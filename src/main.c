@@ -22,7 +22,9 @@ int main(int argc, char** argv) {
 	printf("Lexing %s\n", file);
 	struct Token* tokens = lex(file);
 	while (tokens) {
-		printf("%s\n", tokens->name);
+		if (tokens->name) {
+			printf("%c\n", tokens->name[0]);
+		}
 		tokens = tokens->next;
 	}
 

@@ -1,3 +1,5 @@
+#pragma once
+
 struct Token {
 	const char* name;
 	struct Token* next;
