@@ -13,6 +13,11 @@ struct Token* new_token(char* name, struct Token* next) {
 }
 
 void free_token(struct Token* token) {
-	free(token->name);
+	if (!token) {
+		return;
+	}
+	if (token->name) {
+		free(token->name);
+	}
 	free(token);
 }
