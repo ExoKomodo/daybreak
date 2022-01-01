@@ -1,15 +1,16 @@
 #include <lex/prelude.h>
+#include <stdbool.h>
 
 void greeting() {
 	puts("Welcome to the Daybreak compiler!");
 }
 
-int check_args(int argc, char** argv) {
+bool check_args(int argc, char** argv) {
 	if (argc < 2) {
 		puts("Usage: daybreak <filename>");
-		return 1;
+		return false;
 	}
-	return 0;
+	return true;
 }
 
 int main(int argc, char** argv) {
