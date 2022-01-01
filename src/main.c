@@ -2,13 +2,13 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-void greeting() {
+void _greeting() {
 	printf("#####################################\n");
 	printf("# Welcome to the Daybreak compiler! #\n");
 	printf("#####################################\n\n");
 }
 
-bool check_args(int argc, char** argv) {
+bool _check_args(int argc, char** argv) {
 	if (argc < 2) {
 		puts("Usage: daybreak <filename>");
 		return false;
@@ -17,8 +17,8 @@ bool check_args(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
-	greeting();
-	if (!check_args(argc, argv)) {
+	_greeting();
+	if (!_check_args(argc, argv)) {
 		return 1;
 	}
 	
@@ -27,10 +27,10 @@ int main(int argc, char** argv) {
 	// NOTE: Could write this as a set of tail recursive functions
 	while (tokens) {
 		if (tokens->name) {
-			printf("%s\n", tokens->name);
+			printf("%s, %lu:%lu\n", tokens->name, tokens->row, tokens->column);
 		}
 		struct Token* next = tokens->next;
-		free_token(tokens);
+		token_free(tokens);
 		tokens = next;
 	}
 
