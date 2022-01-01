@@ -1,9 +1,15 @@
 #pragma once
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <lex/token.h>
+
+#define TOKEN_BUFFER_SIZE 64
+
+#define RESET_STRING(str, length) \
+	memset((str), '\0', sizeof(char) * (length));
 
 // Open file from filename
 FILE* _open_file(const char* filename) {
@@ -21,18 +27,34 @@ struct Token* lex(const char* filename) {
 		return NULL;
 	}
 	struct Token* tokens = new_token(NULL, NULL);
+	struct Token* current = tokens;
 
 	// Read from file character by character
-	char sentinel[2] = {'\0', '\0'};
-	while ((sentinel[0] = fgetc(file)) != EOF) {
-		// Create new token
-		char* name = malloc(sizeof(char) * 2);
-		strcpy(name, sentinel);
-		struct Token* token = new_token(name, tokens);
-		if (!tokens) {
-			tokens = token;
+	char sentinel;
+	char token_buffer[TOKEN_BUFFER_SIZE] = {'\0'};
+	int token_length = 0;
+	while ((sentinel = fgetc(file)) != EOF) {
+		if (isspace(sentinel) && token_length > 0) {
+			char* name = malloc(sizeof(char) * token_length);
+			memset(name, '\0', sizeof(char) * token_length);
+			RESET_STRING(name, token_length);
+			strncpy(name, token_buffer, token_length);
+			current->next = new_token(name, NULL);
+			
+			RESET_STRING(token_buffer, token_length);
+			token_length = 0;
+			
+			current = current->next;
+			continue;
 		}
+		token_buffer[token_length++] = sentinel;
+	}
+	if (token_length > 0) {
+		char* name = malloc(sizeof(char) * token_length);
+		strncpy(name, token_buffer, token_length);
+		current->next = new_token(name, NULL);
 	}
 
-	return tokens;
+	// Skip empty head node
+	return tokens->next;
 }

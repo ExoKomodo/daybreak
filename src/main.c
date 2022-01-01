@@ -3,7 +3,9 @@
 #include <stdlib.h>
 
 void greeting() {
-	puts("Welcome to the Daybreak compiler!");
+	printf("#####################################\n");
+	printf("# Welcome to the Daybreak compiler! #\n");
+	printf("#####################################\n\n");
 }
 
 bool check_args(int argc, char** argv) {
@@ -21,18 +23,16 @@ int main(int argc, char** argv) {
 	}
 	
 	const char* file = argv[1];
-	printf("Lexing %s\n", file);
 	struct Token* tokens = lex(file);
 	// NOTE: Could write this as a set of tail recursive functions
-	int count;
-	for (count = 0; tokens; count++) {
+	while (tokens) {
 		if (tokens->name) {
-			printf("%c\n", tokens->name[0]);
+			printf("%s\n", tokens->name);
 		}
+		struct Token* next = tokens->next;
 		free_token(tokens);
-		tokens = tokens->next;
+		tokens = next;
 	}
-	printf("Lexed %d tokens\n", count);
 
 	return 0;
 }
