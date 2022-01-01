@@ -8,11 +8,18 @@ pipeline {
 	}
 
 	stages {
+		stage('CMake Configure') {
+			steps {
+				sh "docker-compose up ${COMPOSE_ARGS} configure"
+			}
+		}
+
 		stage('Build') {
 			steps {
 				sh "docker-compose up ${COMPOSE_ARGS} build"
 			}
 		}
+
 		stage('Test') {
 			steps {
 				sh "docker-compose up ${COMPOSE_ARGS} test"
