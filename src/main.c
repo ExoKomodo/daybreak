@@ -1,5 +1,6 @@
 #include <lex/prelude.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 void greeting() {
 	puts("Welcome to the Daybreak compiler!");
@@ -22,12 +23,16 @@ int main(int argc, char** argv) {
 	const char* file = argv[1];
 	printf("Lexing %s\n", file);
 	struct Token* tokens = lex(file);
-	while (tokens) {
+	// NOTE: Could write this as a set of tail recursive functions
+	int count;
+	for (count = 0; tokens; count++) {
 		if (tokens->name) {
 			printf("%c\n", tokens->name[0]);
 		}
+		free_token(tokens);
 		tokens = tokens->next;
 	}
+	printf("Lexed %d tokens\n", count);
 
 	return 0;
 }

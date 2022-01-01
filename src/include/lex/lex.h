@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <lex/token.h>
 
 // Open file from filename
@@ -22,10 +23,12 @@ struct Token* lex(const char* filename) {
 	struct Token* tokens = new_token(NULL, NULL);
 
 	// Read from file character by character
-	char sentinel;
-	while ((sentinel = fgetc(file)) != EOF) {
+	char sentinel[2] = {'\0', '\0'};
+	while ((sentinel[0] = fgetc(file)) != EOF) {
 		// Create new token
-		struct Token* token = new_token(&sentinel, tokens);
+		char* name = malloc(sizeof(char) * 2);
+		strcpy(name, sentinel);
+		struct Token* token = new_token(name, tokens);
 		if (!tokens) {
 			tokens = token;
 		}
