@@ -1,2 +1,5 @@
-print 'hello'
-print 'hello again'
+?? Prints hello world
+fun main () => int is
+	puts "Hello world"
+	0
+end

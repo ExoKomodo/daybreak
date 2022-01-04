@@ -2,10 +2,17 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-void _greeting() {
-	printf("#####################################\n");
-	printf("# Welcome to the Daybreak compiler! #\n");
-	printf("#####################################\n\n");
+bool _check_args(int argc, char** argv);
+int _compile(const char* filename);
+void _greeting();
+void _process_token(struct Token** tokens);
+
+int main(int argc, char** argv) {
+	_greeting();
+	if (!_check_args(argc, argv)) {
+		return 1;
+	}
+	return _compile(argv[1]);
 }
 
 bool _check_args(int argc, char** argv) {
@@ -16,23 +23,30 @@ bool _check_args(int argc, char** argv) {
 	return true;
 }
 
-int main(int argc, char** argv) {
-	_greeting();
-	if (!_check_args(argc, argv)) {
-		return 1;
-	}
-	
-	const char* file = argv[1];
-	struct Token* tokens = lex(file);
-	// NOTE: Could write this as a set of tail recursive functions
-	while (tokens) {
-		if (tokens->name) {
-			printf("%s, %lu:%lu\n", tokens->name, tokens->row, tokens->column);
+int _compile(const char* filename) {
+	FILE* file = lex_open_file(filename);
+	struct Token* tokens;
+	unsigned long line = 1;
+	while ((tokens = lex_line(filename, file, &line)) != NULL) {
+		if (tokens->line_number == 0) {
+			continue;
 		}
-		struct Token* next = tokens->next;
-		token_free(tokens);
-		tokens = next;
+		while (tokens) {
+			_process_token(&tokens);
+		}
 	}
+}
 
-	return 0;
+void _greeting() {
+	printf("#####################################\n");
+	printf("# Welcome to the Daybreak compiler! #\n");
+	printf("#####################################\n\n");
+}
+
+void _process_token(struct Token** tokens) {
+	struct Token* token = *tokens;
+	token_print(*token);
+	struct Token* next = token->next;
+	token_free(token);
+	(*tokens) = next;
 }
