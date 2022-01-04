@@ -66,4 +66,4 @@ _deps
 build/
 bin/
 
-.vscode/
+.vscode/settings.json

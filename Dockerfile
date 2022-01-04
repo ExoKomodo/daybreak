@@ -1,4 +1,4 @@
-FROM silkeh/clang:12
+FROM gcc:11
 
 RUN apt update -y
 RUN apt install cmake -y
