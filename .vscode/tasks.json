@@ -1,0 +1,34 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "cmake build",
+      "type": "shell",
+      "command": "cmake --build c:/Projects/Daybreak/build --target daybreak --",
+      "problemMatcher": [
+        "$gcc",
+      ],
+      "dependsOn": [
+        "cmake configure",
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true,
+      }
+    },
+    {
+      "label": "cmake configure",
+      "type": "shell",
+      "command": "cmake -Bc:/Projects/Daybreak/build",
+      "problemMatcher": [
+        "$gcc",
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true,
+      },
+    },
+  ]
+}
