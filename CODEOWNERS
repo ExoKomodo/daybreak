@@ -1,1 +1,10 @@
-* @ExoKomodo
+* @ExoKomodo/admins
+
+.vscode @ExoKomodo/developers
+euler @ExoKomodo/developers
+examples @ExoKomodo/developers
+src @ExoKomodo/developers
+tests @ExoKomodo/developers
+.gitignore @ExoKomodo/developers
+CMakeLists.txt @ExoKomodo/developers
+README.md @ExoKomodo/developers

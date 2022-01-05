@@ -1,21 +1,19 @@
-#include <lex/prelude.h>
+#include <api/prelude.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
-bool _check_args(int argc, char** argv);
-int _compile(const char* filename);
+bool _check_args(int argc);
 void _greeting();
-void _process_token(struct Token** tokens);
 
 int main(int argc, char** argv) {
 	_greeting();
-	if (!_check_args(argc, argv)) {
+	if (!_check_args(argc)) {
 		return 1;
 	}
-	return _compile(argv[1]);
+	return compile(argv[1]);
 }
 
-bool _check_args(int argc, char** argv) {
+bool _check_args(int argc) {
 	if (argc < 2) {
 		puts("Usage: daybreak <filename>");
 		return false;
@@ -23,30 +21,9 @@ bool _check_args(int argc, char** argv) {
 	return true;
 }
 
-int _compile(const char* filename) {
-	FILE* file = lex_open_file(filename);
-	struct Token* tokens;
-	unsigned long line = 1;
-	while ((tokens = lex_line(filename, file, &line)) != NULL) {
-		if (tokens->line_number == 0) {
-			continue;
-		}
-		while (tokens) {
-			_process_token(&tokens);
-		}
-	}
-}
-
 void _greeting() {
-	printf("#####################################\n");
-	printf("# Welcome to the Daybreak compiler! #\n");
-	printf("#####################################\n\n");
+	puts(ANSI_FOREGROUND_YELLOW "#####################################" ANSI_RESET);
+	puts(ANSI_FOREGROUND_YELLOW "# Welcome to the Daybreak compiler! #" ANSI_RESET);
+	puts(ANSI_FOREGROUND_YELLOW "#####################################" ANSI_RESET "\n");
 }
 
-void _process_token(struct Token** tokens) {
-	struct Token* token = *tokens;
-	token_print(*token);
-	struct Token* next = token->next;
-	token_free(token);
-	(*tokens) = next;
-}

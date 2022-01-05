@@ -7,6 +7,17 @@ Programming language that compiles to C
 - [Repository](https://github.com/ExoKomodo/Daybreak)
 - [Jenkins](https://jenkins.exokomodo.com/job/Daybreak)
 
+## Suggested VSCode Extensions
+- [Better C++ Syntax](https://marketplace.visualstudio.com/items?itemName=jeff-hykin.better-cpp-syntax)
+- [C/C++ Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools-extension-pack)
+- [CMake](https://marketplace.visualstudio.com/items?itemName=twxs.cmake)
+- [Daybreak Lang](https://marketplace.visualstudio.com/items?itemName=ExoKomodo.daybreak-lang)
+- [Docker](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker)
+- [Jenkinsfile Support](https://marketplace.visualstudio.com/items?itemName=secanis.jenkinsfile-support)
+- [Task Explorer](https://marketplace.visualstudio.com/items?itemName=spmeesseman.vscode-taskexplorer)
+- [Trigger Task on Save](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.triggertaskonsave)
+- [Visual Studio IntelliCode](https://marketplace.visualstudio.com/items?itemName=VisualStudioExptTeam.vscodeintellicode)
+
 ## Setup
 
 ### Setup on Windows

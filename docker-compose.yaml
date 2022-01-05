@@ -12,10 +12,22 @@ services:
     command: bash compose_scripts/test.sh
     volumes:
       - .:/app
-  build:
+  build_all:
     build:
       context: .
-    command: bash compose_scripts/build.sh
+    command: bash compose_scripts/build.sh all
+    volumes:
+      - .:/app
+  build_daybreak:
+    build:
+      context: .
+    command: bash compose_scripts/build.sh daybreak
+    volumes:
+      - .:/app
+  build_daybreak_test:
+    build:
+      context: .
+    command: bash compose_scripts/build.sh daybreak_test
     volumes:
       - .:/app
   fix_ownership:
