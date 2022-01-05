@@ -65,5 +65,3 @@ CTestTestfile.cmake
 _deps
 build/
 bin/
-
-.vscode/settings.json

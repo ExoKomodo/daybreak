@@ -2,4 +2,4 @@
 
 set -ex
 
-cmake --build .
+cmake --build ./build --target $1 --

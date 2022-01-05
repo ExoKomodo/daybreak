@@ -2,4 +2,4 @@
 
 set -ex
 
-cmake .
+cmake -B./build
