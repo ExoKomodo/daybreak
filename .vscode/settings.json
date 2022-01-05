@@ -1,0 +1,22 @@
+{
+  "triggerTaskOnSave.tasks": {
+    "cmake build [daybreak]": [
+      "src/include/**/*.h",
+      "src/main.c",
+    ],
+    "cmake configure": [
+      "CMakeLists.txt",
+      "**/CmakeLists.txt",
+    ],
+  },
+  "files.associations": {
+    "*.script": "lua",
+    "*.py": "python",
+    "*.dron": "jsonc",
+    "*.fs": "fsharp",
+    "*.h": "c",
+    "*.c": "c",
+    "typeinfo": "c",
+    "type_traits": "c"
+  },
+}

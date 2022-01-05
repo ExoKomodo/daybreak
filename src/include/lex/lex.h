@@ -15,18 +15,19 @@
 #define _LEX_RESET_BUFFER(buffer, length) \
 	memset((buffer), '\0', sizeof(char) * (length));
 
-void _build_token(const char* filename, char token_buffer[], size_t* buffer_length, unsigned long line, unsigned long column, struct Token** current_token);
-struct Token* lex_line(const char* filename, FILE* file, unsigned long* line_number);
+void _build_token(const char* filename, char token_buffer[], size_t* buffer_length, size_t line, size_t column, struct Token** current_token);
+struct Token* lex_file(const char* filename, FILE* file);
 FILE* lex_open_file(const char* filename);
 
 
-struct Token* lex_line(const char* filename, FILE* file, unsigned long* line_number) {
+struct Token* lex_file(const char* filename, FILE* file) {
 	if (!file) {
 		return NULL;
 	}
 	struct Token* tokens = token_new(filename, NULL, NULL, 0, 0);
 	struct Token* current = tokens;
-	unsigned long column = 1;
+	size_t line = 1;
+	size_t column = 0;
 
 	// Read from file character by character
 	char character;
@@ -34,11 +35,14 @@ struct Token* lex_line(const char* filename, FILE* file, unsigned long* line_num
 	size_t token_length = 0;
 	bool is_comment = false;
 	bool is_string = false;
-	while ((character = fgetc(file)) != EOF) {
-		int current_lex_column = column;
+	while ((character = (char)fgetc(file)) != EOF) {
+		column++;
+		size_t current_lex_column = column;
+		size_t current_lex_line = line;
 		switch (character) {
-			case '\n':
-				(*line_number)++;
+			case '\n': {
+				column = 0;
+				line++;
 				if (is_comment) {
 					is_comment = false;
 					continue;
@@ -48,41 +52,53 @@ struct Token* lex_line(const char* filename, FILE* file, unsigned long* line_num
 						filename,
 						token_buffer,
 						&token_length,
-						*line_number,
+						current_lex_line,
 						current_lex_column,
 						&current
 					);
 				}
-				return tokens->next;
-			case '"':
-				if (!is_string) {
+				continue;
+			} break;
+			case '"': {
+				if (is_string) {
+					is_string = false;
+					_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
+					_build_token(
+						filename,
+						token_buffer,
+						&token_length,
+						current_lex_line,
+						current_lex_column,
+						&current
+					);
+					continue;
+				} else {
 					is_string = true;
 					_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
 					continue;
 				}
-				break;
-			case '?':
-				is_comment = true;
-				continue;
-		}
-		if (is_comment) {
-			continue;
-		}
-		column++;
-		if (is_string) {
-			if (character == '"') {
-				is_string = false;
+			} break;
+			case '(':
+			case ')': {
 				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
 				_build_token(
 					filename,
 					token_buffer,
 					&token_length,
-					*line_number,
+					current_lex_line,
 					current_lex_column,
 					&current
 				);
 				continue;
-			}
+			} break;
+			case '?': {
+				is_comment = true;
+			} continue;
+		}
+		if (is_comment) {
+			continue;
+		}
+		if (is_string) {
 			_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
 			continue;
 		}
@@ -92,7 +108,7 @@ struct Token* lex_line(const char* filename, FILE* file, unsigned long* line_num
 					filename,
 					token_buffer,
 					&token_length,
-					*line_number,
+					current_lex_line,
 					current_lex_column,
 					&current
 				);
@@ -102,15 +118,23 @@ struct Token* lex_line(const char* filename, FILE* file, unsigned long* line_num
 		_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
 	}
 	if (token_length > 0) {
-		char* name = malloc(sizeof(char) * token_length);
-		strncpy(name, token_buffer, token_length);
-		current->next = token_new(
+		_build_token(
 			filename,
-			name,
-			NULL,
-			*line_number,
-			column - token_length
+			token_buffer,
+			&token_length,
+			line,
+			column,
+			&current
 		);
+		// char* name = malloc(sizeof(char) * token_length);
+		// strncpy(name, token_buffer, token_length);
+		// current->next = token_new(
+		// 	filename,
+		// 	name,
+		// 	NULL,
+		// 	current_lex_line,
+		// 	column - token_length
+		// );
 	}
 
 	// Skip empty head node
@@ -120,7 +144,7 @@ struct Token* lex_line(const char* filename, FILE* file, unsigned long* line_num
 FILE* lex_open_file(const char* filename) {
 	FILE* file = fopen(filename, "r");
 	if (file == NULL) {
-		fprintf(stderr, "Could not open file %s\n", filename);
+		LOG_ERROR("Could not open file %s\n", filename);
 		return NULL;
 	}
 	return file;
@@ -130,13 +154,12 @@ void _build_token(
 	const char* filename,
 	char token_buffer[],
 	size_t* buffer_length,
-	unsigned long line,
-	unsigned long column,
+	size_t line,
+	size_t column,
 	struct Token** current_token
 ) {
-	char* name = malloc(sizeof(char) * *buffer_length);
-	memset(name, '\0', sizeof(char) * *buffer_length);
-	_LEX_RESET_BUFFER(name, *buffer_length);
+	char* name = malloc(sizeof(char) * *buffer_length + 1);
+	_LEX_RESET_BUFFER(name, *buffer_length + 1);
 	strncpy(name, token_buffer, *buffer_length);
 	(*current_token)->next = token_new(filename, name, NULL, line, column - *buffer_length);
 	

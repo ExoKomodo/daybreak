@@ -13,7 +13,19 @@
         "${workspaceFolder}/examples/hello.day",
       ],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "cmake build",
+      "preLaunchTask": "cmake build [daybreak]",
+      "miDebuggerPath": "gdb",
+    },
+    {
+      "name": "Test",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/bin/daybreak_test",
+      "args": [
+        "${workspaceFolder}",
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "cmake build [daybreak_test]",
       "miDebuggerPath": "gdb",
     }
   ]
