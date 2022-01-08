@@ -40,6 +40,7 @@ void token_free(struct Token* token) {
 	}
 	if (token->name) {
 		free(token->name);
+		token->name = NULL;
 	}
 	free(token);
 }
@@ -56,9 +57,11 @@ static inline void token_print(struct Token token) {
 	}
 }
 
-static inline void token_advance(struct Token** tokens) {
+static inline void token_chomp(struct Token** tokens) {
   if (*tokens) {
-		(*tokens) = (*tokens)->next;
+		struct Token* next = (*tokens)->next;
+		token_free(*tokens);
+		*tokens = next;
 	}
 }
 

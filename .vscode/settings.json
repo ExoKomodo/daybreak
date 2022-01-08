@@ -4,9 +4,15 @@
       "src/include/**/*.h",
       "src/main.c",
     ],
+    "cmake build [daybreak_test]": [
+      "src/include/**/*.h",
+      "src/main.c",
+      "tests/*.h",
+      "tests/test_main.c",
+    ],
     "cmake configure": [
       "CMakeLists.txt",
-      "**/CmakeLists.txt",
+      "**/CMakeLists.txt",
     ],
   },
   "files.associations": {
@@ -17,6 +23,7 @@
     "*.h": "c",
     "*.c": "c",
     "typeinfo": "c",
-    "type_traits": "c"
+    "type_traits": "c",
+    "limits": "c"
   },
 }

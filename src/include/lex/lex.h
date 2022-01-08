@@ -126,25 +126,17 @@ struct Token* lex_file(const char* filename, FILE* file) {
 			column,
 			&current
 		);
-		// char* name = malloc(sizeof(char) * token_length);
-		// strncpy(name, token_buffer, token_length);
-		// current->next = token_new(
-		// 	filename,
-		// 	name,
-		// 	NULL,
-		// 	current_lex_line,
-		// 	column - token_length
-		// );
 	}
 
 	// Skip empty head node
-	return tokens->next;
+	token_chomp(&tokens);
+	return tokens;
 }
 
 FILE* lex_open_file(const char* filename) {
 	FILE* file = fopen(filename, "r");
 	if (file == NULL) {
-		LOG_ERROR("Could not open file %s\n", filename);
+		LOG_ERROR("Could not open file %s", filename);
 		return NULL;
 	}
 	return file;
