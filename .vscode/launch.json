@@ -10,7 +10,9 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/bin/daybreak",
       "args": [
-        "${workspaceFolder}/examples/hello.day",
+        "${workspaceFolder}/examples/hello/hello.day",
+        "-o",
+        "${workspaceFolder}/out/hello.exe"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
@@ -23,10 +25,7 @@
       "name": "Test",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/daybreak_test",
-      "args": [
-        "${workspaceFolder}",
-      ],
+      "program": "${workspaceFolder}/build/bin/daybreak_test ${workspaceFolder}",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak_test]",
       "miDebuggerPath": "gdb",

@@ -13,7 +13,7 @@
 } while (0);
 
 #define _ADVANCE_TOKEN(tokens, token) do { \
-  token_advance(tokens); \
+  token_chomp(tokens); \
   token = *tokens; \
 } while (0);
 
@@ -269,6 +269,7 @@ void ast_free_node(struct AstNode* node) {
       exit(1);
     }
   }
+
   free(node);
 }
 
@@ -288,7 +289,10 @@ struct CallExpressionNode* ast_new_call_expression_node(
 
 void ast_free_call_expression_node(struct CallExpressionNode* node) {
   ast_free_identifier_node(node->function);
+  node->function = NULL;
   ast_free_expression_list_node(node->arguments);
+  node->arguments = NULL;
+
   free(node);
 }
 
@@ -331,11 +335,12 @@ struct DeclarationListNode* ast_new_declaration_list_node(
 }
 
 void ast_free_declaration_list_node(struct DeclarationListNode* node) {
-  struct DeclarationNode** declarations = node->declarations;
   for (size_t i = 0; i < node->length; i++) {
-    ast_free_declaration_node(declarations[i]);
+    ast_free_declaration_node(node->declarations[i]);
   }
   free(node->declarations);
+  node->declarations = NULL;
+
   free(node);
 }
 
@@ -403,6 +408,7 @@ void ast_free_declaration_node(struct DeclarationNode* node) {
       exit(1);
     }
   }
+
   free(node);
 }
 
@@ -411,7 +417,7 @@ struct DeclarationNode* ast_parse_declaration(struct Token** tokens) {
   _CHECK_TOKENS();
   struct Token* token = *tokens;
 
-  if (!ast_declaration_token_matches_first_set(**tokens)) {
+  if (!ast_declaration_token_matches_first_set(*token)) {
     LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), token->name);
     exit(1);
   }
@@ -447,11 +453,12 @@ struct ExpressionListNode* ast_new_expression_list_node(
 }
 
 void ast_free_expression_list_node(struct ExpressionListNode* node) {
-  struct ExpressionNode** expressions = node->expressions;
   for (size_t i = 0; i < node->length; i++) {
-    ast_free_expression_node(expressions[i]);
+    ast_free_expression_node(node->expressions[i]);
   }
   free(node->expressions);
+  node->expressions = NULL;
+
   free(node);
 }
 
@@ -527,6 +534,7 @@ void ast_free_expression_node(struct ExpressionNode* node) {
       exit(1);
     }
   }
+
   free(node);
 }
 
@@ -589,8 +597,12 @@ struct FunctionDeclarationNode* ast_new_function_declaration_node(
 
 void ast_free_function_declaration_node(struct FunctionDeclarationNode* node) {
   ast_free_identifier_node(node->identifier);
+  node->identifier = NULL;
   ast_free_parameter_list_node(node->parameters);
+  node->parameters = NULL;
   ast_free_expression_list_node(node->expressions);
+  node->expressions = NULL;
+
   free(node);
 }
 
@@ -599,7 +611,7 @@ struct FunctionDeclarationNode* ast_parse_function_declaration(struct Token** to
   _CHECK_TOKENS();
   struct Token* token = *tokens;
 
-  if (!ast_function_declaration_token_matches_first_set(**tokens)) {
+  if (!ast_function_declaration_token_matches_first_set(*token)) {
     LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), token->name);
     exit(1);
   }
@@ -657,6 +669,8 @@ struct IdentifierNode* ast_new_identifier_node(char* name) {
 
 void ast_free_identifier_node(struct IdentifierNode* node) {
   free(node->name);
+  node->name = NULL;
+
   free(node);
 }
 
@@ -665,14 +679,15 @@ struct IdentifierNode* ast_parse_identifier(struct Token** tokens) {
   _CHECK_TOKENS();
   struct Token* token = *tokens;
 
-  if (!ast_identifier_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_IDENTIFIER), token->name);
+  if (!ast_identifier_token_matches_first_set(*token)) {
+    LOG_ERROR("Expected identifier got '%s'", token->name);
     exit(1);
   }
 
   size_t name_length = (strlen(token->name) + 1);
   char* name = malloc(sizeof(char) * name_length);
-  memset(name, 0, sizeof(char) * name_length);
+  memset(name, '\0', sizeof(char) * name_length);
+  strcpy(name, token->name);
   _ADVANCE_TOKEN(tokens, token);
   return ast_new_identifier_node(name);
 }
@@ -729,11 +744,12 @@ struct ParameterListNode* ast_new_parameter_list_node(
 }
 
 void ast_free_parameter_list_node(struct ParameterListNode* node) {
-  struct ParameterNode** parameters = node->parameters;
   for (size_t i = 0; i < node->length; i++) {
-    ast_free_parameter_node(parameters[i]);
+    ast_free_parameter_node(node->parameters[i]);
   }
   free(node->parameters);
+  node->parameters = NULL;
+
   free(node);
 }
 
@@ -788,7 +804,10 @@ struct ParameterNode* ast_new_parameter_node(
 
 void ast_free_parameter_node(struct ParameterNode* node) {
   ast_free_identifier_node(node->identifier);
+  node->identifier = NULL;
   ast_free_identifier_node(node->type);
+  node->type = NULL;
+
   free(node);
 }
 
@@ -806,6 +825,8 @@ struct ProgramNode* ast_new_program_node(
 
 void ast_free_program_node(struct ProgramNode* node) {
   ast_free_declaration_list_node(node->declarations);
+  node->declarations = NULL;
+
   free(node);
 }
 
@@ -814,36 +835,11 @@ struct ProgramNode* ast_parse_program(struct Token** tokens) {
   _CHECK_TOKENS();
   struct Token* token = *tokens;
 
-  if (!ast_program_token_matches_first_set(**tokens)) {
+  if (!ast_program_token_matches_first_set(*token)) {
     LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), token->name);
     exit(1);
   }
-  return ast_new_program_node(ast_parse_declaration_list(tokens));  
-  
-  // struct Token* token = *tokens;
-  // struct DeclarationListNode* declaration_list = ast_new_declaration_list_node(NULL);
-  // ast_parse_declaration_list(declaration_list, &token);
-  // program->declarations = ast_parse_declaration_list()
-  // struct DeclarationListNode* declarations = program->declarations;
-  // LOG_DEBUG("Parsing ProgramNode with token %s", token->name);
-  
-  // size_t function_name_length = token->length + 1;
-  // char* function_name = malloc(sizeof(char) * function_name_length);
-  // memset(function_name, '\0', function_name_length);
-  // strncpy(function_name, token->name, function_name_length);
-  // struct FunctionDeclarationNode* function = ast_new_function_declaration_node(
-  //   ast_new_identifier_node(function_name),
-  //   ast_new_parameter_list_node(NULL),
-  //   ast_new_expression_list_node(NULL)
-  // );
-  
-  // struct DeclarationNode* declaration = ast_new_declaration_node(
-  //   AstFunctionDeclaration,
-  //   (union DeclarationNodeUnion) {
-  //     .function_declaration = function
-  //   }
-  // );
-  // ast_add_declaration_node(declarations, declaration);
+  return ast_new_program_node(ast_parse_declaration_list(tokens));
 }
 
 inline bool ast_program_token_matches_first_set(struct Token token) {
@@ -861,6 +857,8 @@ struct StringExpressionNode* ast_new_string_expression_node(char* value) {
 }
 void ast_free_string_expression_node(struct StringExpressionNode* node) {
   free(node->value);
+  node->value = NULL;
+
   free(node);
 }
 
@@ -876,7 +874,7 @@ struct StringExpressionNode* ast_parse_string_expression(struct Token** tokens) 
   const size_t token_length = token->length + 1;
   char* value = malloc(sizeof(char) * token_length);
   memset(value, '\0', token_length);
-  strncpy(value, token->name, token_length);
+  strncpy(value, token->name, token_length - 1);
   _ADVANCE_TOKEN(tokens, token);
   return ast_new_string_expression_node(value);
 }
