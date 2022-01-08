@@ -12,13 +12,24 @@ add_compile_options(
   -Wconversion
   -Wsign-conversion
   -Wmisleading-indentation
-  -Wduplicated-cond
-  -Wduplicated-branches
-  -Wlogical-op
   -Wnull-dereference
   -Wdouble-promotion
   -Wformat=2
 )
+
+if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+  add_compile_options(
+    -Wduplicated-cond
+    -Wduplicated-branches
+    -Wlogical-op
+  )
+elseif (CMAKE_C_COMPILER_ID MATCHES "Clang")
+  add_compile_options(
+    -Wno-gnu-zero-variadic-macro-arguments
+    -Wnewline-eof
+    -Wno-static-in-inline
+  )
+endif()
 
 add_subdirectory(src)
 add_subdirectory(tests)
