@@ -15,6 +15,9 @@
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
       "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      }
     },
     {
       "name": "Test",
@@ -27,6 +30,9 @@
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak_test]",
       "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      }
     }
   ]
 }

@@ -1,7 +1,10 @@
 #pragma once
 
-#include <log/prelude.h>
+#include <ctype.h>
+#include <stdlib.h>
 #include <string.h>
+
+#include <log/prelude.h>
 
 struct Token {
 	const char* filename;

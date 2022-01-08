@@ -1,7 +1,10 @@
 #pragma once
 
+#include <generation/prelude.h>
 #include <lex/prelude.h>
 #include <parser/prelude.h>
+
+int compile(const char*);
 
 int compile(const char* filename) {
 	// TODO: Handle NULL files
