@@ -11,10 +11,10 @@ add_compile_options(
   -pedantic
   -Wconversion
   -Wsign-conversion
-  -Wmisleading-indentation
   -Wnull-dereference
   -Wdouble-promotion
   -Wformat=2
+  -Wno-endif-labels
 )
 
 if (CMAKE_C_COMPILER_ID STREQUAL "GNU")

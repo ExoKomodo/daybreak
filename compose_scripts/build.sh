@@ -2,4 +2,7 @@
 
 set -ex
 
-cmake --build ./build --target $1 --
+cd /app
+
+bash ./compose_scripts/configure.sh
+cmake --build . --target $1 --

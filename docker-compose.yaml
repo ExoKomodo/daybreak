@@ -3,36 +3,31 @@ services:
   configure:
     build:
       context: .
-    command: bash compose_scripts/configure.sh
+    command: bash /app/compose_scripts/configure.sh
     volumes:
       - .:/app
+    working_dir: /app
+  memory_check:
+    build:
+      context: .
+    command: bash /app/compose_scripts/memory_check.sh
   test:
     build:
       context: .
-    command: bash compose_scripts/test.sh
-    volumes:
-      - .:/app
+    command: bash /app/compose_scripts/test.sh
   build_all:
     build:
       context: .
-    command: bash compose_scripts/build.sh all
-    volumes:
-      - .:/app
+    command: bash /app/compose_scripts/build.sh all
   build_daybreak:
     build:
       context: .
-    command: bash compose_scripts/build.sh daybreak
-    volumes:
-      - .:/app
+    command: bash /app/compose_scripts/build.sh daybreak
   build_daybreak_test:
     build:
       context: .
-    command: bash compose_scripts/build.sh daybreak_test
-    volumes:
-      - .:/app
+    command: bash /app/compose_scripts/build.sh daybreak_test
   fix_ownership:
     build:
       context: .
-    command: bash compose_scripts/fix_ownership.sh
-    volumes:
-      - .:/app
+    command: bash /app/compose_scripts/fix_ownership.sh

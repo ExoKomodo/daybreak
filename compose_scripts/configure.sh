@@ -2,4 +2,6 @@
 
 set -ex
 
-cmake -B./build
+cd /app
+
+cmake .

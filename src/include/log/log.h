@@ -3,7 +3,9 @@
 #include <stdbool.h>
 #include <log/colors.h>
 
-#define DEBUG true
+#ifndef DEBUG
+  #define DEBUG false
+#endif
 
 #if DEBUG
   #define LOG_DEBUG(format_string, ...) \
