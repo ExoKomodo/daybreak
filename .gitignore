@@ -69,3 +69,4 @@ out/*
 !out/.gitkeep
 
 build/
+.cmake/
