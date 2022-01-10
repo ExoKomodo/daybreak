@@ -17,10 +17,7 @@
       "problemMatcher": [
         "$gcc",
       ],
-      "group": {
-        "kind": "build",
-        "isDefault": true,
-      },
+      "group": "build",
       "dependsOn": [
         "cmake configure",
       ],
@@ -61,12 +58,24 @@
       "problemMatcher": [
         "$gcc",
       ],
+      "group": "test",
+      "dependsOn": [
+        "cmake configure",
+      ],
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "${workspaceFolder}/bin/daybreak_test",
+      "problemMatcher": [
+        "$gcc",
+      ],
       "group": {
-        "kind": "build",
+        "kind": "test",
         "isDefault": true,
       },
       "dependsOn": [
-        "cmake configure",
+        "cmake build [daybreak_test]",
       ],
     },
     {
@@ -82,10 +91,23 @@
       "problemMatcher": [
         "$gcc",
       ],
-      "group": {
-        "kind": "build",
-        "isDefault": true,
-      },
+      "group": "none",
     },
-  ]
+    {
+      "label": "cmake clean",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "${workspaceFolder}",
+        "--target",
+        "clean",
+        "--",
+      ],
+      "problemMatcher": [
+        "$gcc",
+      ],
+      "group": "none",
+    },
+  ],
 }
