@@ -4,9 +4,6 @@ services:
     build:
       context: .
     command: bash /app/compose_scripts/configure.sh
-    volumes:
-      - .:/app
-    working_dir: /app
   memory_check:
     build:
       context: .
