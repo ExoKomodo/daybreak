@@ -4,4 +4,4 @@ set -ex
 
 cd /app
 
-cmake .
+cmake . -G "Unix Makefiles"
