@@ -9,7 +9,7 @@
       "command": "cmake",
       "args": [
         "--build",
-        "${workspaceFolder}/build",
+        "${workspaceFolder}",
         "--target",
         "all",
         "--",
@@ -20,7 +20,10 @@
       "group": {
         "kind": "build",
         "isDefault": true,
-      }
+      },
+      "dependsOn": [
+        "cmake configure",
+      ],
     },
     {
       "label": "cmake build [daybreak]",
@@ -28,7 +31,7 @@
       "command": "cmake",
       "args": [
         "--build",
-        "${workspaceFolder}/build",
+        "${workspaceFolder}",
         "--target",
         "daybreak",
         "--",
@@ -39,7 +42,10 @@
       "group": {
         "kind": "build",
         "isDefault": true,
-      }
+      },
+      "dependsOn": [
+        "cmake configure",
+      ],
     },
     {
       "label": "cmake build [daybreak_test]",
@@ -47,7 +53,7 @@
       "command": "cmake",
       "args": [
         "--build",
-        "${workspaceFolder}/build",
+        "${workspaceFolder}",
         "--target",
         "daybreak_test",
         "--",
@@ -58,12 +64,15 @@
       "group": {
         "kind": "build",
         "isDefault": true,
-      }
+      },
+      "dependsOn": [
+        "cmake configure",
+      ],
     },
     {
       "label": "cmake configure",
       "type": "shell",
-      "command": "cmake -B${workspaceFolder}/build",
+      "command": "cmake ${workspaceFolder}",
       "problemMatcher": [
         "$gcc",
       ],

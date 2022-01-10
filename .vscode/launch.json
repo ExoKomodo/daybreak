@@ -8,7 +8,7 @@
       "name": "Hello world",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/daybreak",
+      "program": "${workspaceFolder}/bin/daybreak",
       "args": [
         "${workspaceFolder}/examples/hello/hello.day",
         "-o",
@@ -25,7 +25,7 @@
       "name": "Test",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/daybreak_test ${workspaceFolder}",
+      "program": "${workspaceFolder}/bin/daybreak_test",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak_test]",
       "miDebuggerPath": "gdb",
