@@ -19,7 +19,7 @@
       "miDebuggerPath": "gdb",
       "osx": {
         "miDebuggerPath": "lldb-mi",
-      }
+      },
     },
     {
       "name": "Test",
