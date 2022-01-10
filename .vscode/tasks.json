@@ -72,7 +72,12 @@
     {
       "label": "cmake configure",
       "type": "shell",
-      "command": "cmake ${workspaceFolder}",
+      "command": "cmake",
+      "args": [
+        "${workspaceFolder}",
+        "-G",
+        "Unix Makefiles",
+      ],
       "problemMatcher": [
         "$gcc",
       ],
