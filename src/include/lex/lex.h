@@ -78,8 +78,22 @@ struct Token* lex_file(const char* filename, FILE* file) {
 					continue;
 				}
 			} break;
+			case ':':
 			case '(':
 			case ')': {
+				if (is_string) {
+					break;
+				}
+				if (token_length > 0) {
+					_build_token(
+						filename,
+						token_buffer,
+						&token_length,
+						current_lex_line,
+						current_lex_column,
+						&current
+					);
+				}
 				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
 				_build_token(
 					filename,

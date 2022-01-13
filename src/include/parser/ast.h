@@ -12,9 +12,8 @@
   } \
 } while (0);
 
-#define _ADVANCE_TOKEN(tokens, token) do { \
+#define _ADVANCE_TOKEN(tokens) do { \
   token_chomp(tokens); \
-  token = *tokens; \
 } while (0);
 
 typedef enum {
@@ -26,6 +25,7 @@ typedef enum {
   AstExpressionList,
   AstFunctionDeclaration,
   AstIdentifier,
+  AstIdentifierExpression,
   AstNumericExpression,
   AstParameter,
   AstParameterList,
@@ -42,6 +42,7 @@ struct ExpressionListNode;
 struct ExpressionNode;
 struct FunctionDeclarationNode;
 struct IdentifierNode;
+struct IdentifierExpressionNode;
 struct NumericExpressionNode;
 struct ParameterListNode;
 struct ParameterNode;
@@ -73,6 +74,7 @@ union DeclarationNodeUnion {
 
 union ExpressionNodeUnion {
   struct CallExpressionNode* call_expression;
+  struct IdentifierExpressionNode* identifier_expression;
   struct NumericExpressionNode* numeric_expression;
   struct StringExpressionNode* string_expression;
 };
@@ -107,7 +109,7 @@ void ast_free_expression_node(struct ExpressionNode*);
 struct ExpressionNode* ast_parse_expression(struct Token**);
 bool ast_expression_token_matches_first_set(struct Token);
 
-struct FunctionDeclarationNode* ast_new_function_declaration_node(struct IdentifierNode*, struct ParameterListNode*, struct ExpressionListNode*);
+struct FunctionDeclarationNode* ast_new_function_declaration_node(struct IdentifierNode*, struct IdentifierNode*, struct ParameterListNode*, struct ExpressionListNode*);
 void ast_free_function_declaration_node(struct FunctionDeclarationNode*);
 struct FunctionDeclarationNode* ast_parse_function_declaration(struct Token**);
 bool ast_function_declaration_token_matches_first_set(struct Token);
@@ -116,6 +118,11 @@ struct IdentifierNode* ast_new_identifier_node(char*);
 void ast_free_identifier_node(struct IdentifierNode*);
 struct IdentifierNode* ast_parse_identifier(struct Token**);
 bool ast_identifier_token_matches_first_set(struct Token);
+
+struct IdentifierExpressionNode* ast_new_identifier_expression_node(struct IdentifierNode*);
+void ast_free_identifier_expression_node(struct IdentifierExpressionNode*);
+struct IdentifierExpressionNode* ast_parse_identifier_expression(struct Token**);
+bool ast_identifier_expression_token_matches_first_set(struct Token);
 
 struct NumericExpressionNode* ast_new_numeric_expression_node(int);
 void ast_free_numeric_expression_node(struct NumericExpressionNode*);
@@ -130,6 +137,8 @@ bool ast_parameter_list_token_matches_first_set(struct Token);
 
 struct ParameterNode* ast_new_parameter_node(struct IdentifierNode*, struct IdentifierNode*);
 void ast_free_parameter_node(struct ParameterNode*);
+struct ParameterNode* ast_parse_parameter(struct Token** tokens);
+bool ast_parameter_token_matches_first_set(struct Token);
 
 struct ProgramNode* ast_new_program_node(struct DeclarationListNode*);
 void ast_free_program_node(struct ProgramNode*);
@@ -177,6 +186,7 @@ struct ExpressionNode {
 struct FunctionDeclarationNode {
   AstNodeKind kind;
   struct IdentifierNode* identifier;
+  struct IdentifierNode* return_type;
   struct ParameterListNode* parameters;
   struct ExpressionListNode* expressions;
 };
@@ -184,6 +194,11 @@ struct FunctionDeclarationNode {
 struct IdentifierNode {
   AstNodeKind kind;
   char* name;
+};
+
+struct IdentifierExpressionNode {
+  AstNodeKind kind;
+  struct IdentifierNode* identifier;
 };
 
 struct NumericExpressionNode {
@@ -300,20 +315,18 @@ struct CallExpressionNode* ast_parse_call_expression(struct Token** tokens) {
   LOG_DEBUG("Parsing Call Expression");
   _CHECK_TOKENS();
 
-  struct Token* token = *tokens;
-  if (!ast_call_expression_token_matches_first_set(*token)) {
-    LOG_ERROR("Expected '(' got '%s'", token->name);
+  if (!ast_call_expression_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected '(' got '%s'", (*tokens)->name);
     exit(1);
   }
-  _ADVANCE_TOKEN(tokens, token);
+  _ADVANCE_TOKEN(tokens);
   struct IdentifierNode* function = ast_parse_identifier(tokens);
   struct ExpressionListNode* arguments = ast_parse_expression_list(tokens);
-  token = *tokens;
-  if (!token_is_close_paren(*token)) {
-    LOG_ERROR("Expected ')' got '%s'", token->name);
+  if (!token_is_close_paren(**tokens)) {
+    LOG_ERROR("Expected ')' got '%s'", (*tokens)->name);
     exit(1);
   }
-  _ADVANCE_TOKEN(tokens, token);
+  _ADVANCE_TOKEN(tokens);
   return ast_new_call_expression_node(function, arguments);
 }
 
@@ -359,20 +372,18 @@ void ast_add_declaration_node(struct DeclarationListNode* node, struct Declarati
 struct DeclarationListNode* ast_parse_declaration_list(struct Token** tokens) {
   LOG_DEBUG("Parsing Declaration List");
   _CHECK_TOKENS();
-  struct Token* token = *tokens;
 
-  if (!ast_declaration_list_token_matches_first_set(*token)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), token->name);
+  if (!ast_declaration_list_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), (*tokens)->name);
     exit(1);
   }
 
   struct DeclarationListNode* declaration_list = ast_new_declaration_list_node(NULL);
-  while (token && ast_declaration_list_token_matches_first_set(*token)) {
+  while (tokens && *tokens && ast_declaration_list_token_matches_first_set(**tokens)) {
     ast_add_declaration_node(
       declaration_list,
       ast_parse_declaration(tokens)
     );
-    token = *tokens;
   }
   return declaration_list;
 }
@@ -415,14 +426,13 @@ void ast_free_declaration_node(struct DeclarationNode* node) {
 struct DeclarationNode* ast_parse_declaration(struct Token** tokens) {
   LOG_DEBUG("Parsing Declaration");
   _CHECK_TOKENS();
-  struct Token* token = *tokens;
 
-  if (!ast_declaration_token_matches_first_set(*token)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), token->name);
+  if (!ast_declaration_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), (*tokens)->name);
     exit(1);
   }
 
-  if (token_is_fun(*token)) {
+  if (token_is_fun(**tokens)) {
     return ast_new_declaration_node(
       AstFunctionDeclaration,
       (union DeclarationNodeUnion) {
@@ -431,7 +441,7 @@ struct DeclarationNode* ast_parse_declaration(struct Token** tokens) {
     );
   }
   
-  LOG_ERROR("'%s' not yet implemented for parsing DeclarationNode", token->name);
+  LOG_ERROR("'%s' not yet implemented for parsing DeclarationNode", (*tokens)->name);
   exit(1);
 }
 
@@ -477,22 +487,16 @@ void ast_add_expression_node(struct ExpressionListNode* node, struct ExpressionN
 struct ExpressionListNode* ast_parse_expression_list(struct Token** tokens) {
   LOG_DEBUG("Parsing Expression List");
   _CHECK_TOKENS();
-  struct Token* token = *tokens;
 
   struct ExpressionListNode* expression_list = ast_new_expression_list_node(NULL);
-  while (ast_expression_list_token_matches_first_set(*token)) {
-    // ast_add_expression_node(
-    //   expression_list,
-    //   ast_parse_expression(tokens)
-    // );
-    // NOTE: Temporarily advance past expressions
+  while (ast_expression_list_token_matches_first_set(**tokens)) {
     ast_add_expression_node(expression_list, ast_parse_expression(tokens));
-    token = *tokens;
     // TODO: Add follow set function
     if (
-      !token ||
-      token_is_close_paren(*token) ||
-      token_is_end(*token)
+      !tokens ||
+      !*tokens ||
+      token_is_close_paren(**tokens) ||
+      token_is_end(**tokens)
     ) {
       break;
     }
@@ -529,6 +533,9 @@ void ast_free_expression_node(struct ExpressionNode* node) {
     case AstStringExpression: {
       ast_free_string_expression_node(node->value.string_expression);
     } break;
+    case AstIdentifierExpression: {
+      ast_free_identifier_expression_node(node->value.identifier_expression);
+    } break;
     default: {
       LOG_ERROR("Invalid ExpressionNode kind");
       exit(1);
@@ -541,13 +548,12 @@ void ast_free_expression_node(struct ExpressionNode* node) {
 struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
   LOG_DEBUG("Parsing Expression");
   _CHECK_TOKENS();
-  struct Token* token = *tokens;
 
-  if (!ast_expression_token_matches_first_set(*token)) {
+  if (!ast_expression_token_matches_first_set(**tokens)) {
     LOG_ERROR("Expected something else");
     exit(1);
   }
-  if (token_is_string_literal(*token)){
+  if (token_is_string_literal(**tokens)){
     struct StringExpressionNode* expression = ast_parse_string_expression(tokens);
     return ast_new_expression_node(
       expression->kind,
@@ -555,7 +561,7 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
         .string_expression = expression
       }
     );
-  } else if (token_is_numeric(*token)) {
+  } else if (token_is_numeric(**tokens)) {
     struct NumericExpressionNode* expression = ast_parse_numeric_expression(tokens);
     return ast_new_expression_node(
       expression->kind,
@@ -563,7 +569,7 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
         .numeric_expression = expression
       }
     );
-  } else {
+  } else if (token_is_open_paren(**tokens)) {
     struct CallExpressionNode* expression = ast_parse_call_expression(tokens);
     return ast_new_expression_node(
       expression->kind,
@@ -571,6 +577,17 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
         .call_expression = expression
       }
     );
+  } else if (ast_identifier_token_matches_first_set(**tokens)) {
+    struct IdentifierExpressionNode* expression = ast_parse_identifier_expression(tokens);
+    return ast_new_expression_node(
+      expression->kind,
+      (union ExpressionNodeUnion) {
+        .identifier_expression = expression
+      }
+    );
+  } else {
+    LOG_ERROR("Invalid ExpressionNode kind");
+    exit(1);
   }
 }
 
@@ -584,12 +601,14 @@ inline bool ast_expression_token_matches_first_set(struct Token token) {
 /***************************/
 struct FunctionDeclarationNode* ast_new_function_declaration_node(
   struct IdentifierNode* identifier,
+  struct IdentifierNode* return_type,
   struct ParameterListNode* parameters,
   struct ExpressionListNode* expression
 ) {
   struct FunctionDeclarationNode* node = malloc(sizeof(struct FunctionDeclarationNode));
   node->kind = AstFunctionDeclaration;
   node->identifier = identifier;
+  node->return_type = return_type;
   node->parameters = parameters;
   node->expressions = expression;
   return node;
@@ -598,6 +617,8 @@ struct FunctionDeclarationNode* ast_new_function_declaration_node(
 void ast_free_function_declaration_node(struct FunctionDeclarationNode* node) {
   ast_free_identifier_node(node->identifier);
   node->identifier = NULL;
+  ast_free_identifier_node(node->return_type);
+  node->return_type = NULL;
   ast_free_parameter_list_node(node->parameters);
   node->parameters = NULL;
   ast_free_expression_list_node(node->expressions);
@@ -609,45 +630,43 @@ void ast_free_function_declaration_node(struct FunctionDeclarationNode* node) {
 struct FunctionDeclarationNode* ast_parse_function_declaration(struct Token** tokens) {
   LOG_DEBUG("Parsing Function Declaration");
   _CHECK_TOKENS();
-  struct Token* token = *tokens;
 
-  if (!ast_function_declaration_token_matches_first_set(*token)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), token->name);
+  if (!ast_function_declaration_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), (*tokens)->name);
     exit(1);
   }
 
-  _ADVANCE_TOKEN(tokens, token);
+  _ADVANCE_TOKEN(tokens);
   struct IdentifierNode* identifier = ast_parse_identifier(tokens);
   struct ParameterListNode* parameters = ast_parse_parameter_list(tokens);
-  token = *tokens;
   
   // TODO: Add follow set function
-  if (!token_is_fat_arrow(*token)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FAT_ARROW), token->name);
+  if (!token_is_fat_arrow(**tokens)) {
+    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FAT_ARROW), (*tokens)->name);
     exit(1);
   }
-  _ADVANCE_TOKEN(tokens, token);
+  _ADVANCE_TOKEN(tokens);
   // TODO: Check for the identifier to be a non-reserved keyword
-  if (!token_is_int(*token)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_INT), token->name);
+  if (!ast_identifier_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected type got '%s'", (*tokens)->name);
     exit(1);
   }
-  _ADVANCE_TOKEN(tokens, token);
-  if (!token_is_is(*token)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_IS), token->name);
+  struct IdentifierNode* return_type = ast_parse_identifier(tokens);
+  if (!token_is_is(**tokens)) {
+    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_IS), (*tokens)->name);
     exit(1);
   }
-  _ADVANCE_TOKEN(tokens, token);
+  _ADVANCE_TOKEN(tokens);
   
   struct ExpressionListNode* expression = ast_parse_expression_list(tokens);
-  token = *tokens;
-  if (!token_is_end(*token)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_END), token->name);
+  if (!token_is_end(**tokens)) {
+    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_END), (*tokens)->name);
     exit(1);
   }
-  _ADVANCE_TOKEN(tokens, token);
+  _ADVANCE_TOKEN(tokens);
   return ast_new_function_declaration_node(
     identifier,
+    return_type,
     parameters,
     expression
   );
@@ -677,18 +696,17 @@ void ast_free_identifier_node(struct IdentifierNode* node) {
 struct IdentifierNode* ast_parse_identifier(struct Token** tokens) {
   LOG_DEBUG("Parsing Identifier");
   _CHECK_TOKENS();
-  struct Token* token = *tokens;
 
-  if (!ast_identifier_token_matches_first_set(*token)) {
-    LOG_ERROR("Expected identifier got '%s'", token->name);
+  if (!ast_identifier_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected identifier got '%s'", (*tokens)->name);
     exit(1);
   }
 
-  size_t name_length = (strlen(token->name) + 1);
+  size_t name_length = (strlen((*tokens)->name) + 1);
   char* name = malloc(sizeof(char) * name_length);
   memset(name, '\0', sizeof(char) * name_length);
-  strcpy(name, token->name);
-  _ADVANCE_TOKEN(tokens, token);
+  strcpy(name, (*tokens)->name);
+  _ADVANCE_TOKEN(tokens);
   return ast_new_identifier_node(name);
 }
 
@@ -696,6 +714,38 @@ inline bool ast_identifier_token_matches_first_set(struct Token token) {
   UNUSED(token);
   return true;
 }
+
+/****************************/
+/* IdentifierExpressionNode */
+/****************************/
+struct IdentifierExpressionNode* ast_new_identifier_expression_node(struct IdentifierNode* identifier) {
+  struct IdentifierExpressionNode* node = malloc(sizeof(struct IdentifierExpressionNode));
+  node->kind = AstIdentifierExpression;
+  node->identifier = identifier;
+  return node;
+}
+void ast_free_identifier_expression_node(struct IdentifierExpressionNode* node) {
+  ast_free_identifier_node(node->identifier);
+  node->identifier = NULL;
+
+  free(node);
+}
+
+struct IdentifierExpressionNode* ast_parse_identifier_expression(struct Token** tokens) {
+  LOG_DEBUG("Parsing Identifier Expression");
+  _CHECK_TOKENS();
+
+  if (!ast_identifier_expression_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected identifier got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  return ast_new_identifier_expression_node(ast_parse_identifier(tokens));
+}
+
+bool ast_identifier_expression_token_matches_first_set(struct Token token) {
+  return ast_identifier_token_matches_first_set(token);
+}
+
 
 /*************************/
 /* NumericExpressionNode */
@@ -714,15 +764,14 @@ void ast_free_numeric_expression_node(struct NumericExpressionNode* node) {
 struct NumericExpressionNode* ast_parse_numeric_expression(struct Token** tokens) {
   LOG_DEBUG("Parsing Numeric Expression");
   _CHECK_TOKENS();
-  struct Token* token = *tokens;
 
   if (!ast_numeric_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected number got '%s'", token->name);
+    LOG_ERROR("Expected number got '%s'", (*tokens)->name);
     exit(1);
   }
 
-  const int value = atoi(token->name);
-  _ADVANCE_TOKEN(tokens, token);
+  const int value = atoi((*tokens)->name);
+  _ADVANCE_TOKEN(tokens);
   return ast_new_numeric_expression_node(value);
 }
 
@@ -768,19 +817,20 @@ void ast_add_parameter_node(struct ParameterListNode* node, struct ParameterNode
 struct ParameterListNode* ast_parse_parameter_list(struct Token** tokens) {
   LOG_DEBUG("Parsing Parameter List");
   _CHECK_TOKENS();
-  struct Token* token = *tokens;
 
   struct ParameterListNode* parameter_list = ast_new_parameter_list_node(NULL);
-  if (!ast_parameter_list_token_matches_first_set(*token)) {
-    LOG_ERROR("Expected '(' got '%s'", token->name);
+  if (!ast_parameter_list_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected '(' got '%s'", (*tokens)->name);
     exit(1);
   }
-  _ADVANCE_TOKEN(tokens, token);
-  if (!token_is_close_paren(*token)) {
-    LOG_ERROR("Expected ')' got '%s'", token->name);
-    exit(1);
+
+  _ADVANCE_TOKEN(tokens);
+
+  while (!token_is_close_paren(**tokens)) {
+    ast_add_parameter_node(parameter_list, ast_parse_parameter(tokens));
   }
-  _ADVANCE_TOKEN(tokens, token);
+  _ADVANCE_TOKEN(tokens);
+
   return parameter_list;
 }
 
@@ -811,6 +861,29 @@ void ast_free_parameter_node(struct ParameterNode* node) {
   free(node);
 }
 
+struct ParameterNode* ast_parse_parameter(struct Token** tokens) {
+  LOG_DEBUG("Parsing Parameter");
+  _CHECK_TOKENS();
+
+  if (!ast_parameter_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected an identifier");
+    exit(1);
+  }
+
+  struct IdentifierNode* identifier = ast_parse_identifier(tokens);
+  if (!token_is_colon(**tokens)) {
+    LOG_ERROR("Expected ':' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct IdentifierNode* type = ast_parse_identifier(tokens);
+  return ast_new_parameter_node(identifier, type);
+}
+
+bool ast_parameter_token_matches_first_set(struct Token token) {
+  return ast_identifier_token_matches_first_set(token);
+}
+
 /***************/
 /* ProgramNode */
 /***************/
@@ -833,10 +906,9 @@ void ast_free_program_node(struct ProgramNode* node) {
 struct ProgramNode* ast_parse_program(struct Token** tokens) {
   LOG_DEBUG("Parsing Program");
   _CHECK_TOKENS();
-  struct Token* token = *tokens;
 
-  if (!ast_program_token_matches_first_set(*token)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), token->name);
+  if (!ast_program_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), (*tokens)->name);
     exit(1);
   }
   return ast_new_program_node(ast_parse_declaration_list(tokens));
@@ -865,17 +937,16 @@ void ast_free_string_expression_node(struct StringExpressionNode* node) {
 struct StringExpressionNode* ast_parse_string_expression(struct Token** tokens) {
   LOG_DEBUG("Parsing String Expression");
   _CHECK_TOKENS();
-  struct Token* token = *tokens;
 
-  if (!ast_string_expression_token_matches_first_set(*token)) {
-    LOG_ERROR("Expected string got '%s'", token->name);
+  if (!ast_string_expression_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected string got '%s'", (*tokens)->name);
     exit(1);
   }
-  const size_t token_length = token->length + 1;
+  const size_t token_length = (*tokens)->length + 1;
   char* value = malloc(sizeof(char) * token_length);
   memset(value, '\0', token_length);
-  strncpy(value, token->name, token_length - 1);
-  _ADVANCE_TOKEN(tokens, token);
+  strncpy(value, (*tokens)->name, token_length - 1);
+  _ADVANCE_TOKEN(tokens);
   return ast_new_string_expression_node(value);
 }
 
