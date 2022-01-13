@@ -12,10 +12,15 @@ int generate_c_from_declaration_list(FILE*, struct DeclarationListNode*);
 int generate_c_from_expression(FILE*, struct ExpressionNode*);
 int generate_c_from_expression_list(FILE*, struct ExpressionListNode*, bool);
 int generate_c_from_function_declaration(FILE*, struct FunctionDeclarationNode*);
+int generate_c_from_identifier(FILE*, struct IdentifierNode*);
+int generate_c_from_identifier_expression(FILE*, struct IdentifierExpressionNode*);
+int generate_c_from_parameter(FILE*, struct ParameterNode*);
+int generate_c_from_parameter_list(FILE*, struct ParameterListNode*);
 int generate_c_from_numeric_expression(FILE*, struct NumericExpressionNode*);
 int generate_c_from_program(FILE*, struct ProgramNode*);
 int generate_c_from_string_expression(FILE*, struct StringExpressionNode*);
 int generate_c_include_prelude(FILE*);
+int generate_c_macros(FILE*);
 FILE* _open_output_file(const char*);
 
 int generate_c_code(
@@ -36,6 +41,13 @@ int generate_c_code(
 		return error;
 	}
 
+	error = generate_c_macros(output_file);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C macros");
+		fclose(output_file);
+		return error;
+	}
+
 	error = generate_c_from_program(output_file, program);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C code");
@@ -48,7 +60,9 @@ int generate_c_code(
 }
 
 int generate_c_include_prelude(FILE* output_file) {
-	fprintf(output_file, "#include <stdio.h>\n\n");
+	fputs("#include <stdbool.h>\n", output_file);
+	fputs("#include <stdlib.h>\n", output_file);
+	fputs("#include <stdio.h>\n\n", output_file);
 	return 0;
 }
 
@@ -59,14 +73,8 @@ int generate_c_from_call_expression(FILE* output_file, struct CallExpressionNode
 	}
 
 	fprintf(output_file, "%s(", call_expression->function->name);
-	struct ExpressionListNode* arguments = call_expression->arguments;
-	for (size_t i = 0; i < arguments->length; i++) {
-		generate_c_from_expression_list(output_file, arguments, false);
-		if (i < arguments->length - 1) {
-			fprintf(output_file, ", ");
-		}
-	}
-	fprintf(output_file, ")");
+	generate_c_from_expression_list(output_file, call_expression->arguments, false);
+	fputs(")", output_file);
 	return 0;
 }
 
@@ -130,6 +138,9 @@ int generate_c_from_expression(FILE* output_file, struct ExpressionNode* express
 		case AstStringExpression: {
 			return generate_c_from_string_expression(output_file, expression->value.string_expression);
 		} break;
+		case AstIdentifierExpression: {
+			return generate_c_from_identifier_expression(output_file, expression->value.identifier_expression);
+		} break;
 		default: {
 			LOG_ERROR(
 				"Failed to generate C code from ExpressionNode. Unknown ExpressionNode kind %d.",
@@ -151,16 +162,17 @@ int generate_c_from_expression_list(
 	}
 
 	for (size_t i = 0; i < expression_list->length; i++) {
-		int error;
 		if (is_function_body && i == expression_list->length - 1) {
-			fprintf(output_file, "return ");
+			fputs("return ", output_file);
 		}
-		error = generate_c_from_expression(output_file, expression_list->expressions[i]);
+		const int error = generate_c_from_expression(output_file, expression_list->expressions[i]);
 		if (error != 0) {
 			return error;
 		}
 		if (is_function_body) {
-			fprintf(output_file, ";\n");
+			fputs(";\n", output_file);
+		} else if (i < expression_list->length - 1) {
+			fputs(", ", output_file);
 		}
 	}
 
@@ -175,18 +187,40 @@ int generate_c_from_function_declaration(
 		LOG_ERROR("Failed to generate C code from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
 		return 1;
 	}
-	// TODO: Store return type in function declaration
-	fprintf(output_file, "%s %s(", "int", function_declaration->identifier->name);
-	// TODO: Generate parameters and print between parentheses
-	fprintf(output_file, ") {\n");
+	generate_c_from_identifier(output_file, function_declaration->return_type);
+	fputs(" ", output_file);
+	generate_c_from_identifier(output_file, function_declaration->identifier);
+	fputs("(", output_file);
+	generate_c_from_parameter_list(output_file, function_declaration->parameters);
+	fputs(") {\n", output_file);
 	struct ExpressionListNode* expressions = function_declaration->expressions;
-	int error;
-	error = generate_c_from_expression_list(output_file, expressions, true);
+	const int error = generate_c_from_expression_list(output_file, expressions, true);
 	if (error != 0) {
 		return error;
 	}
-	fprintf(output_file, "}\n");
+	fputs("}\n", output_file);
 
+	return 0;
+}
+
+int generate_c_from_identifier(FILE* output_file, struct IdentifierNode* identifier) {
+	if (!identifier) {
+		LOG_ERROR("Failed to generate C code from IdentifierNode. NULL IdentifierNode.");
+		return 1;
+	}
+	fprintf(output_file, "%s", identifier->name);
+	return 0;
+}
+
+int generate_c_from_identifier_expression(FILE* output_file, struct IdentifierExpressionNode* identifier_expression) {
+	if (!identifier_expression) {
+		LOG_ERROR("Failed to generate C code from IdentifierExpressionNode. NULL IdentifierExpressionNode.");
+		return 1;
+	}
+	const int error = generate_c_from_identifier(output_file, identifier_expression->identifier);
+	if (error != 0) {
+		return error;
+	}
 	return 0;
 }
 
@@ -198,6 +232,34 @@ int generate_c_from_numeric_expression(FILE* output_file, struct NumericExpressi
 
 	fprintf(output_file, "%d", numeric_expression->value);
 
+	return 0;
+}
+
+int generate_c_from_parameter(FILE* output_file, struct ParameterNode* parameter) {
+	if (!parameter) {
+		LOG_ERROR("Failed to generate C code from ParameterNode. NULL ParameterNode.");
+		return 1;
+	}
+	fprintf(output_file, "%s %s", parameter->type->name, parameter->identifier->name);
+
+	return 0;
+}
+
+int generate_c_from_parameter_list(FILE* output_file, struct ParameterListNode* parameter_list) {
+	if (!parameter_list) {
+		LOG_ERROR("Failed to generate C code from ParameterListNode. NULL ParameterListNode.");
+		return 1;
+	}
+	struct ParameterNode** parameters = parameter_list->parameters;
+	for (size_t i = 0; i < parameter_list->length; i++) {
+		const int error = generate_c_from_parameter(output_file, parameters[i]);
+		if (error != 0) {
+			return error;
+		}
+		if (i < parameter_list->length - 1) {
+			fputs(", ", output_file);
+		}
+	}
 	return 0;
 }
 
@@ -213,15 +275,14 @@ int generate_c_from_program(
 		LOG_ERROR("Failed to generate C code. No declarations found. At minimum, a main function must be provided as an entrypoint.");
 		return 3;
 	}
-	int error;
-	error = generate_c_from_declaration_list(
+	const int error = generate_c_from_declaration_list(
 		output_file,
 		program->declarations
 	);
 	if (error != 0) {
 		return error;
 	}
-	fprintf(output_file, "\n");
+	fputs("\n", output_file);
 	return 0;
 }
 
@@ -230,8 +291,14 @@ int generate_c_from_string_expression(FILE* output_file, struct StringExpression
 		LOG_ERROR("Failed to generate C code from StringExpressionNode. NULL StringExpressionNode.");
 		return 1;
 	}
-
 	fprintf(output_file, "%s", string_expression->value);
+
+	return 0;
+}
+
+int generate_c_macros(FILE* output_file) {
+	fputs("#define ccstring const char *\n", output_file);
+	fputs("#define cstring char *\n\n", output_file);
 
 	return 0;
 }
