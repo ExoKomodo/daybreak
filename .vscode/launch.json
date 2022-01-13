@@ -22,12 +22,31 @@
       },
     },
     {
+      "name": "FooBar",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/foobar/foobar.day",
+        "-o",
+        "${workspaceFolder}/out/foobar.exe"
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "cmake build [daybreak]",
+      "console": "integratedTerminal",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      },
+    },
+    {
       "name": "Test",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/daybreak_test",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak_test]",
+      "console": "integratedTerminal",
       "miDebuggerPath": "gdb",
       "osx": {
         "miDebuggerPath": "lldb-mi",
