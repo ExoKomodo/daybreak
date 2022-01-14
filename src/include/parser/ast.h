@@ -944,7 +944,7 @@ struct StringExpressionNode* ast_parse_string_expression(struct Token** tokens) 
   }
   const size_t token_length = (*tokens)->length + 1;
   char* value = malloc(sizeof(char) * token_length);
-  memset(value, '\0', token_length);
+  memset(value, '\0', sizeof(char) * token_length);
   strncpy(value, (*tokens)->name, token_length - 1);
   _ADVANCE_TOKEN(tokens);
   return ast_new_string_expression_node(value);

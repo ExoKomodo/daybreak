@@ -15,6 +15,7 @@ bash ./compose_scripts/build.sh daybreak
 
 # Directly compile programs using the compiler executable
 ${WRAPPER} ./bin/daybreak ./examples/hello/hello.day
+${WRAPPER} ./bin/daybreak ./examples/foobar/foobar.day
 
 bash ./compose_scripts/build.sh daybreak_test
 
