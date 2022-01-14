@@ -26,4 +26,7 @@
     "type_traits": "c",
     "limits": "c"
   },
+  "cSpell.words": [
+    "ccstring"
+  ],
 }
