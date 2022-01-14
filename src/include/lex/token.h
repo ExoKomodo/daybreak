@@ -66,9 +66,11 @@ static inline void token_chomp(struct Token** tokens) {
 }
 
 #define TOKEN_FUN fun
+#define TOKEN_LET let
 #define TOKEN_IS is
 #define TOKEN_END end
 #define TOKEN_SYMBOLIC_FAT_ARROW fat_arrow
+#define TOKEN_BINDING_ARROW_SYMBOL <-
 #define TOKEN_FAT_ARROW_SYMBOL =>
 
 #define _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(token_type) \
@@ -87,6 +89,13 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	fun
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
+	let
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
+	binding_arrow,
+	"<-"
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 	fat_arrow,
@@ -107,12 +116,6 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION
 (
 	is
-)
-_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
-	int
-)
-_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
-	unit
 )
 
 static inline bool token_is_string_literal(struct Token token) {

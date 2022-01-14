@@ -12,7 +12,7 @@
       "args": [
         "${workspaceFolder}/examples/hello/hello.day",
         "-o",
-        "${workspaceFolder}/out/hello.exe"
+        "${workspaceFolder}/out/hello"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
@@ -29,7 +29,25 @@
       "args": [
         "${workspaceFolder}/examples/foobar/foobar.day",
         "-o",
-        "${workspaceFolder}/out/foobar.exe"
+        "${workspaceFolder}/out/foobar"
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "cmake build [daybreak]",
+      "console": "integratedTerminal",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      },
+    },
+    {
+      "name": "Variables",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/variables/variables.day",
+        "-o",
+        "${workspaceFolder}/out/variables"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",

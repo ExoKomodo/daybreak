@@ -1,0 +1,9 @@
+fun do_work (x: int) => int is
+	let y:int <- x
+	(printf "x = %d, y = %d\n" x y)
+	0
+end
+
+fun main () => int is
+	(do_work 10)
+end
