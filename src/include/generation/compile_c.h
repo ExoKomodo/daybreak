@@ -8,34 +8,33 @@
 #include <log/prelude.h>
 #include <macros/helpers.h>
 
-#define FLAGS ""
-#define DEFAULT_COMPILE_COMMAND_FORMAT "cc -o %s %s"
+#define CC_FLAGS "" \
+  "-Werror " \
+  "-Wall " \
+  "-Wextra " \
+  "-Wshadow " \
+  "-pedantic " \
+  "-Wconversion " \
+  "-Wsign-conversion " \
+  "-Wnull-dereference " \
+  "-Wdouble-promotion " \
+  "-Wformat=2 " \
+  "-Wno-endif-labels " 
+
+#define CC_COMPILE_COMMAND_FORMAT "cc %s -o %s %s"
 
 int compile_c_code(const char*, const char*);
+char* _build_command(const char*, const char*);
 
 int compile_c_code(
   const char* source_file_path,
   const char* executable_path
 ) {
-  char* command = malloc(
-    sizeof(char) *
-    (
-      strlen(DEFAULT_COMPILE_COMMAND_FORMAT) +
-      strlen(executable_path) +
-      strlen(source_file_path) +
-      1
-    )
-  );
-  sprintf(
-    command,
-    DEFAULT_COMPILE_COMMAND_FORMAT,
-    executable_path,
-    source_file_path
-  );
+  char* command = _build_command(source_file_path, executable_path);
 
   LOG_DEBUG("Running compiler command: %s", command);
 
-  int error = run_command(command, stdout);
+  const int error = run_command(command, stdout);
   free(command);
   command = NULL;
   if (error != 0) {
@@ -43,4 +42,25 @@ int compile_c_code(
     return error;
   }
   return 0;
+}
+
+char* _build_command(const char* source_file_path, const char* executable_path) {
+  char* command = malloc(
+    sizeof(char) *
+    (
+      strlen(CC_COMPILE_COMMAND_FORMAT) +
+      strlen(CC_FLAGS) +
+      strlen(executable_path) +
+      strlen(source_file_path) +
+      1
+    )
+  );
+  sprintf(
+    command,
+    CC_COMPILE_COMMAND_FORMAT,
+    CC_FLAGS,
+    executable_path,
+    source_file_path
+  );
+  return command;
 }

@@ -34,7 +34,7 @@ int daybreak_compile(
 
 	size_t output_c_file_length = strlen(OUTPUT_FILE_NAME) + 3;
 	char* output_c_file_path = malloc(sizeof(char) * output_c_file_length);
-	memset(output_c_file_path, '\0', output_c_file_length);
+	memset(output_c_file_path, '\0', sizeof(char) * output_c_file_length);
 	sprintf(output_c_file_path, "%s.c", OUTPUT_FILE_NAME);
 	
 	int error = generate_c_code(program, output_c_file_path);
