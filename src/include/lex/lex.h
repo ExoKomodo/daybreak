@@ -19,7 +19,6 @@ void _build_token(const char* filename, char token_buffer[], size_t* buffer_leng
 struct Token* lex_file(const char* filename, FILE* file);
 FILE* lex_open_file(const char* filename);
 
-
 struct Token* lex_file(const char* filename, FILE* file) {
 	if (!file) {
 		return NULL;
@@ -35,10 +34,11 @@ struct Token* lex_file(const char* filename, FILE* file) {
 	size_t token_length = 0;
 	bool is_comment = false;
 	bool is_string = false;
+	bool is_less_than = false;
 	while ((character = (char)fgetc(file)) != EOF) {
 		column++;
-		size_t current_lex_column = column;
-		size_t current_lex_line = line;
+		const size_t current_lex_column = column;
+		const size_t current_lex_line = line;
 		switch (character) {
 			case '\n': {
 				column = 0;
@@ -72,9 +72,41 @@ struct Token* lex_file(const char* filename, FILE* file) {
 						&current
 					);
 					continue;
-				} else {
-					is_string = true;
+				}
+				is_string = true;
+				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
+				continue;
+			} break;
+			case '<': {
+				if (is_string) {
+					break;
+				}
+				if (token_length > 0) {
+					_build_token(
+						filename,
+						token_buffer,
+						&token_length,
+						current_lex_line,
+						current_lex_column,
+						&current
+					);
+				}
+				is_less_than = true;
+				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
+				continue;
+			} break;
+			case '-': {
+				if (is_less_than) {
+					is_less_than = false;
 					_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
+					_build_token(
+						filename,
+						token_buffer,
+						&token_length,
+						current_lex_line,
+						current_lex_column,
+						&current
+					);
 					continue;
 				}
 			} break;

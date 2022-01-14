@@ -18,6 +18,7 @@
 
 typedef enum {
   AstBlank,
+  AstBindingExpression,
   AstCallExpression,
   AstDeclaration,
   AstDeclarationList,
@@ -54,6 +55,7 @@ union ExpressionNodeUnion;
 union DeclarationNodeUnion;
 
 union AstNodeUnion {
+  struct BindingExpressionNode* binding_expression;
   struct CallExpressionNode* call_expression;
   struct DeclarationListNode* declaration_list;
   struct DeclarationNode* declaration;
@@ -61,6 +63,7 @@ union AstNodeUnion {
   struct ExpressionNode* expression;
   struct FunctionDeclarationNode* function_declaration;
   struct IdentifierNode* identifier;
+  struct IdentifierExpressionNode* identifier_expression;
   struct NumericExpressionNode* numeric_expression;
   struct ParameterListNode* parameter_list;
   struct ParameterNode* parameter;
@@ -73,6 +76,7 @@ union DeclarationNodeUnion {
 };
 
 union ExpressionNodeUnion {
+  struct BindingExpressionNode* binding_expression;
   struct CallExpressionNode* call_expression;
   struct IdentifierExpressionNode* identifier_expression;
   struct NumericExpressionNode* numeric_expression;
@@ -81,6 +85,11 @@ union ExpressionNodeUnion {
 
 struct AstNode* ast_new_node(AstNodeKind, union AstNodeUnion);
 void ast_free_node(struct AstNode*);
+
+struct BindingExpressionNode* ast_new_binding_expression_node(struct IdentifierNode*, struct IdentifierNode*, struct ExpressionNode*);
+void ast_free_binding_expression_node(struct BindingExpressionNode*);
+struct BindingExpressionNode* ast_parse_binding_expression(struct Token**);
+bool ast_binding_expression_token_matches_first_set(struct Token);
 
 struct CallExpressionNode* ast_new_call_expression_node(struct IdentifierNode*, struct ExpressionListNode*);
 void ast_free_call_expression_node(struct CallExpressionNode*);
@@ -153,6 +162,13 @@ bool ast_string_expression_token_matches_first_set(struct Token);
 struct AstNode {
   AstNodeKind kind;
   union AstNodeUnion value;
+};
+
+struct BindingExpressionNode {
+  AstNodeKind kind;
+  struct IdentifierNode* binding;
+  struct IdentifierNode* type;
+  struct ExpressionNode* expression;
 };
 
 struct CallExpressionNode {
@@ -243,6 +259,9 @@ struct AstNode* ast_new_node(
 
 void ast_free_node(struct AstNode* node) {
   switch (node->kind) {
+    case AstBindingExpression: {
+      ast_free_binding_expression_node(node->value.binding_expression);
+    } break;
     case AstCallExpression: {
       ast_free_call_expression_node(node->value.call_expression);
     } break;
@@ -263,6 +282,9 @@ void ast_free_node(struct AstNode* node) {
     } break;
     case AstIdentifier: {
       ast_free_identifier_node(node->value.identifier);
+    } break;
+    case AstIdentifierExpression: {
+      ast_free_identifier_expression_node(node->value.identifier_expression);
     } break;
     case AstNumericExpression: {
       ast_free_numeric_expression_node(node->value.numeric_expression);
@@ -286,6 +308,62 @@ void ast_free_node(struct AstNode* node) {
   }
 
   free(node);
+}
+
+/*************************/
+/* BindingExpressionNode */
+/*************************/
+struct BindingExpressionNode* ast_new_binding_expression_node(
+  struct IdentifierNode* binding,
+  struct IdentifierNode* type,
+  struct ExpressionNode* expression
+) {
+  struct BindingExpressionNode* node = malloc(sizeof(struct BindingExpressionNode));
+  node->kind = AstBindingExpression;
+  node->binding = binding;
+  node->type = type;
+  node->expression = expression;
+  return node;
+}
+
+void ast_free_binding_expression_node(struct BindingExpressionNode* node) {
+  ast_free_identifier_node(node->binding);
+  node->binding = NULL;
+  ast_free_identifier_node(node->type);
+  node->type = NULL;
+  ast_free_expression_node(node->expression);
+  node->expression = NULL;
+
+  free(node);
+}
+
+struct BindingExpressionNode* ast_parse_binding_expression(struct Token** tokens) {
+  LOG_DEBUG("Parsing Binding Expression");
+  _CHECK_TOKENS();
+
+  if (!ast_binding_expression_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected 'let' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct IdentifierNode* binding = ast_parse_identifier(tokens);
+  if (!token_is_colon(**tokens)) {
+    LOG_ERROR("Expected ':' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct IdentifierNode* type = ast_parse_identifier(tokens);
+  if (!token_is_binding_arrow(**tokens)) {
+    LOG_ERROR("Expected '->' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct ExpressionNode* expression = ast_parse_expression(tokens);
+  return ast_new_binding_expression_node(binding, type, expression);
+}
+
+inline bool ast_binding_expression_token_matches_first_set(struct Token token) {
+  return token_is_let(token);
 }
 
 /**********************/
@@ -524,6 +602,9 @@ struct ExpressionNode* ast_new_expression_node(
 
 void ast_free_expression_node(struct ExpressionNode* node) {
   switch (node->kind) {
+    case AstBindingExpression: {
+      ast_free_binding_expression_node(node->value.binding_expression);
+    } break;
     case AstCallExpression: {
       ast_free_call_expression_node(node->value.call_expression);
     } break;
@@ -553,7 +634,7 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
     LOG_ERROR("Expected something else");
     exit(1);
   }
-  if (token_is_string_literal(**tokens)){
+  if (ast_string_expression_token_matches_first_set(**tokens)){
     struct StringExpressionNode* expression = ast_parse_string_expression(tokens);
     return ast_new_expression_node(
       expression->kind,
@@ -561,7 +642,7 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
         .string_expression = expression
       }
     );
-  } else if (token_is_numeric(**tokens)) {
+  } else if (ast_numeric_expression_token_matches_first_set(**tokens)) {
     struct NumericExpressionNode* expression = ast_parse_numeric_expression(tokens);
     return ast_new_expression_node(
       expression->kind,
@@ -569,12 +650,20 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
         .numeric_expression = expression
       }
     );
-  } else if (token_is_open_paren(**tokens)) {
+  } else if (ast_call_expression_token_matches_first_set(**tokens)) {
     struct CallExpressionNode* expression = ast_parse_call_expression(tokens);
     return ast_new_expression_node(
       expression->kind,
       (union ExpressionNodeUnion) {
         .call_expression = expression
+      }
+    );
+  } else if (ast_binding_expression_token_matches_first_set(**tokens)) {
+    struct BindingExpressionNode* expression = ast_parse_binding_expression(tokens);
+    return ast_new_expression_node(
+      expression->kind,
+      (union ExpressionNodeUnion) {
+        .binding_expression = expression
       }
     );
   } else if (ast_identifier_token_matches_first_set(**tokens)) {

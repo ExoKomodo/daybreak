@@ -6,6 +6,7 @@
 #include <macros/helpers.h>
 
 int generate_c_code(struct ProgramNode*, const char*);
+int generate_c_from_binding_expression(FILE*, struct BindingExpressionNode*);
 int generate_c_from_call_expression(FILE*, struct CallExpressionNode*);
 int generate_c_from_declaration(FILE*, struct DeclarationNode*);
 int generate_c_from_declaration_list(FILE*, struct DeclarationListNode*);
@@ -66,6 +67,20 @@ int generate_c_include_prelude(FILE* output_file) {
 	return 0;
 }
 
+int generate_c_from_binding_expression(
+	FILE* output_file,
+	struct BindingExpressionNode* binding_expression
+) {
+	if (!binding_expression) {
+		LOG_ERROR("Failed to generate C code from BindingExpressionNode. NULL BindingExpressionNode.");
+		return 1;
+	}
+
+	fprintf(output_file, "const %s %s = ", binding_expression->type->name, binding_expression->binding->name);
+	const int error = generate_c_from_expression(output_file, binding_expression->expression);
+	return error;
+}
+
 int generate_c_from_call_expression(FILE* output_file, struct CallExpressionNode* call_expression) {
 	if (!call_expression) {
 		LOG_ERROR("Failed to generate C code from CallExpressionNode. NULL CallExpressionNode.");
@@ -73,9 +88,9 @@ int generate_c_from_call_expression(FILE* output_file, struct CallExpressionNode
 	}
 
 	fprintf(output_file, "%s(", call_expression->function->name);
-	generate_c_from_expression_list(output_file, call_expression->arguments, false);
+	const int error = generate_c_from_expression_list(output_file, call_expression->arguments, false);
 	fputs(")", output_file);
-	return 0;
+	return error;
 }
 
 int generate_c_from_declaration(
@@ -98,7 +113,7 @@ int generate_c_from_declaration(
 				"Failed to generate C code from DeclarationNode. Unknown DeclarationNode kind %d",
 				declaration->kind
 			);
-			return 3;
+			return 1;
 		} break;
 	}
 }
@@ -113,8 +128,7 @@ int generate_c_from_declaration_list(
 	}
 	struct DeclarationNode** declarations = declaration_list->declarations;
 	for (size_t i = 0; i < declaration_list->length; i++) {
-		int error;
-		error = generate_c_from_declaration(output_file, declarations[i]);
+		const int error = generate_c_from_declaration(output_file, declarations[i]);
 		if (error != 0) {
 			return error;
 		}
@@ -129,6 +143,9 @@ int generate_c_from_expression(FILE* output_file, struct ExpressionNode* express
 	}
 
 	switch (expression->kind) {
+		case AstBindingExpression: {
+			return generate_c_from_binding_expression(output_file, expression->value.binding_expression);
+		} break;
 		case AstCallExpression: {
 			return generate_c_from_call_expression(output_file, expression->value.call_expression);
 		} break;
@@ -187,14 +204,23 @@ int generate_c_from_function_declaration(
 		LOG_ERROR("Failed to generate C code from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
 		return 1;
 	}
-	generate_c_from_identifier(output_file, function_declaration->return_type);
+	int error = generate_c_from_identifier(output_file, function_declaration->return_type);
+	if (error != 0) {
+		return error;
+	}
 	fputs(" ", output_file);
-	generate_c_from_identifier(output_file, function_declaration->identifier);
+	error = generate_c_from_identifier(output_file, function_declaration->identifier);
+	if (error != 0) {
+		return error;
+	}
 	fputs("(", output_file);
-	generate_c_from_parameter_list(output_file, function_declaration->parameters);
+	error = generate_c_from_parameter_list(output_file, function_declaration->parameters);
+	if (error != 0) {
+		return error;
+	}
 	fputs(") {\n", output_file);
 	struct ExpressionListNode* expressions = function_declaration->expressions;
-	const int error = generate_c_from_expression_list(output_file, expressions, true);
+	error = generate_c_from_expression_list(output_file, expressions, true);
 	if (error != 0) {
 		return error;
 	}
