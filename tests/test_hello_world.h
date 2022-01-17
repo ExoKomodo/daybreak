@@ -42,7 +42,7 @@ bool test_hello_world() {
   while (fgets(buffer, BUFFER_SIZE, output_file)) {
     if (strcmp(buffer, HELLO_WORLD_OUTPUT "\n") != 0) {
       fclose(output_file);
-      LOG_ERROR("Failed to output \"%s\", got \"%s\"", HELLO_WORLD_OUTPUT, buffer);
+      LOG_ERROR("Failed to output '%s', got '%s'", HELLO_WORLD_OUTPUT, buffer);
       return false;
     }
   }
