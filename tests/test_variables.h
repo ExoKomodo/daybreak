@@ -42,7 +42,7 @@ bool test_variables() {
   fgets(buffer, BUFFER_SIZE, output_file);
   fclose(output_file);
   if (strcmp(buffer, VARIABLES_OUTPUT "\n") != 0) {
-    LOG_ERROR("Failed to output \"%s\", got \"%s\"", VARIABLES_OUTPUT, buffer);
+    LOG_ERROR("Failed to output '%s', got '%s'", VARIABLES_OUTPUT, buffer);
     return false;
   }
   return true;
