@@ -324,7 +324,12 @@ int generate_c_from_string_expression(FILE* output_file, struct StringExpression
 
 int generate_c_macros(FILE* output_file) {
 	fputs("#define ccstring const char *\n", output_file);
-	fputs("#define cstring char *\n\n", output_file);
+	fputs("#define cstring char *\n", output_file);
+	fputs("#define add(x, y) ((x) + (y))\n", output_file);
+	fputs("#define sub(x, y) ((x) - (y))\n", output_file);
+	fputs("#define mul(x, y) ((x) * (y))\n", output_file);
+	fputs("#define div(x, y) ((x) / (y))\n", output_file);
+	fputs("#define mod(x, y) ((x) % (y))\n\n", output_file);
 
 	return 0;
 }
