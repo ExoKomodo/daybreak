@@ -19,6 +19,7 @@ int generate_c_from_parameter(FILE*, struct ParameterNode*);
 int generate_c_from_parameter_list(FILE*, struct ParameterListNode*);
 int generate_c_from_numeric_expression(FILE*, struct NumericExpressionNode*);
 int generate_c_from_program(FILE*, struct ProgramNode*);
+int generate_c_from_return_expression(FILE*, struct ReturnExpressionNode*);
 int generate_c_from_string_expression(FILE*, struct StringExpressionNode*);
 int generate_c_include_prelude(FILE*);
 int generate_c_macros(FILE*);
@@ -149,14 +150,17 @@ int generate_c_from_expression(FILE* output_file, struct ExpressionNode* express
 		case AstCallExpression: {
 			return generate_c_from_call_expression(output_file, expression->value.call_expression);
 		} break;
+		case AstIdentifierExpression: {
+			return generate_c_from_identifier_expression(output_file, expression->value.identifier_expression);
+		} break;
 		case AstNumericExpression: {
 			return generate_c_from_numeric_expression(output_file, expression->value.numeric_expression);
 		} break;
+		case AstReturnExpression: {
+			return generate_c_from_return_expression(output_file, expression->value.return_expression);
+		} break;
 		case AstStringExpression: {
 			return generate_c_from_string_expression(output_file, expression->value.string_expression);
-		} break;
-		case AstIdentifierExpression: {
-			return generate_c_from_identifier_expression(output_file, expression->value.identifier_expression);
 		} break;
 		default: {
 			LOG_ERROR(
@@ -179,9 +183,6 @@ int generate_c_from_expression_list(
 	}
 
 	for (size_t i = 0; i < expression_list->length; i++) {
-		if (is_function_body && i == expression_list->length - 1) {
-			fputs("return ", output_file);
-		}
 		const int error = generate_c_from_expression(output_file, expression_list->expressions[i]);
 		if (error != 0) {
 			return error;
@@ -318,6 +319,20 @@ int generate_c_from_string_expression(FILE* output_file, struct StringExpression
 		return 1;
 	}
 	fprintf(output_file, "%s", string_expression->value);
+
+	return 0;
+}
+
+int generate_c_from_return_expression(FILE* output_file, struct ReturnExpressionNode* return_expression) {
+	if (!return_expression) {
+		LOG_ERROR("Failed to generate C code from ReturnExpressionNode. NULL ReturnExpressionNode.");
+		return 1;
+	}
+	fputs("return ", output_file);
+	const int error = generate_c_from_expression(output_file, return_expression->expression);
+	if (error != 0) {
+		return error;
+	}
 
 	return 0;
 }

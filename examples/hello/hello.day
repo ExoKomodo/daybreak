@@ -1,5 +1,5 @@
 ? Prints hello world
 fun main () => int is
   (puts "Hello world")
-	0
+	return 0
 end
