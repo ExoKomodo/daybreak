@@ -31,6 +31,7 @@ typedef enum {
   AstParameter,
   AstParameterList,
   AstProgram,
+  AstReturnExpression,
   AstStringExpression,
 } AstNodeKind;
 
@@ -48,6 +49,7 @@ struct NumericExpressionNode;
 struct ParameterListNode;
 struct ParameterNode;
 struct ProgramNode;
+struct ReturnExpressionNode;
 struct StringExpressionNode;
 
 union AstNodeUnion;
@@ -68,6 +70,7 @@ union AstNodeUnion {
   struct ParameterListNode* parameter_list;
   struct ParameterNode* parameter;
   struct ProgramNode* program;
+  struct ReturnExpressionNode* return_expression;
   struct StringExpressionNode* string_expression;
 };
 
@@ -80,6 +83,7 @@ union ExpressionNodeUnion {
   struct CallExpressionNode* call_expression;
   struct IdentifierExpressionNode* identifier_expression;
   struct NumericExpressionNode* numeric_expression;
+  struct ReturnExpressionNode* return_expression;
   struct StringExpressionNode* string_expression;
 };
 
@@ -153,6 +157,11 @@ struct ProgramNode* ast_new_program_node(struct DeclarationListNode*);
 void ast_free_program_node(struct ProgramNode*);
 struct ProgramNode* ast_parse_program(struct Token**);
 bool ast_program_token_matches_first_set(struct Token);
+
+struct ReturnExpressionNode* ast_new_return_expression_node(struct ExpressionNode*);
+void ast_free_return_expression_node(struct ReturnExpressionNode*);
+struct ReturnExpressionNode* ast_parse_return_expression(struct Token**);
+bool ast_return_expression_token_matches_first_set(struct Token);
 
 struct StringExpressionNode* ast_new_string_expression_node(char*);
 void ast_free_string_expression_node(struct StringExpressionNode*);
@@ -237,6 +246,11 @@ struct ParameterNode {
 struct ProgramNode {
   AstNodeKind kind;
   struct DeclarationListNode* declarations;
+};
+
+struct ReturnExpressionNode {
+  AstNodeKind kind;
+  struct ExpressionNode* expression;
 };
 
 struct StringExpressionNode {
@@ -608,14 +622,17 @@ void ast_free_expression_node(struct ExpressionNode* node) {
     case AstCallExpression: {
       ast_free_call_expression_node(node->value.call_expression);
     } break;
+    case AstIdentifierExpression: {
+      ast_free_identifier_expression_node(node->value.identifier_expression);
+    } break;
     case AstNumericExpression: {
       ast_free_numeric_expression_node(node->value.numeric_expression);
     } break;
+    case AstReturnExpression: {
+      ast_free_return_expression_node(node->value.return_expression);
+    } break;
     case AstStringExpression: {
       ast_free_string_expression_node(node->value.string_expression);
-    } break;
-    case AstIdentifierExpression: {
-      ast_free_identifier_expression_node(node->value.identifier_expression);
     } break;
     default: {
       LOG_ERROR("Invalid ExpressionNode kind");
@@ -664,6 +681,14 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
       expression->kind,
       (union ExpressionNodeUnion) {
         .binding_expression = expression
+      }
+    );
+  } else if (ast_return_expression_token_matches_first_set(**tokens)) {
+    struct ReturnExpressionNode* expression = ast_parse_return_expression(tokens);
+    return ast_new_expression_node(
+      expression->kind,
+      (union ExpressionNodeUnion) {
+        .return_expression = expression
       }
     );
   } else if (ast_identifier_token_matches_first_set(**tokens)) {
@@ -1005,6 +1030,40 @@ struct ProgramNode* ast_parse_program(struct Token** tokens) {
 
 inline bool ast_program_token_matches_first_set(struct Token token) {
   return token_is_fun(token);
+}
+
+/************************/
+/* ReturnExpressionNode */
+/************************/
+struct ReturnExpressionNode* ast_new_return_expression_node(struct ExpressionNode* expression) {
+  struct ReturnExpressionNode* node = malloc(sizeof(struct ReturnExpressionNode));
+  node->kind = AstReturnExpression;
+  node->expression = expression;
+  return node;
+}
+
+void ast_free_return_expression_node(struct ReturnExpressionNode* node) {
+  ast_free_expression_node(node->expression);
+  node->expression = NULL;
+
+  free(node);
+}
+
+struct ReturnExpressionNode* ast_parse_return_expression(struct Token** tokens) {
+  LOG_DEBUG("Parsing Return Expression");
+  _CHECK_TOKENS();
+
+  if (!ast_return_expression_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected return got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct ExpressionNode* expression = ast_parse_expression(tokens);
+  return ast_new_return_expression_node(expression);
+}
+
+bool ast_return_expression_token_matches_first_set(struct Token token) {
+  return token_is_return(token);
 }
 
 /************************/
