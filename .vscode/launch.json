@@ -58,6 +58,24 @@
       },
     },
     {
+      "name": "Match",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/match/match.day",
+        "-o",
+        "${workspaceFolder}/out/match"
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "cmake build [daybreak]",
+      "console": "integratedTerminal",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      },
+    },
+    {
       "name": "Test",
       "type": "cppdbg",
       "request": "launch",

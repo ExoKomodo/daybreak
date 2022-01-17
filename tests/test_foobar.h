@@ -40,13 +40,13 @@ bool test_foobar() {
   fgets(buffer, BUFFER_SIZE, output_file);
   if (strcmp(buffer, "Foo: Hello!\n") != 0) {
     fclose(output_file);
-    LOG_ERROR("Failed to output \"Foo: Hello!\"");
+    LOG_ERROR("Failed to output 'Foo: Hello!', got '%s'", buffer);
     return false;
   }
   fgets(buffer, BUFFER_SIZE, output_file);
   if (strcmp(buffer, "Bar: 2 Hello again!!\n") != 0) {
     fclose(output_file);
-    LOG_ERROR("Failed to output \"Bar: 2 Hello again!!\"");
+    LOG_ERROR("Failed to output 'Bar: 2 Hello again!!', got '%s'", buffer);
     return false;
   }
   fclose(output_file);

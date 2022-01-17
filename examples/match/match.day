@@ -1,0 +1,9 @@
+fun main () => int is
+	let x: int <- 10
+	match
+		(equals x 10) => (puts "x was 10")
+		(equals x 20) => (puts "x was 20")
+		(default) => (puts "x was something else")
+	end
+	return 0
+end
