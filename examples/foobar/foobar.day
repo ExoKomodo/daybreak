@@ -3,10 +3,7 @@ fun foo (s: ccstring) => int is
 	return 0
 end
 
-fun bar (
-	a:int
-	b:cstring
-) => int is
+fun bar (a:int b:cstring) => int is
 	(printf "Bar: %d %s\n" a b)
 	return 0
 end
