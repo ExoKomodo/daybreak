@@ -1,6 +1,6 @@
 fun foo (s: ccstring) => int is
 	(printf "Foo: %s\n" s)
-	0
+	return 0
 end
 
 fun bar (
@@ -8,12 +8,12 @@ fun bar (
 	b:cstring
 ) => int is
 	(printf "Bar: %d %s\n" a b)
-	0
+	return 0
 end
 
 ? Prints hello world
 fun main () => int is
   (foo "Hello!")
 	(bar 2 "Hello again!!")
-	0
+	return 0
 end
