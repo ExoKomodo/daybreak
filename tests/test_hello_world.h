@@ -16,6 +16,7 @@
   #define HELLO_OUTPUT_FILE "out/output.txt"
 #endif
 
+#define HELLO_WORLD_OUTPUT "Hello world"
 
 #define BUFFER_SIZE 1024
 
@@ -39,9 +40,9 @@ bool test_hello_world() {
   char buffer[BUFFER_SIZE];
   memset(buffer, '\0', sizeof(char) * BUFFER_SIZE);
   while (fgets(buffer, BUFFER_SIZE, output_file)) {
-    if (strcmp(buffer, "Hello world\n") != 0) {
+    if (strcmp(buffer, HELLO_WORLD_OUTPUT "\n") != 0) {
       fclose(output_file);
-      LOG_ERROR("Failed to output \"Hello world\"");
+      LOG_ERROR("Failed to output \"%s\", got \"%s\"", HELLO_WORLD_OUTPUT, buffer);
       return false;
     }
   }
