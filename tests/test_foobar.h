@@ -16,7 +16,6 @@
   #define FOOBAR_OUTPUT_FILE "out/output.txt"
 #endif
 
-
 #define BUFFER_SIZE 1024
 
 bool test_foobar();

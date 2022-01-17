@@ -16,6 +16,7 @@
   #define VARIABLES_OUTPUT_FILE "out/output.txt"
 #endif
 
+#define VARIABLES_OUTPUT "x = 10, y = 15"
 
 #define BUFFER_SIZE 1024
 
@@ -40,8 +41,8 @@ bool test_variables() {
   memset(buffer, '\0', sizeof(char) * BUFFER_SIZE);
   fgets(buffer, BUFFER_SIZE, output_file);
   fclose(output_file);
-  if (strcmp(buffer, "x = 10, y = 51\n") != 0) {
-    LOG_ERROR("Failed to output \"x = 10, y = 51\"");
+  if (strcmp(buffer, VARIABLES_OUTPUT "\n") != 0) {
+    LOG_ERROR("Failed to output \"%s\", got \"%s\"", VARIABLES_OUTPUT, buffer);
     return false;
   }
   return true;
