@@ -39,6 +39,9 @@ struct Token* lex_file(const char* filename, FILE* file) {
 		column++;
 		const size_t current_lex_column = column;
 		const size_t current_lex_line = line;
+		if (is_comment && character != '\n') {
+			continue;
+		}
 		switch (character) {
 			case '\n': {
 				column = 0;
@@ -140,9 +143,6 @@ struct Token* lex_file(const char* filename, FILE* file) {
 			case '?': {
 				is_comment = true;
 			} continue;
-		}
-		if (is_comment) {
-			continue;
 		}
 		if (is_string) {
 			_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);

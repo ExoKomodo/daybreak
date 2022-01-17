@@ -16,7 +16,7 @@
   #define VARIABLES_OUTPUT_FILE "out/output.txt"
 #endif
 
-#define VARIABLES_OUTPUT "x = 10, y = 15"
+#define VARIABLES_OUTPUT "x = 10, y = 20"
 
 #define BUFFER_SIZE 1024
 
