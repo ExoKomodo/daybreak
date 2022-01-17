@@ -1,5 +1,6 @@
+? x + (5 * 2)
 fun do_work (x: int) => int is
-	let y:int <- (add x (mul 5 1))
+	let y:int <- (add x (mul 5 2))
 	(printf "x = %d, y = %d\n" x y)
 	0
 end
