@@ -76,6 +76,24 @@
       },
     },
     {
+      "name": "Types",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/types/types.day",
+        "-o",
+        "${workspaceFolder}/out/types"
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "cmake build [daybreak]",
+      "console": "integratedTerminal",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      },
+    },
+    {
       "name": "Variables",
       "type": "cppdbg",
       "request": "launch",

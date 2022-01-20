@@ -9,11 +9,11 @@
 #if defined(_WIN32) || defined(_WIN64)
   #define HELLO_WORLD "examples\\hello\\hello.day"
   #define HELLO_WORLD_EXECUTABLE "out\\test_hello_world.exe"
-  #define HELLO_OUTPUT_FILE "out\\output.txt"
+  #define HELLO_WORLD_OUTPUT_FILE "out\\output.txt"
 #else
   #define HELLO_WORLD "examples/hello/hello.day"
   #define HELLO_WORLD_EXECUTABLE "out/test_hello_world"
-  #define HELLO_OUTPUT_FILE "out/output.txt"
+  #define HELLO_WORLD_OUTPUT_FILE "out/output.txt"
 #endif
 
 #define HELLO_WORLD_OUTPUT "Hello world"
@@ -31,11 +31,11 @@ bool test_hello_world() {
     return false;
   }
 
-  FILE* output_file = fopen(HELLO_OUTPUT_FILE, "w+");
+  FILE* output_file = fopen(HELLO_WORLD_OUTPUT_FILE, "w+");
   error = run_command(HELLO_WORLD_EXECUTABLE, output_file);
   fclose(output_file);
 
-  output_file = fopen(HELLO_OUTPUT_FILE, "r");
+  output_file = fopen(HELLO_WORLD_OUTPUT_FILE, "r");
   
   char buffer[BUFFER_SIZE];
   memset(buffer, '\0', sizeof(char) * BUFFER_SIZE);
