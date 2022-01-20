@@ -843,13 +843,6 @@ struct FunctionDeclarationNode* ast_parse_function_declaration(struct Token** to
   _ADVANCE_TOKEN(tokens);
   struct IdentifierNode* identifier = ast_parse_identifier(tokens);
   struct ParameterListNode* parameters = ast_parse_parameter_list(tokens);
-  
-  // TODO: Add follow set function
-  if (!token_is_fat_arrow(**tokens)) {
-    LOG_ERROR("Expected '=>' got '%s'", (*tokens)->name);
-    exit(1);
-  }
-  _ADVANCE_TOKEN(tokens);
   struct TypeIdentifierNode* return_type = ast_parse_type_identifier(tokens);
   if (!token_is_is(**tokens)) {
     LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_IS), (*tokens)->name);
