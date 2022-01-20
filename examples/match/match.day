@@ -1,4 +1,4 @@
-fun main () => int is
+fun main () int is
 	let x: int <- 10
 	match
 		(equals x 10) => (puts "x was 10")

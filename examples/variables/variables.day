@@ -1,10 +1,10 @@
 ? x + (5 * 2)
-fun do_work (x: int) => int is
+fun do_work (x: int) int is
 	let y:int <- (add x (mul 5 2))
 	(printf "x = %d, y = %d\n" x y)
 	return 0
 end
 
-fun main () => int is
+fun main () int is
 	return (do_work 10)
 end
