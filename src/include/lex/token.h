@@ -65,16 +65,19 @@ static inline void token_chomp(struct Token** tokens) {
 	}
 }
 
-#define TOKEN_FUN fun
-#define TOKEN_LET let
-#define TOKEN_IS is
-#define TOKEN_END end
-#define TOKEN_MATCH match
-#define TOKEN_LEFT_ANGLE <
-#define TOKEN_RIGHT_ANGLE >
-#define TOKEN_SYMBOLIC_FAT_ARROW fat_arrow
 #define TOKEN_BINDING_ARROW_SYMBOL <-
+#define TOKEN_END end
 #define TOKEN_FAT_ARROW_SYMBOL =>
+#define TOKEN_FUN fun
+#define TOKEN_IS is
+#define TOKEN_LEFT_ANGLE <
+#define TOKEN_LET let
+#define TOKEN_MATCH match
+#define TOKEN_PERIOD .
+#define TOKEN_RIGHT_ANGLE >
+#define TOKEN_STRUCT struct
+#define TOKEN_SYMBOLIC_FAT_ARROW fat_arrow
+#define TOKEN_TYPE type
 
 #define _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(token_type) \
 	static inline bool token_is_##token_type(struct Token token) { \
@@ -100,6 +103,12 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	return
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
+	struct
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
+	type
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	match
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
@@ -117,6 +126,18 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 	close_paren,
 	")"
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
+	open_brace,
+	"{"
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
+	close_brace,
+	"}"
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
+	period,
+	"."
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 	colon,
@@ -146,6 +167,28 @@ static inline bool token_is_string_literal(struct Token token) {
 static inline bool token_is_numeric(struct Token token) {
 	for (size_t i = 0; i < token.length; i++) {
 		if (!isdigit(token.name[i])) {
+			return false;
+		}
+	}
+	return true;
+}
+
+static inline bool token_is_identifier(struct Token token) {
+	for (size_t i = 0; i < token.length; i++) {
+		const char c = token.name[i];
+		if (
+			!(
+				i == 0 &&
+				(
+					isalpha(c) || c == '_'
+				)
+			) && !(
+				i != 0 &&
+				(
+					isalnum(c) || c == '_'
+				)
+			)
+		) {
 			return false;
 		}
 	}

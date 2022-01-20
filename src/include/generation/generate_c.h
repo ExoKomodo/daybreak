@@ -12,6 +12,10 @@ int generate_c_from_declaration(FILE*, const struct DeclarationNode*);
 int generate_c_from_declaration_list(FILE*, const struct DeclarationListNode*);
 int generate_c_from_expression(FILE*, const struct ExpressionNode*);
 int generate_c_from_expression_list(FILE*, const struct ExpressionListNode*, bool);
+int generate_c_from_field(FILE*, const struct FieldNode*);
+int generate_c_from_field_binding(FILE*, const struct FieldBindingNode*);
+int generate_c_from_field_binding_list(FILE*, const struct FieldBindingListNode*);
+int generate_c_from_field_list(FILE*, const struct FieldListNode*);
 int generate_c_from_function_declaration(FILE*, const struct FunctionDeclarationNode*);
 int generate_c_from_identifier(FILE*, const struct IdentifierNode*);
 int generate_c_from_identifier_expression(FILE*, const struct IdentifierExpressionNode*);
@@ -24,6 +28,8 @@ int generate_c_from_numeric_expression(FILE*, const struct NumericExpressionNode
 int generate_c_from_program(FILE*, const struct ProgramNode*);
 int generate_c_from_return_expression(FILE*, const struct ReturnExpressionNode*);
 int generate_c_from_string_expression(FILE*, const struct StringExpressionNode*);
+int generate_c_from_type_declaration(FILE*, const struct TypeDeclarationNode*);
+int generate_c_from_type_expression(FILE*, const struct TypeExpressionNode*);
 int generate_c_from_type_identifier(FILE*, const struct TypeIdentifierNode*);
 int generate_c_include_prelude(FILE*);
 int generate_c_macros(FILE*);
@@ -94,7 +100,7 @@ int generate_c_from_call_expression(FILE* output_file, const struct CallExpressi
 
 	fprintf(output_file, "%s(", call_expression->function->name);
 	const int error = generate_c_from_expression_list(output_file, call_expression->arguments, false);
-	fputs(")", output_file);
+	fputc(')', output_file);
 	return error;
 }
 
@@ -111,6 +117,12 @@ int generate_c_from_declaration(
 			return generate_c_from_function_declaration(
 				output_file,
 				declaration->value.function_declaration
+			);
+		} break;
+		case AstTypeDeclaration: {
+			return generate_c_from_type_declaration(
+				output_file,
+				declaration->value.type_declaration
 			);
 		} break;
 		default: {
@@ -137,6 +149,7 @@ int generate_c_from_declaration_list(
 		if (error != 0) {
 			return error;
 		}
+		fputc('\n', output_file);
 	}
 	return 0;
 }
@@ -168,6 +181,9 @@ int generate_c_from_expression(FILE* output_file, const struct ExpressionNode* e
 		} break;
 		case AstStringExpression: {
 			return generate_c_from_string_expression(output_file, expression->value.string_expression);
+		} break;
+		case AstTypeExpression: {
+			return generate_c_from_type_expression(output_file, expression->value.type_expression);
 		} break;
 		default: {
 			LOG_ERROR(
@@ -208,6 +224,74 @@ int generate_c_from_expression_list(
 	return 0;
 }
 
+int generate_c_from_field(FILE* output_file, const struct FieldNode* field) {
+	if (!field) {
+		LOG_ERROR("Failed to generate C code from FieldNode. NULL FieldNode.");
+		return 1;
+	}
+	int error = generate_c_from_type_identifier(output_file, field->type_identifier);
+	if (error != 0) {
+		return error;
+	}
+	fputc(' ', output_file);
+	error = generate_c_from_identifier(output_file, field->identifier);
+	if (error != 0) {
+		return error;
+	}
+	fputs(";\n", output_file);
+	return 0;
+}
+
+int generate_c_from_field_binding(FILE* output_file, const struct FieldBindingNode* field_binding) {
+	if (!field_binding) {
+		LOG_ERROR("Failed to generate C code from FieldBindingNode. NULL FieldBindingNode.");
+		return 1;
+	}
+	fputc('.', output_file);
+	int error = generate_c_from_identifier(output_file, field_binding->field_identifier);
+	if (error != 0) {
+		return error;
+	}
+	fputc('=', output_file);
+	error = generate_c_from_expression(output_file, field_binding->expression);
+	if (error != 0) {
+		return error;
+	}
+	return 0;
+}
+
+int generate_c_from_field_binding_list(FILE* output_file, const struct FieldBindingListNode* field_bindings) {
+	if (!field_bindings) {
+		LOG_ERROR("Failed to generate C code from FieldBindingListNode. NULL FieldBindingListNode.");
+		return 1;
+	}
+	for (size_t i = 0; i < field_bindings->length; i++) {
+		const int error = generate_c_from_field_binding(output_file, field_bindings->field_bindings[i]);
+		if (error != 0) {
+			return error;
+		}
+		if (i < field_bindings->length - 1) {
+			fputs(", ", output_file);
+		}
+	}
+	return 0;
+}
+
+int generate_c_from_field_list(FILE* output_file, const struct FieldListNode* field_list) {
+	if (!field_list) {
+		LOG_ERROR("Failed to generate C code from FieldListNode. NULL FieldListNode.");
+		return 1;
+	}
+	struct FieldNode** fields = field_list->fields;
+	for (size_t i = 0; i < field_list->length; i++) {
+		const int error = generate_c_from_field(output_file, fields[i]);
+		if (error != 0) {
+			return error;
+		}
+	}
+	return 0;
+}
+
 int generate_c_from_function_declaration(
 	FILE* output_file,
 	const struct FunctionDeclarationNode* function_declaration
@@ -220,12 +304,12 @@ int generate_c_from_function_declaration(
 	if (error != 0) {
 		return error;
 	}
-	fputs(" ", output_file);
+	fputc(' ', output_file);
 	error = generate_c_from_identifier(output_file, function_declaration->identifier);
 	if (error != 0) {
 		return error;
 	}
-	fputs("(", output_file);
+	fputc('(', output_file);
 	error = generate_c_from_parameter_list(output_file, function_declaration->parameters);
 	if (error != 0) {
 		return error;
@@ -255,10 +339,18 @@ int generate_c_from_identifier_expression(FILE* output_file, const struct Identi
 		LOG_ERROR("Failed to generate C code from IdentifierExpressionNode. NULL IdentifierExpressionNode.");
 		return 1;
 	}
-	const int error = generate_c_from_identifier(output_file, identifier_expression->identifier);
+	int error = generate_c_from_identifier(output_file, identifier_expression->identifier);
 	if (error != 0) {
 		return error;
 	}
+	if (identifier_expression->next) {
+		fputc('.', output_file);
+		error = generate_c_from_identifier_expression(output_file, identifier_expression->next);
+		if (error != 0) {
+			return error;
+		}
+	}
+
 	return 0;
 }
 
@@ -327,7 +419,7 @@ int generate_c_from_parameter(FILE* output_file, const struct ParameterNode* par
 	if (error != 0) {
 		return error;
 	}
-	fputs(" ", output_file);
+	fputc(' ', output_file);
 	error = generate_c_from_identifier(output_file, parameter->identifier);
 	if (error != 0) {
 		return error;
@@ -373,7 +465,7 @@ int generate_c_from_program(
 	if (error != 0) {
 		return error;
 	}
-	fputs("\n", output_file);
+	fputc('\n', output_file);
 	return 0;
 }
 
@@ -401,6 +493,58 @@ int generate_c_from_string_expression(FILE* output_file, const struct StringExpr
 	return 0;
 }
 
+int generate_c_from_type_declaration(FILE* output_file, const struct TypeDeclarationNode* type_declaration) {
+	if (!type_declaration) {
+		LOG_ERROR("Failed to generate C code from TypeDeclarationNode. NULL TypeDeclarationNode.");
+		return 1;
+	}
+
+	fputs("typedef ", output_file);
+	int error = generate_c_from_identifier(output_file, type_declaration->type_kind);
+	if (error != 0) {
+		return error;
+	}
+	fputs(" {\n", output_file);
+	error = generate_c_from_field_list(output_file, type_declaration->fields);
+	if (error != 0) {
+		return error;
+	}
+	fputs("} ", output_file);
+	error = generate_c_from_identifier(output_file, type_declaration->identifier);
+	if (error != 0) {
+		return error;
+	}
+	fputs(";\n", output_file);
+
+	return 0;	
+}
+
+int generate_c_from_type_expression(FILE* output_file, const struct TypeExpressionNode* type_expression) {
+	if (!type_expression) {
+		LOG_ERROR("Failed to generate C code from TypeExpressionNode. NULL TypeExpressionNode.");
+		return 1;
+	}
+
+	fputc('(', output_file);
+	int error = generate_c_from_identifier(output_file, type_expression->object);
+	fputc(')', output_file);
+	if (error != 0) {
+		return error;
+	}
+	
+	fputc('{', output_file);
+	error = generate_c_from_field_binding_list(
+		output_file,
+		type_expression->field_bindings
+	);
+	if (error != 0) {
+		return error;
+	}
+	fputc('}', output_file);
+
+	return 0;	
+}
+
 int generate_c_from_type_identifier(FILE* output_file, const struct TypeIdentifierNode* type_identifier) {
 	if (!type_identifier) {
 		LOG_ERROR("Failed to generate C code from TypeIdentifierNode. NULL TypeIdentifierNode.");
@@ -413,7 +557,7 @@ int generate_c_from_type_identifier(FILE* output_file, const struct TypeIdentifi
 				return error;
 			}
 		}
-		fputs("*", output_file);
+		fputc('*', output_file);
 		return 0;
 	}
 	const int error = generate_c_from_identifier(output_file, type_identifier->identifier);
@@ -437,7 +581,7 @@ int generate_c_macros(FILE* output_file) {
 	fputs("#define sub(x, y) ((x) - (y))\n", output_file);
 	fputs("#define unsafe_index(arr, index) (arr)[(index)]\n", output_file);
 	fputs("#define unused(x) (void)(x)\n", output_file);
-	fputs("\n", output_file);
+	fputc('\n', output_file);
 
 	return 0;
 }

@@ -172,7 +172,10 @@ struct Token* lex_file(const char* filename, FILE* file) {
 				);
 				continue;
 			} break;
+			case '.':
 			case ':':
+			case '{':
+			case '}':
 			case '(':
 			case ')': {
 				if (token_length > 0) {
@@ -199,6 +202,11 @@ struct Token* lex_file(const char* filename, FILE* file) {
 			case '?': {
 				is_comment = true;
 			} continue;
+			case ';':
+			case ',': {
+				LOG_ERROR("Unexpected '%c'", character);
+				exit(1);
+			} break;
 		}
 		if (isspace(character)){
 			if (token_length > 0) {
