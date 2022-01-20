@@ -24,6 +24,7 @@ int generate_c_from_numeric_expression(FILE*, const struct NumericExpressionNode
 int generate_c_from_program(FILE*, const struct ProgramNode*);
 int generate_c_from_return_expression(FILE*, const struct ReturnExpressionNode*);
 int generate_c_from_string_expression(FILE*, const struct StringExpressionNode*);
+int generate_c_from_type_identifier(FILE*, const struct TypeIdentifierNode*);
 int generate_c_include_prelude(FILE*);
 int generate_c_macros(FILE*);
 FILE* _open_output_file(const char*);
@@ -215,7 +216,7 @@ int generate_c_from_function_declaration(
 		LOG_ERROR("Failed to generate C code from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
 		return 1;
 	}
-	int error = generate_c_from_identifier(output_file, function_declaration->return_type);
+	int error = generate_c_from_type_identifier(output_file, function_declaration->return_type);
 	if (error != 0) {
 		return error;
 	}
@@ -322,7 +323,15 @@ int generate_c_from_parameter(FILE* output_file, const struct ParameterNode* par
 		LOG_ERROR("Failed to generate C code from ParameterNode. NULL ParameterNode.");
 		return 1;
 	}
-	fprintf(output_file, "%s %s", parameter->type->name, parameter->identifier->name);
+	int error = generate_c_from_type_identifier(output_file, parameter->type_identifier);
+	if (error != 0) {
+		return error;
+	}
+	fputs(" ", output_file);
+	error = generate_c_from_identifier(output_file, parameter->identifier);
+	if (error != 0) {
+		return error;
+	}
 
 	return 0;
 }
@@ -368,16 +377,6 @@ int generate_c_from_program(
 	return 0;
 }
 
-int generate_c_from_string_expression(FILE* output_file, const struct StringExpressionNode* string_expression) {
-	if (!string_expression) {
-		LOG_ERROR("Failed to generate C code from StringExpressionNode. NULL StringExpressionNode.");
-		return 1;
-	}
-	fprintf(output_file, "%s", string_expression->value);
-
-	return 0;
-}
-
 int generate_c_from_return_expression(FILE* output_file, const struct ReturnExpressionNode* return_expression) {
 	if (!return_expression) {
 		LOG_ERROR("Failed to generate C code from ReturnExpressionNode. NULL ReturnExpressionNode.");
@@ -392,16 +391,52 @@ int generate_c_from_return_expression(FILE* output_file, const struct ReturnExpr
 	return 0;
 }
 
+int generate_c_from_string_expression(FILE* output_file, const struct StringExpressionNode* string_expression) {
+	if (!string_expression) {
+		LOG_ERROR("Failed to generate C code from StringExpressionNode. NULL StringExpressionNode.");
+		return 1;
+	}
+	fprintf(output_file, "%s", string_expression->value);
+
+	return 0;
+}
+
+int generate_c_from_type_identifier(FILE* output_file, const struct TypeIdentifierNode* type_identifier) {
+	if (!type_identifier) {
+		LOG_ERROR("Failed to generate C code from TypeIdentifierNode. NULL TypeIdentifierNode.");
+		return 1;
+	}
+	if (strcmp(type_identifier->identifier->name, "ptr") == 0) {
+		if (type_identifier->contained_type) {
+			const int error = generate_c_from_type_identifier(output_file, type_identifier->contained_type);
+			if (error != 0) {
+				return error;
+			}
+		}
+		fputs("*", output_file);
+		return 0;
+	}
+	const int error = generate_c_from_identifier(output_file, type_identifier->identifier);
+	if (error != 0) {
+		return error;
+	}
+	return 0;
+}
+
 int generate_c_macros(FILE* output_file) {
+	fputs("#define add(x, y) ((x) + (y))\n", output_file);
 	fputs("#define ccstring const char *\n", output_file);
 	fputs("#define cstring char *\n", output_file);
-	fputs("#define add(x, y) ((x) + (y))\n", output_file);
-	fputs("#define sub(x, y) ((x) - (y))\n", output_file);
-	fputs("#define mul(x, y) ((x) * (y))\n", output_file);
+	fputs("#define deref(x) *(x)\n", output_file);
 	fputs("#define div(x, y) ((x) / (y))\n", output_file);
-	fputs("#define mod(x, y) ((x) % (y))\n", output_file);
 	fputs("#define equals(x, y) ((x) == (y))\n", output_file);
+	fputs("#define mod(x, y) ((x) % (y))\n", output_file);
+	fputs("#define mul(x, y) ((x) * (y))\n", output_file);
 	fputs("#define not(x) !(x)\n", output_file);
+	fputs("#define point(x) &(x)\n", output_file);
+	fputs("#define sub(x, y) ((x) - (y))\n", output_file);
+	fputs("#define unsafe_index(arr, index) (arr)[(index)]\n", output_file);
+	fputs("#define unused(x) (void)(x)\n", output_file);
 	fputs("\n", output_file);
 
 	return 0;

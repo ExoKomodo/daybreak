@@ -35,12 +35,37 @@ struct Token* lex_file(const char* filename, FILE* file) {
 	bool is_comment = false;
 	bool is_string = false;
 	bool is_less_than = false;
+	bool is_equals = false;
 	while ((character = (char)fgetc(file)) != EOF) {
 		column++;
 		const size_t current_lex_column = column;
 		const size_t current_lex_line = line;
 		if (is_comment && character != '\n') {
 			continue;
+		}
+		if (is_string && character != '"') {
+			_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
+			continue;
+		}
+		if (is_equals) {
+			is_equals = false;
+			if (character == '>') {
+				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
+				_build_token(filename, token_buffer, &token_length, current_lex_line, current_lex_column, &current);
+				continue;
+			}
+			_build_token(filename, token_buffer, &token_length, current_lex_line, current_lex_column, &current);
+		}
+		if (is_less_than && character != '-'){
+			is_less_than = false;
+			_build_token(
+				filename,
+				token_buffer,
+				&token_length,
+				current_lex_line,
+				current_lex_column,
+				&current
+			);
 		}
 		switch (character) {
 			case '\n': {
@@ -81,9 +106,6 @@ struct Token* lex_file(const char* filename, FILE* file) {
 				continue;
 			} break;
 			case '<': {
-				if (is_string) {
-					break;
-				}
 				if (token_length > 0) {
 					_build_token(
 						filename,
@@ -113,12 +135,46 @@ struct Token* lex_file(const char* filename, FILE* file) {
 					continue;
 				}
 			} break;
+			case '=': {
+				is_equals = true;
+				if (token_length > 0) {
+					_build_token(
+						filename,
+						token_buffer,
+						&token_length,
+						current_lex_line,
+						current_lex_column,
+						&current
+					);
+				}
+				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
+				continue;
+			} break;
+			case '>': {
+				if (token_length > 0) {
+					_build_token(
+						filename,
+						token_buffer,
+						&token_length,
+						current_lex_line,
+						current_lex_column,
+						&current
+					);
+				}
+				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
+				_build_token(
+					filename,
+					token_buffer,
+					&token_length,
+					current_lex_line,
+					current_lex_column,
+					&current
+				);
+				continue;
+			} break;
 			case ':':
 			case '(':
 			case ')': {
-				if (is_string) {
-					break;
-				}
 				if (token_length > 0) {
 					_build_token(
 						filename,
@@ -144,11 +200,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 				is_comment = true;
 			} continue;
 		}
-		if (is_string) {
-			_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
-			continue;
-		}
-		if (!is_string && isspace(character)){
+		if (isspace(character)){
 			if (token_length > 0) {
 				_build_token(
 					filename,

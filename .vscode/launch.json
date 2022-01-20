@@ -40,14 +40,14 @@
       },
     },
     {
-      "name": "Variables",
+      "name": "Match",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/daybreak",
       "args": [
-        "${workspaceFolder}/examples/variables/variables.day",
+        "${workspaceFolder}/examples/match/match.day",
         "-o",
-        "${workspaceFolder}/out/variables"
+        "${workspaceFolder}/out/match"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
@@ -58,14 +58,32 @@
       },
     },
     {
-      "name": "Match",
+      "name": "Pointers",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/daybreak",
       "args": [
-        "${workspaceFolder}/examples/match/match.day",
+        "${workspaceFolder}/examples/pointers/pointers.day",
         "-o",
-        "${workspaceFolder}/out/match"
+        "${workspaceFolder}/out/pointers"
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "cmake build [daybreak]",
+      "console": "integratedTerminal",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      },
+    },
+    {
+      "name": "Variables",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/variables/variables.day",
+        "-o",
+        "${workspaceFolder}/out/variables"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
