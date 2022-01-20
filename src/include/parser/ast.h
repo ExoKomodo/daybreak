@@ -24,6 +24,10 @@ typedef enum {
   AstDeclarationList,
   AstExpression,
   AstExpressionList,
+  AstField,
+  AstFieldBinding,
+  AstFieldBindingList,
+  AstFieldList,
   AstFunctionDeclaration,
   AstIdentifier,
   AstIdentifierExpression,
@@ -36,6 +40,8 @@ typedef enum {
   AstProgram,
   AstReturnExpression,
   AstStringExpression,
+  AstTypeDeclaration,
+  AstTypeExpression,
   AstTypeIdentifier,
 } AstNodeKind;
 
@@ -47,6 +53,8 @@ struct DeclarationListNode;
 struct DeclarationNode;
 struct ExpressionListNode;
 struct ExpressionNode;
+struct FieldNode;
+struct FieldListNode;
 struct FunctionDeclarationNode;
 struct IdentifierNode;
 struct IdentifierExpressionNode;
@@ -59,6 +67,8 @@ struct ParameterNode;
 struct ProgramNode;
 struct ReturnExpressionNode;
 struct StringExpressionNode;
+struct TypeDeclarationNode;
+struct TypeExpressionNode;
 struct TypeIdentifierNode;
 
 union AstNodeUnion;
@@ -72,6 +82,10 @@ union AstNodeUnion {
   struct DeclarationNode* declaration;
   struct ExpressionListNode* expression_list;
   struct ExpressionNode* expression;
+  struct FieldBindingNode* field_binding;
+  struct FieldBindingListNode* field_binding_list;
+  struct FieldNode* field;
+  struct FieldListNode* field_list;
   struct FunctionDeclarationNode* function_declaration;
   struct IdentifierNode* identifier;
   struct IdentifierExpressionNode* identifier_expression;
@@ -84,11 +98,14 @@ union AstNodeUnion {
   struct ProgramNode* program;
   struct ReturnExpressionNode* return_expression;
   struct StringExpressionNode* string_expression;
+  struct TypeDeclarationNode* type_declaration;
+  struct TypeExpressionNode* type_expression;
   struct TypeIdentifierNode* type_identifier;
 };
 
 union DeclarationNodeUnion {
   struct FunctionDeclarationNode* function_declaration;
+  struct TypeDeclarationNode* type_declaration;
 };
 
 union ExpressionNodeUnion {
@@ -99,6 +116,7 @@ union ExpressionNodeUnion {
   struct NumericExpressionNode* numeric_expression;
   struct ReturnExpressionNode* return_expression;
   struct StringExpressionNode* string_expression;
+  struct TypeExpressionNode* type_expression;
 };
 
 struct AstNode* ast_new_node(AstNodeKind, union AstNodeUnion);
@@ -136,6 +154,28 @@ void ast_free_expression_node(struct ExpressionNode*);
 struct ExpressionNode* ast_parse_expression(struct Token**);
 bool ast_expression_token_matches_first_set(struct Token);
 
+struct FieldBindingListNode* ast_new_field_binding_list_node(struct FieldBindingNode**);
+void ast_add_field_binding_node(struct FieldBindingListNode*, struct FieldBindingNode*);
+void ast_free_field_binding_list_node(struct FieldBindingListNode*);
+struct FieldBindingListNode* ast_parse_field_binding_list(struct Token** tokens);
+bool ast_field_binding_list_token_matches_first_set(struct Token);
+
+struct FieldBindingNode* ast_new_field_binding_node(struct IdentifierNode*, struct ExpressionNode*);
+void ast_free_field_binding_node(struct FieldBindingNode*);
+struct FieldBindingNode* ast_parse_field_binding(struct Token**);
+bool ast_field_binding_token_matches_first_set(struct Token);
+
+struct FieldListNode* ast_new_field_list_node(struct FieldNode**);
+void ast_free_field_list_node(struct FieldListNode*);
+void ast_add_field_node(struct FieldListNode*, struct FieldNode*);
+struct FieldListNode* ast_parse_field_list(struct Token**);
+bool ast_field_list_token_matches_first_set(struct Token);
+
+struct FieldNode* ast_new_field_node(struct IdentifierNode*, struct TypeIdentifierNode*);
+void ast_free_field_node(struct FieldNode*);
+struct FieldNode* ast_parse_field(struct Token** tokens);
+bool ast_field_token_matches_first_set(struct Token);
+
 struct FunctionDeclarationNode* ast_new_function_declaration_node(struct IdentifierNode*, struct TypeIdentifierNode*, struct ParameterListNode*, struct ExpressionListNode*);
 void ast_free_function_declaration_node(struct FunctionDeclarationNode*);
 struct FunctionDeclarationNode* ast_parse_function_declaration(struct Token**);
@@ -146,7 +186,7 @@ void ast_free_identifier_node(struct IdentifierNode*);
 struct IdentifierNode* ast_parse_identifier(struct Token**);
 bool ast_identifier_token_matches_first_set(struct Token);
 
-struct IdentifierExpressionNode* ast_new_identifier_expression_node(struct IdentifierNode*);
+struct IdentifierExpressionNode* ast_new_identifier_expression_node(struct IdentifierNode*, struct IdentifierExpressionNode*);
 void ast_free_identifier_expression_node(struct IdentifierExpressionNode*);
 struct IdentifierExpressionNode* ast_parse_identifier_expression(struct Token**);
 bool ast_identifier_expression_token_matches_first_set(struct Token);
@@ -198,6 +238,16 @@ void ast_free_string_expression_node(struct StringExpressionNode*);
 struct StringExpressionNode* ast_parse_string_expression(struct Token**);
 bool ast_string_expression_token_matches_first_set(struct Token);
 
+struct TypeDeclarationNode* ast_new_type_declaration_node(struct IdentifierNode*, struct IdentifierNode*, struct FieldListNode*);
+void ast_free_type_declaration_node(struct TypeDeclarationNode*);
+struct TypeDeclarationNode* ast_parse_type_declaration(struct Token**);
+bool ast_type_declaration_token_matches_first_set(struct Token);
+
+struct TypeExpressionNode* ast_new_type_expression_node(struct IdentifierNode*, struct FieldBindingListNode*);
+void ast_free_type_expression_node(struct TypeExpressionNode*);
+struct TypeExpressionNode* ast_parse_type_expression(struct Token**);
+bool ast_type_expression_token_matches_first_set(struct Token);
+
 struct TypeIdentifierNode* ast_new_type_identifier_node(struct IdentifierNode*, struct TypeIdentifierNode*);
 void ast_free_type_identifier_node(struct TypeIdentifierNode*);
 struct TypeIdentifierNode* ast_parse_type_identifier(struct Token**);
@@ -243,6 +293,30 @@ struct ExpressionNode {
   union ExpressionNodeUnion value;
 };
 
+struct FieldBindingListNode {
+  AstNodeKind kind;
+  struct FieldBindingNode** field_bindings;
+  size_t length;
+};
+
+struct FieldBindingNode {
+  AstNodeKind kind;
+  struct IdentifierNode* field_identifier;
+  struct ExpressionNode* expression;
+};
+
+struct FieldListNode {
+  AstNodeKind kind;
+  struct FieldNode** fields;
+  size_t length;
+};
+
+struct FieldNode {
+  AstNodeKind kind;
+  struct IdentifierNode* identifier;
+  struct TypeIdentifierNode* type_identifier;
+};
+
 struct FunctionDeclarationNode {
   AstNodeKind kind;
   struct IdentifierNode* identifier;
@@ -259,6 +333,7 @@ struct IdentifierNode {
 struct IdentifierExpressionNode {
   AstNodeKind kind;
   struct IdentifierNode* identifier;
+  struct IdentifierExpressionNode* next;
 };
 
 struct MatchCaseNode {
@@ -310,6 +385,19 @@ struct StringExpressionNode {
   char* value;
 };
 
+struct TypeDeclarationNode {
+  AstNodeKind kind;
+  struct IdentifierNode* identifier;
+  struct IdentifierNode* type_kind;
+  struct FieldListNode* fields;
+};
+
+struct TypeExpressionNode {
+  AstNodeKind kind;
+  struct IdentifierNode* object;
+  struct FieldBindingListNode* field_bindings;
+};
+
 struct TypeIdentifierNode {
   AstNodeKind kind;
   struct IdentifierNode* identifier;
@@ -349,6 +437,12 @@ void ast_free_node(struct AstNode* node) {
     case AstExpression: {
       ast_free_expression_node(node->value.expression);
     } break;
+    case AstField: {
+      ast_free_field_node(node->value.field);
+    } break;
+    case AstFieldList: {
+      ast_free_field_list_node(node->value.field_list);
+    } break;
     case AstFunctionDeclaration: {
       ast_free_function_declaration_node(node->value.function_declaration);
     } break;
@@ -381,6 +475,15 @@ void ast_free_node(struct AstNode* node) {
     } break;
     case AstStringExpression: {
       ast_free_string_expression_node(node->value.string_expression);
+    } break;
+    case AstTypeDeclaration: {
+      ast_free_type_declaration_node(node->value.type_declaration);
+    } break;
+    case AstTypeExpression: {
+      ast_free_type_expression_node(node->value.type_expression);
+    } break;
+    case AstTypeIdentifier: {
+      ast_free_type_identifier_node(node->value.type_identifier);
     } break;
     default: {
       LOG_ERROR("Invalid AstNode kind");
@@ -542,7 +645,7 @@ struct DeclarationListNode* ast_parse_declaration_list(struct Token** tokens) {
   _CHECK_TOKENS();
 
   if (!ast_declaration_list_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), (*tokens)->name);
+    LOG_ERROR("Expected declaration got '%s'", (*tokens)->name);
     exit(1);
   }
 
@@ -557,7 +660,7 @@ struct DeclarationListNode* ast_parse_declaration_list(struct Token** tokens) {
 }
 
 inline bool ast_declaration_list_token_matches_first_set(struct Token token) {
-  return token_is_fun(token);
+  return ast_declaration_token_matches_first_set(token);
 }
 
 /*******************/
@@ -567,6 +670,8 @@ struct DeclarationNode* ast_new_declaration_node(AstNodeKind kind, union Declara
   struct DeclarationNode* node = malloc(sizeof(struct DeclarationNode));
   switch (kind) {
     case AstFunctionDeclaration: {
+    } break;
+    case AstTypeDeclaration: {
     } break;
     default:
       LOG_ERROR("Invalid DeclarationNode kind");
@@ -582,6 +687,9 @@ void ast_free_declaration_node(struct DeclarationNode* node) {
     case AstFunctionDeclaration: {
       ast_free_function_declaration_node(node->value.function_declaration);
     } break;
+    case AstTypeDeclaration: {
+      ast_free_type_declaration_node(node->value.type_declaration);
+    } break;
     default: {
       LOG_ERROR("Invalid DeclarationNode kind");
       exit(1);
@@ -595,11 +703,6 @@ struct DeclarationNode* ast_parse_declaration(struct Token** tokens) {
   LOG_DEBUG("Parsing Declaration");
   _CHECK_TOKENS();
 
-  if (!ast_declaration_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), (*tokens)->name);
-    exit(1);
-  }
-
   if (token_is_fun(**tokens)) {
     return ast_new_declaration_node(
       AstFunctionDeclaration,
@@ -607,14 +710,23 @@ struct DeclarationNode* ast_parse_declaration(struct Token** tokens) {
         .function_declaration = ast_parse_function_declaration(tokens)
       }
     );
+  } else if (token_is_type(**tokens)) {
+    return ast_new_declaration_node(
+      AstTypeDeclaration,
+      (union DeclarationNodeUnion) {
+        .type_declaration = ast_parse_type_declaration(tokens)
+      }
+    );
   }
-  
-  LOG_ERROR("'%s' not yet implemented for parsing DeclarationNode", (*tokens)->name);
+  LOG_ERROR("Expected a declaration got '%s'", (*tokens)->name);
   exit(1);
 }
 
 inline bool ast_declaration_token_matches_first_set(struct Token token) {
-  return token_is_fun(token);
+  return (
+    ast_function_declaration_token_matches_first_set(token) ||
+    ast_type_declaration_token_matches_first_set(token)
+  );
 }
 
 /**********************/
@@ -666,7 +778,8 @@ struct ExpressionListNode* ast_parse_expression_list(struct Token** tokens) {
       !tokens ||
       !*tokens || 
       token_is_end(**tokens) ||
-      token_is_close_paren(**tokens)
+      token_is_close_paren(**tokens) || 
+      token_is_close_brace(**tokens)
     ) {
       break;
     }
@@ -676,8 +789,7 @@ struct ExpressionListNode* ast_parse_expression_list(struct Token** tokens) {
 }
 
 inline bool ast_expression_list_token_matches_first_set(struct Token token) {
-  UNUSED(token);
-  return true;
+  return ast_expression_token_matches_first_set(token);
 }
 
 /******************/
@@ -716,6 +828,9 @@ void ast_free_expression_node(struct ExpressionNode* node) {
     case AstStringExpression: {
       ast_free_string_expression_node(node->value.string_expression);
     } break;
+    case AstTypeExpression: {
+      ast_free_type_expression_node(node->value.type_expression);
+    } break;
     default: {
       LOG_ERROR("Invalid ExpressionNode kind");
       exit(1);
@@ -730,7 +845,7 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
   _CHECK_TOKENS();
 
   if (!ast_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected something else");
+    LOG_ERROR("Expected an expression, but got %s", (*tokens)->name);
     exit(1);
   }
   if (ast_string_expression_token_matches_first_set(**tokens)){
@@ -781,6 +896,14 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
         .match_expression = expression
       }
     );
+  } else if (ast_type_expression_token_matches_first_set(**tokens)) {
+    struct TypeExpressionNode* expression = ast_parse_type_expression(tokens);
+    return ast_new_expression_node(
+      expression->kind,
+      (union ExpressionNodeUnion) {
+        .type_expression = expression
+      }
+    );
   } else if (ast_identifier_token_matches_first_set(**tokens)) {
     struct IdentifierExpressionNode* expression = ast_parse_identifier_expression(tokens);
     return ast_new_expression_node(
@@ -796,8 +919,221 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
 }
 
 inline bool ast_expression_token_matches_first_set(struct Token token) {
-  UNUSED(token);
-  return true;
+  return (
+    ast_string_expression_token_matches_first_set(token) ||
+    ast_numeric_expression_token_matches_first_set(token) ||
+    ast_call_expression_token_matches_first_set(token) ||
+    ast_binding_expression_token_matches_first_set(token) ||
+    ast_return_expression_token_matches_first_set(token) ||
+    ast_match_expression_token_matches_first_set(token) ||
+    ast_type_expression_token_matches_first_set(token) ||
+    ast_identifier_token_matches_first_set(token)
+  );
+}
+
+/************************/
+/* FieldBindingListNode */
+/************************/
+struct FieldBindingListNode* ast_new_field_binding_list_node(
+  struct FieldBindingNode** field_bindings
+) {
+  struct FieldBindingListNode* node = malloc(sizeof(struct FieldBindingListNode));
+  node->kind = AstFieldBindingList;
+  node->field_bindings = field_bindings;
+  node->length = 0;
+  while (field_bindings && *field_bindings) {
+    node->length++;
+    field_bindings++;
+  }
+  return node;
+}
+
+void ast_free_field_binding_list_node(struct FieldBindingListNode* node) {
+  for (size_t i = 0; i < node->length; i++) {
+    ast_free_field_binding_node(node->field_bindings[i]);
+  }
+  free(node->field_bindings);
+  node->field_bindings = NULL;
+
+  free(node);
+}
+
+void ast_add_field_binding_node(struct FieldBindingListNode* node, struct FieldBindingNode* field_binding) {
+  if (!field_binding) {
+    return;
+  }
+  if (!node->field_bindings) {
+    node->field_bindings = malloc(sizeof(struct FieldBindingNode*));
+  } else {
+    node->field_bindings = realloc(node->field_bindings, sizeof(struct FieldBindingNode*) * (node->length + 1));
+  }
+  node->field_bindings[node->length++] = field_binding;
+}
+
+struct FieldBindingListNode* ast_parse_field_binding_list(struct Token** tokens) {
+  LOG_DEBUG("Parsing Field Binding List");
+  _CHECK_TOKENS();
+
+  struct FieldBindingListNode* field_binding_list = ast_new_field_binding_list_node(NULL);
+  while (ast_field_binding_list_token_matches_first_set(**tokens)) {
+    if (token_is_close_brace(**tokens)) {
+      break;
+    }
+    ast_add_field_binding_node(field_binding_list, ast_parse_field_binding(tokens));
+  }
+  return field_binding_list;
+}
+
+inline bool ast_field_binding_list_token_matches_first_set(struct Token token) {
+  return ast_field_binding_token_matches_first_set(token);
+}
+
+/********************/
+/* FieldBindingNode */
+/********************/
+struct FieldBindingNode* ast_new_field_binding_node(
+  struct IdentifierNode* field_identifier,
+  struct ExpressionNode* expression
+) {
+  struct FieldBindingNode* node = malloc(sizeof(struct FieldBindingNode));
+  node->kind = AstFieldBinding;
+  node->field_identifier = field_identifier;
+  node->expression = expression;
+  return node;
+}
+
+void ast_free_field_binding_node(struct FieldBindingNode* node) {
+  ast_free_identifier_node(node->field_identifier);
+  node->field_identifier = NULL;
+  ast_free_expression_node(node->expression);
+  node->expression = NULL;
+
+  free(node);
+}
+
+struct FieldBindingNode* ast_parse_field_binding(struct Token** tokens) {
+  LOG_DEBUG("Parsing Field Binding");
+  _CHECK_TOKENS();
+
+  if (!ast_field_binding_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected an identifier, but got %s", (*tokens)->name);
+    exit(1);
+  }
+  struct IdentifierNode* field_identifier = ast_parse_identifier(tokens);
+  if (!token_is_binding_arrow(**tokens)) {
+    LOG_ERROR("Expected a '<-', but got %s", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct ExpressionNode* expression = ast_parse_expression(tokens);
+  return ast_new_field_binding_node(field_identifier, expression);
+}
+
+inline bool ast_field_binding_token_matches_first_set(struct Token token) {
+  return ast_identifier_token_matches_first_set(token);
+}
+
+/*****************/
+/* FieldListNode */
+/*****************/
+struct FieldListNode* ast_new_field_list_node(struct FieldNode** fields) {
+  struct FieldListNode* node = malloc(sizeof(struct FieldListNode));
+  node->kind = AstFieldList;
+  node->fields = fields;
+  node->length = 0;
+  while (fields && *fields) {
+    node->length++;
+    fields++;
+  }
+  return node;
+}
+
+void ast_free_field_list_node(struct FieldListNode* node) {
+  for (size_t i = 0; i < node->length; i++) {
+    ast_free_field_node(node->fields[i]);
+  }
+  free(node->fields);
+  node->fields = NULL;
+
+  free(node);
+}
+
+void ast_add_field_node(struct FieldListNode* node, struct FieldNode* field) {
+  if (!field) {
+    return;
+  }
+  if (!node->fields) {
+    node->fields = malloc(sizeof(struct FieldNode*));
+  } else {
+    node->fields = realloc(node->fields, sizeof(struct FieldNode*) * (node->length + 1));
+  }
+  node->fields[node->length++] = field;
+}
+
+struct FieldListNode* ast_parse_field_list(struct Token** tokens) {
+  LOG_DEBUG("Parsing Field List");
+  _CHECK_TOKENS();
+
+  struct FieldListNode* field_list = ast_new_field_list_node(NULL);
+  if (!ast_field_list_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected identifier, got '%s'", (*tokens)->name);
+    exit(1);
+  }
+
+  while (!token_is_end(**tokens)) {
+    ast_add_field_node(field_list, ast_parse_field(tokens));
+  }
+  return field_list;
+}
+
+inline bool ast_field_list_token_matches_first_set(struct Token token) {
+  return ast_identifier_token_matches_first_set(token);
+}
+
+/*************/
+/* FieldNode */
+/*************/
+struct FieldNode* ast_new_field_node(
+  struct IdentifierNode* identifier,
+  struct TypeIdentifierNode* type_identifier
+) {
+  struct FieldNode* node = malloc(sizeof(struct FieldNode));
+  node->kind = AstField;
+  node->identifier = identifier;
+  node->type_identifier = type_identifier;
+  return node;
+}
+
+void ast_free_field_node(struct FieldNode* node) {
+  ast_free_identifier_node(node->identifier);
+  node->identifier = NULL;
+  ast_free_type_identifier_node(node->type_identifier);
+  node->type_identifier = NULL;
+
+  free(node);
+}
+
+struct FieldNode* ast_parse_field(struct Token** tokens) {
+  LOG_DEBUG("Parsing Field");
+  _CHECK_TOKENS();
+
+  if (!ast_field_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected an identifier");
+    exit(1);
+  }
+
+  struct IdentifierNode* identifier = ast_parse_identifier(tokens);
+  if (!token_is_colon(**tokens)) {
+    LOG_ERROR("Expected ':' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct TypeIdentifierNode* type = ast_parse_type_identifier(tokens);
+  return ast_new_field_node(identifier, type);
+}
+
+inline bool ast_field_token_matches_first_set(struct Token token) {
+  return ast_identifier_token_matches_first_set(token);
 }
 
 /***************************/
@@ -903,23 +1239,29 @@ struct IdentifierNode* ast_parse_identifier(struct Token** tokens) {
 }
 
 inline bool ast_identifier_token_matches_first_set(struct Token token) {
-  UNUSED(token);
-  return true;
+  return token_is_identifier(token);
 }
 
 /****************************/
 /* IdentifierExpressionNode */
 /****************************/
-struct IdentifierExpressionNode* ast_new_identifier_expression_node(struct IdentifierNode* identifier) {
+struct IdentifierExpressionNode* ast_new_identifier_expression_node(
+  struct IdentifierNode* identifier,
+  struct IdentifierExpressionNode* next
+) {
   struct IdentifierExpressionNode* node = malloc(sizeof(struct IdentifierExpressionNode));
   node->kind = AstIdentifierExpression;
   node->identifier = identifier;
+  node->next = next;
   return node;
 }
 void ast_free_identifier_expression_node(struct IdentifierExpressionNode* node) {
   ast_free_identifier_node(node->identifier);
   node->identifier = NULL;
-
+  if (node->next) {
+    ast_free_identifier_expression_node(node->next);
+    node->next = NULL;
+  }
   free(node);
 }
 
@@ -931,11 +1273,77 @@ struct IdentifierExpressionNode* ast_parse_identifier_expression(struct Token** 
     LOG_ERROR("Expected identifier got '%s'", (*tokens)->name);
     exit(1);
   }
-  return ast_new_identifier_expression_node(ast_parse_identifier(tokens));
+  struct IdentifierNode* identifier = ast_parse_identifier(tokens);
+  struct IdentifierExpressionNode* next = NULL;
+  if (token_is_period(**tokens)) {
+    _ADVANCE_TOKEN(tokens);
+    next = ast_parse_identifier_expression(tokens);
+  }
+  return ast_new_identifier_expression_node(identifier, next);
 }
 
 inline bool ast_identifier_expression_token_matches_first_set(struct Token token) {
   return ast_identifier_token_matches_first_set(token);
+}
+
+/*********************/
+/* MatchCaseListNode */
+/*********************/
+struct MatchCaseListNode* ast_new_match_case_list_node(struct MatchCaseNode** cases) {
+  struct MatchCaseListNode* node = malloc(sizeof(struct MatchCaseListNode));
+  node->kind = AstMatchCaseList;
+  node->cases = cases;
+  node->length = 0;
+  while (cases && *cases) {
+    node->length++;
+    cases++;
+  }
+  return node;
+}
+
+void ast_free_match_case_list_node(struct MatchCaseListNode* node) {
+  for (size_t i = 0; i < node->length; i++) {
+    ast_free_match_case_node(node->cases[i]);
+  }
+  free(node->cases);
+  node->cases = NULL;
+
+  free(node);
+}
+
+struct MatchCaseListNode* ast_parse_match_case_list(struct Token** tokens) {
+  LOG_DEBUG("Parsing Match Case List");
+  _CHECK_TOKENS();
+
+  struct MatchCaseListNode* case_list = ast_new_match_case_list_node(NULL);
+  while (ast_match_case_list_token_matches_first_set(**tokens)) {
+    ast_add_match_case_node(case_list, ast_parse_match_case(tokens));
+    // TODO: Add follow set function
+    if (
+      !tokens ||
+      !*tokens ||
+      token_is_end(**tokens)
+    ) {
+      break;
+    }
+  }
+  return case_list;
+}
+
+inline bool ast_match_case_list_token_matches_first_set(struct Token token) {
+  return ast_match_case_token_matches_first_set(token);
+}
+
+void ast_add_match_case_node(struct MatchCaseListNode* node, struct MatchCaseNode* match_case) {
+  if (!match_case) {
+    return;
+  }
+  if (!node->cases) {
+    node->cases = malloc(sizeof(struct MatchCaseNode*));
+  } else {
+    node->cases = realloc(node->cases, sizeof(struct MatchCaseNode*) * (node->length + 1));
+  }
+  node->cases[node->length++] = match_case;
 }
 
 /*****************/
@@ -1017,66 +1425,6 @@ inline bool ast_match_expression_token_matches_first_set(struct Token token) {
   return token_is_match(token);
 }
 
-/*********************/
-/* MatchCaseListNode */
-/*********************/
-struct MatchCaseListNode* ast_new_match_case_list_node(struct MatchCaseNode** cases) {
-  struct MatchCaseListNode* node = malloc(sizeof(struct MatchCaseListNode));
-  node->kind = AstMatchCaseList;
-  node->cases = cases;
-  node->length = 0;
-  while (cases && *cases) {
-    node->length++;
-    cases++;
-  }
-  return node;
-}
-
-void ast_free_match_case_list_node(struct MatchCaseListNode* node) {
-  for (size_t i = 0; i < node->length; i++) {
-    ast_free_match_case_node(node->cases[i]);
-  }
-  free(node->cases);
-  node->cases = NULL;
-
-  free(node);
-}
-
-struct MatchCaseListNode* ast_parse_match_case_list(struct Token** tokens) {
-  LOG_DEBUG("Parsing Match Case List");
-  _CHECK_TOKENS();
-
-  struct MatchCaseListNode* case_list = ast_new_match_case_list_node(NULL);
-  while (ast_match_case_list_token_matches_first_set(**tokens)) {
-    ast_add_match_case_node(case_list, ast_parse_match_case(tokens));
-    // TODO: Add follow set function
-    if (
-      !tokens ||
-      !*tokens ||
-      token_is_end(**tokens)
-    ) {
-      break;
-    }
-  }
-  return case_list;
-}
-
-inline bool ast_match_case_list_token_matches_first_set(struct Token token) {
-  return ast_match_case_token_matches_first_set(token);
-}
-
-void ast_add_match_case_node(struct MatchCaseListNode* node, struct MatchCaseNode* match_case) {
-  if (!match_case) {
-    return;
-  }
-  if (!node->cases) {
-    node->cases = malloc(sizeof(struct MatchCaseNode*));
-  } else {
-    node->cases = realloc(node->cases, sizeof(struct MatchCaseNode*) * (node->length + 1));
-  }
-  node->cases[node->length++] = match_case;
-}
-
 /*************************/
 /* NumericExpressionNode */
 /*************************/
@@ -1119,6 +1467,10 @@ struct ParameterListNode* ast_new_parameter_list_node(
   node->kind = AstParameterList;
   node->parameters = parameters;
   node->length = 0;
+  while (parameters && *parameters) {
+    node->length++;
+    parameters++;
+  }
   return node;
 }
 
@@ -1238,14 +1590,14 @@ struct ProgramNode* ast_parse_program(struct Token** tokens) {
   _CHECK_TOKENS();
 
   if (!ast_program_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), (*tokens)->name);
+    LOG_ERROR("Expected declaration got '%s'", (*tokens)->name);
     exit(1);
   }
   return ast_new_program_node(ast_parse_declaration_list(tokens));
 }
 
 inline bool ast_program_token_matches_first_set(struct Token token) {
-  return token_is_fun(token);
+  return ast_declaration_list_token_matches_first_set(token);
 }
 
 /************************/
@@ -1316,6 +1668,104 @@ struct StringExpressionNode* ast_parse_string_expression(struct Token** tokens) 
 
 inline bool ast_string_expression_token_matches_first_set(struct Token token) {
   return token_is_string_literal(token);
+}
+
+/***********************/
+/* TypeDeclarationNode */
+/***********************/
+struct TypeDeclarationNode* ast_new_type_declaration_node(struct IdentifierNode* identifier, struct IdentifierNode* type_kind, struct FieldListNode* fields) {
+  struct TypeDeclarationNode* node = malloc(sizeof(struct TypeDeclarationNode));
+  node->kind = AstTypeDeclaration;
+  node->identifier = identifier;
+  node->type_kind = type_kind;
+  node->fields = fields;
+  return node;
+}
+
+void ast_free_type_declaration_node(struct TypeDeclarationNode* type_declaration) {
+  ast_free_identifier_node(type_declaration->identifier);
+  type_declaration->identifier = NULL;
+  ast_free_identifier_node(type_declaration->type_kind);
+  type_declaration->type_kind = NULL;
+  ast_free_field_list_node(type_declaration->fields);
+  type_declaration->fields = NULL;
+
+  free(type_declaration);
+}
+
+struct TypeDeclarationNode* ast_parse_type_declaration(struct Token** tokens) {
+  LOG_DEBUG("Parsing Type Declaration");
+  _CHECK_TOKENS();
+
+  if (!ast_type_declaration_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected type declaration got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct IdentifierNode* identifier = ast_parse_identifier(tokens);
+  struct IdentifierNode* type_kind = ast_parse_identifier(tokens);
+  if (!token_is_is(**tokens)) {
+    LOG_ERROR("Expected 'is' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct FieldListNode* fields = ast_parse_field_list(tokens);
+  if (!token_is_end(**tokens)) {
+    LOG_ERROR("Expected 'end' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  return ast_new_type_declaration_node(identifier, type_kind, fields);
+}
+
+inline bool ast_type_declaration_token_matches_first_set(struct Token token) {
+  return token_is_type(token);
+}
+
+/**********************/
+/* TypeExpressionNode */
+/**********************/
+struct TypeExpressionNode* ast_new_type_expression_node(
+  struct IdentifierNode* object,
+  struct FieldBindingListNode* field_bindings
+) {
+  struct TypeExpressionNode* node = malloc(sizeof(struct TypeExpressionNode));
+  node->kind = AstTypeExpression;
+  node->object = object;
+  node->field_bindings = field_bindings;
+  return node;
+}
+
+void ast_free_type_expression_node(struct TypeExpressionNode* node) {
+  ast_free_identifier_node(node->object);
+  node->object = NULL;
+  ast_free_field_binding_list_node(node->field_bindings);
+  node->field_bindings = NULL;
+
+  free(node);
+}
+
+struct TypeExpressionNode* ast_parse_type_expression(struct Token** tokens) {
+  LOG_DEBUG("Parsing Type Expression");
+  _CHECK_TOKENS();
+
+  if (!ast_type_expression_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected '{' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct IdentifierNode* object = ast_parse_identifier(tokens);
+  struct FieldBindingListNode* field_bindings = ast_parse_field_binding_list(tokens);
+  if (!token_is_close_brace(**tokens)) {
+    LOG_ERROR("Expected '}' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  return ast_new_type_expression_node(object, field_bindings);
+}
+
+inline bool ast_type_expression_token_matches_first_set(struct Token token) {
+  return token_is_open_brace(token);
 }
 
 /**********************/

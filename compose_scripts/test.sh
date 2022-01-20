@@ -17,6 +17,7 @@ bash ./compose_scripts/build.sh daybreak
 ${WRAPPER} ./bin/daybreak ./examples/hello/hello.day
 ${WRAPPER} ./bin/daybreak ./examples/foobar/foobar.day
 ${WRAPPER} ./bin/daybreak ./examples/match/match.day
+${WRAPPER} ./bin/daybreak ./examples/types/types.day
 ${WRAPPER} ./bin/daybreak ./examples/variables/variables.day
 
 bash ./compose_scripts/build.sh daybreak_test
