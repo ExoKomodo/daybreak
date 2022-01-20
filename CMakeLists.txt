@@ -13,7 +13,6 @@ add_compile_options(
   -Wsign-conversion
   -Wnull-dereference
   -Wdouble-promotion
-  -Wformat=2
   -Wno-endif-labels
 )
 

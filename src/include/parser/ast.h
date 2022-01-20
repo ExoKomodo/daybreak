@@ -36,6 +36,7 @@ typedef enum {
   AstProgram,
   AstReturnExpression,
   AstStringExpression,
+  AstTypeIdentifier,
 } AstNodeKind;
 
 struct AstNode;
@@ -58,6 +59,7 @@ struct ParameterNode;
 struct ProgramNode;
 struct ReturnExpressionNode;
 struct StringExpressionNode;
+struct TypeIdentifierNode;
 
 union AstNodeUnion;
 union ExpressionNodeUnion;
@@ -82,6 +84,7 @@ union AstNodeUnion {
   struct ProgramNode* program;
   struct ReturnExpressionNode* return_expression;
   struct StringExpressionNode* string_expression;
+  struct TypeIdentifierNode* type_identifier;
 };
 
 union DeclarationNodeUnion {
@@ -133,7 +136,7 @@ void ast_free_expression_node(struct ExpressionNode*);
 struct ExpressionNode* ast_parse_expression(struct Token**);
 bool ast_expression_token_matches_first_set(struct Token);
 
-struct FunctionDeclarationNode* ast_new_function_declaration_node(struct IdentifierNode*, struct IdentifierNode*, struct ParameterListNode*, struct ExpressionListNode*);
+struct FunctionDeclarationNode* ast_new_function_declaration_node(struct IdentifierNode*, struct TypeIdentifierNode*, struct ParameterListNode*, struct ExpressionListNode*);
 void ast_free_function_declaration_node(struct FunctionDeclarationNode*);
 struct FunctionDeclarationNode* ast_parse_function_declaration(struct Token**);
 bool ast_function_declaration_token_matches_first_set(struct Token);
@@ -175,7 +178,7 @@ void ast_add_parameter_node(struct ParameterListNode*, struct ParameterNode*);
 struct ParameterListNode* ast_parse_parameter_list(struct Token**);
 bool ast_parameter_list_token_matches_first_set(struct Token);
 
-struct ParameterNode* ast_new_parameter_node(struct IdentifierNode*, struct IdentifierNode*);
+struct ParameterNode* ast_new_parameter_node(struct IdentifierNode*, struct TypeIdentifierNode*);
 void ast_free_parameter_node(struct ParameterNode*);
 struct ParameterNode* ast_parse_parameter(struct Token** tokens);
 bool ast_parameter_token_matches_first_set(struct Token);
@@ -194,6 +197,11 @@ struct StringExpressionNode* ast_new_string_expression_node(char*);
 void ast_free_string_expression_node(struct StringExpressionNode*);
 struct StringExpressionNode* ast_parse_string_expression(struct Token**);
 bool ast_string_expression_token_matches_first_set(struct Token);
+
+struct TypeIdentifierNode* ast_new_type_identifier_node(struct IdentifierNode*, struct TypeIdentifierNode*);
+void ast_free_type_identifier_node(struct TypeIdentifierNode*);
+struct TypeIdentifierNode* ast_parse_type_identifier(struct Token**);
+bool ast_type_identifier_token_matches_first_set(struct Token);
 
 struct AstNode {
   AstNodeKind kind;
@@ -238,7 +246,7 @@ struct ExpressionNode {
 struct FunctionDeclarationNode {
   AstNodeKind kind;
   struct IdentifierNode* identifier;
-  struct IdentifierNode* return_type;
+  struct TypeIdentifierNode* return_type;
   struct ParameterListNode* parameters;
   struct ExpressionListNode* expressions;
 };
@@ -284,7 +292,7 @@ struct ParameterListNode {
 struct ParameterNode {
   AstNodeKind kind;
   struct IdentifierNode* identifier;
-  struct IdentifierNode* type;
+  struct TypeIdentifierNode* type_identifier;
 };
 
 struct ProgramNode {
@@ -300,6 +308,12 @@ struct ReturnExpressionNode {
 struct StringExpressionNode {
   AstNodeKind kind;
   char* value;
+};
+
+struct TypeIdentifierNode {
+  AstNodeKind kind;
+  struct IdentifierNode* identifier;
+  struct TypeIdentifierNode* contained_type;
 };
 
 /***********/
@@ -791,7 +805,7 @@ inline bool ast_expression_token_matches_first_set(struct Token token) {
 /***************************/
 struct FunctionDeclarationNode* ast_new_function_declaration_node(
   struct IdentifierNode* identifier,
-  struct IdentifierNode* return_type,
+  struct TypeIdentifierNode* return_type,
   struct ParameterListNode* parameters,
   struct ExpressionListNode* expression
 ) {
@@ -807,7 +821,7 @@ struct FunctionDeclarationNode* ast_new_function_declaration_node(
 void ast_free_function_declaration_node(struct FunctionDeclarationNode* node) {
   ast_free_identifier_node(node->identifier);
   node->identifier = NULL;
-  ast_free_identifier_node(node->return_type);
+  ast_free_type_identifier_node(node->return_type);
   node->return_type = NULL;
   ast_free_parameter_list_node(node->parameters);
   node->parameters = NULL;
@@ -836,12 +850,7 @@ struct FunctionDeclarationNode* ast_parse_function_declaration(struct Token** to
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
-  // TODO: Check for the identifier to be a non-reserved keyword
-  if (!ast_identifier_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected type got '%s'", (*tokens)->name);
-    exit(1);
-  }
-  struct IdentifierNode* return_type = ast_parse_identifier(tokens);
+  struct TypeIdentifierNode* return_type = ast_parse_type_identifier(tokens);
   if (!token_is_is(**tokens)) {
     LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_IS), (*tokens)->name);
     exit(1);
@@ -932,7 +941,7 @@ struct IdentifierExpressionNode* ast_parse_identifier_expression(struct Token** 
   return ast_new_identifier_expression_node(ast_parse_identifier(tokens));
 }
 
-bool ast_identifier_expression_token_matches_first_set(struct Token token) {
+inline bool ast_identifier_expression_token_matches_first_set(struct Token token) {
   return ast_identifier_token_matches_first_set(token);
 }
 
@@ -975,7 +984,7 @@ struct MatchCaseNode* ast_parse_match_case(struct Token** tokens) {
   return ast_new_match_case_node(condition, expression);
 }
 
-bool ast_match_case_token_matches_first_set(struct Token token) {
+inline bool ast_match_case_token_matches_first_set(struct Token token) {
   return ast_call_expression_token_matches_first_set(token);
 }
 
@@ -1011,7 +1020,7 @@ struct MatchExpressionNode* ast_parse_match_expression(struct Token** tokens) {
   return ast_new_match_expression_node(match_case_list);
 }
 
-bool ast_match_expression_token_matches_first_set(struct Token token) {
+inline bool ast_match_expression_token_matches_first_set(struct Token token) {
   return token_is_match(token);
 }
 
@@ -1059,7 +1068,7 @@ struct MatchCaseListNode* ast_parse_match_case_list(struct Token** tokens) {
   return case_list;
 }
 
-bool ast_match_case_list_token_matches_first_set(struct Token token) {
+inline bool ast_match_case_list_token_matches_first_set(struct Token token) {
   return ast_match_case_token_matches_first_set(token);
 }
 
@@ -1103,7 +1112,7 @@ struct NumericExpressionNode* ast_parse_numeric_expression(struct Token** tokens
   return ast_new_numeric_expression_node(value);
 }
 
-bool ast_numeric_expression_token_matches_first_set(struct Token token) {
+inline bool ast_numeric_expression_token_matches_first_set(struct Token token) {
   return token_is_numeric(token);
 }
 
@@ -1162,7 +1171,7 @@ struct ParameterListNode* ast_parse_parameter_list(struct Token** tokens) {
   return parameter_list;
 }
 
-bool ast_parameter_list_token_matches_first_set(struct Token token) {
+inline bool ast_parameter_list_token_matches_first_set(struct Token token) {
   return token_is_open_paren(token);
 }
 
@@ -1171,20 +1180,20 @@ bool ast_parameter_list_token_matches_first_set(struct Token token) {
 /*****************/
 struct ParameterNode* ast_new_parameter_node(
   struct IdentifierNode* identifier,
-  struct IdentifierNode* type
+  struct TypeIdentifierNode* type_identifier
 ) {
   struct ParameterNode* node = malloc(sizeof(struct ParameterNode));
   node->kind = AstParameter;
   node->identifier = identifier;
-  node->type = type;
+  node->type_identifier = type_identifier;
   return node;
 }
 
 void ast_free_parameter_node(struct ParameterNode* node) {
   ast_free_identifier_node(node->identifier);
   node->identifier = NULL;
-  ast_free_identifier_node(node->type);
-  node->type = NULL;
+  ast_free_type_identifier_node(node->type_identifier);
+  node->type_identifier = NULL;
 
   free(node);
 }
@@ -1204,11 +1213,11 @@ struct ParameterNode* ast_parse_parameter(struct Token** tokens) {
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
-  struct IdentifierNode* type = ast_parse_identifier(tokens);
+  struct TypeIdentifierNode* type = ast_parse_type_identifier(tokens);
   return ast_new_parameter_node(identifier, type);
 }
 
-bool ast_parameter_token_matches_first_set(struct Token token) {
+inline bool ast_parameter_token_matches_first_set(struct Token token) {
   return ast_identifier_token_matches_first_set(token);
 }
 
@@ -1276,7 +1285,7 @@ struct ReturnExpressionNode* ast_parse_return_expression(struct Token** tokens) 
   return ast_new_return_expression_node(expression);
 }
 
-bool ast_return_expression_token_matches_first_set(struct Token token) {
+inline bool ast_return_expression_token_matches_first_set(struct Token token) {
   return token_is_return(token);
 }
 
@@ -1312,6 +1321,53 @@ struct StringExpressionNode* ast_parse_string_expression(struct Token** tokens) 
   return ast_new_string_expression_node(value);
 }
 
-bool ast_string_expression_token_matches_first_set(struct Token token) {
+inline bool ast_string_expression_token_matches_first_set(struct Token token) {
   return token_is_string_literal(token);
+}
+
+/**********************/
+/* TypeIdentifierNode */
+/**********************/
+struct TypeIdentifierNode* ast_new_type_identifier_node(struct IdentifierNode* identifier, struct TypeIdentifierNode* contained_type) {
+  struct TypeIdentifierNode* node = malloc(sizeof(struct TypeIdentifierNode));
+  node->kind = AstTypeIdentifier;
+  node->identifier = identifier;
+  node->contained_type = contained_type;
+  return node;
+}
+
+void ast_free_type_identifier_node(struct TypeIdentifierNode* type_identifier) {
+  ast_free_identifier_node(type_identifier->identifier);
+  type_identifier->identifier = NULL;
+  if (type_identifier->contained_type != NULL) {
+    ast_free_type_identifier_node(type_identifier->contained_type);
+    type_identifier->contained_type = NULL;
+  }
+  free(type_identifier);
+}
+
+struct TypeIdentifierNode* ast_parse_type_identifier(struct Token** tokens) {  
+  LOG_DEBUG("Parsing TypeIdentifier");
+  _CHECK_TOKENS();
+
+  if (!ast_type_identifier_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected type identifier got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  struct IdentifierNode* identifier = ast_parse_identifier(tokens);
+  struct TypeIdentifierNode* contained_type = NULL;
+  if (token_is_left_angle(**tokens)) {
+    _ADVANCE_TOKEN(tokens);
+    contained_type = ast_parse_type_identifier(tokens);
+    if (!token_is_right_angle(**tokens)) {
+      LOG_ERROR("Expected '>' got '%s'", (*tokens)->name);
+      exit(1);
+    }
+    _ADVANCE_TOKEN(tokens);
+  }
+  return ast_new_type_identifier_node(identifier, contained_type);
+}
+
+inline bool ast_type_identifier_token_matches_first_set(struct Token token) {
+  return ast_identifier_token_matches_first_set(token);
 }

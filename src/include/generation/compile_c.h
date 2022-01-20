@@ -18,7 +18,6 @@
   "-Wsign-conversion " \
   "-Wnull-dereference " \
   "-Wdouble-promotion " \
-  "-Wformat=2 " \
   "-Wno-endif-labels " 
 
 #define CC_COMPILE_COMMAND_FORMAT "cc %s -o %s %s"
