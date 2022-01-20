@@ -1,15 +1,15 @@
-fun foo (s: ccstring) => int is
+fun foo (s: ccstring) int is
 	(printf "Foo: %s\n" s)
 	return 0
 end
 
-fun bar (a:int b:cstring) => int is
+fun bar (a:int b:cstring) int is
 	(printf "Bar: %d %s\n" a b)
 	return 0
 end
 
 ? Prints hello world
-fun main () => int is
+fun main () int is
   (foo "Hello!")
 	(bar 2 "Hello again!!")
 	return 0
