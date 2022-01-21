@@ -20,21 +20,24 @@ fun from_foo (f: Foo) Baz is
 end
 
 fun from_bar (b: Bar) Baz is
-  return {
-    Baz
+  return {Baz
     bar <- b
   }
 end
 
 fun main () int is
-  let f:Foo <- {Foo a<-1 b<-2}
-  let b:Bar <- {Bar a<-3}
-  let c:Baz <- (from_foo f)
-  let d:Baz <- (from_bar b)
+  let f: Foo <- {Foo
+    a<-1
+    b<-2
+  }
+  let b: Bar <- {Bar
+    a<-3
+  }
+  let c: Baz <- (from_foo f)
+  let d: Baz <- (from_bar b)
   ? Foo: 1
   ? Bar: 2
-  (
-    printf
+  (printf
     "Foo: %d %d, Bar: %d\n"
     c.foo.a
     c.foo.b
