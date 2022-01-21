@@ -1,6 +1,5 @@
 fun foo(a:ptr<ptr<char>>) void is
-	(
-		printf
+	(printf
 		"%s"
 		(deref a)
 	)
