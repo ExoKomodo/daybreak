@@ -2,7 +2,7 @@ importc "string.h"
 
 fun do_work (a: int) int is
 	( printf
-		"a: %d\n'Hello world' length: %lu\n"
+		"a: %d, 'Hello world' length: %llu\n"
 		a
 		(strlen "Hello world") )
 	

@@ -13,8 +13,7 @@ type Baz union is
 end
 
 fun from_foo (f: Foo) Baz is
-  return {
-    Baz
+  return {Baz
     foo <- f
   }
 end
@@ -27,11 +26,11 @@ end
 
 fun main () int is
   let f: Foo <- {Foo
-    a<-1
-    b<-2
+    a <- 1
+    b <- 2
   }
   let b: Bar <- {Bar
-    a<-3
+    a <- 3
   }
   let c: Baz <- (from_foo f)
   let d: Baz <- (from_bar b)
