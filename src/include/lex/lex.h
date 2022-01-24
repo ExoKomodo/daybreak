@@ -1,10 +1,12 @@
 #pragma once
 
 #include <ctype.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <lex/token.h>
 
 #define _TOKEN_BUFFER_SIZE 64
@@ -241,11 +243,26 @@ struct Token* lex_file(const char* filename, FILE* file) {
 
 FILE* lex_open_file(const char* filename) {
 	FILE* file = fopen(filename, "r");
-	if (file == NULL) {
-		LOG_ERROR("Could not open file %s", filename);
+	if (file != NULL) {
+		return file;
+	}
+	char cwd[PATH_MAX];
+	if (getcwd(cwd, sizeof(cwd)) == NULL) {
+		LOG_ERROR("Failed to get current working directory");
 		return NULL;
 	}
-	return file;
+	char* full_path = malloc(strlen(cwd) + strlen(filename) + 2);
+	sprintf(full_path, "%s/%s", cwd, filename);
+	file = fopen(full_path, "r");
+	if (file != NULL) {
+		free(full_path);
+		full_path = NULL;
+		return file;
+	}
+	LOG_ERROR("Could not open file from either '%s' or '%s'", filename, full_path);
+	free(full_path);
+	full_path = NULL;
+	return NULL;
 }
 
 void _build_token(

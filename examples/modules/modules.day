@@ -1,4 +1,4 @@
-import "foo.day"
+import "examples/modules/foo.day"
 
 fun main() int is
 	(do_work 1)

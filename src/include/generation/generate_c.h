@@ -368,10 +368,10 @@ int generate_c_from_import_statement(FILE* output_file, const struct ImportState
 		return 1;
 	}
 
-	const size_t length = (strlen(import_statement->module_name->value) - 2);
+	const size_t length = (strlen(import_statement->module_name->value) - 1);
 	char* source_file_path = malloc(sizeof(char) * length);
 	memset(source_file_path, '\0', sizeof(char) * length);
-	strncpy(source_file_path, (import_statement->module_name->value + 1), length);
+	strncpy(source_file_path, (import_statement->module_name->value + 1), length - 1);
 	switch (import_statement->import_kind) {
 		case ImportStatement: {
 			FILE* source_file = lex_open_file(source_file_path);
