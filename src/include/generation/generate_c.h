@@ -2,14 +2,15 @@
 
 #include <stdbool.h>
 
+#include <lex/prelude.h>
 #include <parser/prelude.h>
 #include <macros/helpers.h>
 
 int generate_c_code(const struct ProgramNode*, const char*);
 int generate_c_from_binding_expression(FILE*, const struct BindingExpressionNode*);
 int generate_c_from_call_expression(FILE*, const struct CallExpressionNode*);
-int generate_c_from_declaration(FILE*, const struct DeclarationNode*);
-int generate_c_from_declaration_list(FILE*, const struct DeclarationListNode*);
+int generate_c_from_module_statement(FILE*, const struct ModuleStatementNode*);
+int generate_c_from_module_statement_list(FILE*, const struct ModuleStatementListNode*);
 int generate_c_from_expression(FILE*, const struct ExpressionNode*);
 int generate_c_from_expression_list(FILE*, const struct ExpressionListNode*, bool);
 int generate_c_from_field(FILE*, const struct FieldNode*);
@@ -19,6 +20,7 @@ int generate_c_from_field_list(FILE*, const struct FieldListNode*);
 int generate_c_from_function_declaration(FILE*, const struct FunctionDeclarationNode*);
 int generate_c_from_identifier(FILE*, const struct IdentifierNode*);
 int generate_c_from_identifier_expression(FILE*, const struct IdentifierExpressionNode*);
+int generate_c_from_import_statement(FILE*, const struct ImportStatementNode*);
 int generate_c_from_match_case(FILE*, const struct MatchCaseNode*);
 int generate_c_from_match_case_list(FILE*, const struct MatchCaseListNode*);
 int generate_c_from_match_expression(FILE*, const struct MatchExpressionNode*);
@@ -104,12 +106,12 @@ int generate_c_from_call_expression(FILE* output_file, const struct CallExpressi
 	return error;
 }
 
-int generate_c_from_declaration(
+int generate_c_from_module_statement(
 	FILE* output_file,
-	const struct DeclarationNode* declaration
+	const struct ModuleStatementNode* declaration
 ) {
 	if (!declaration) {
-		LOG_ERROR("Failed to generate C code from DeclarationNode. NULL DeclarationNode.");
+		LOG_ERROR("Failed to generate C code from ModuleStatementNode. NULL ModuleStatementNode.");
 		return 1;
 	}
 	switch (declaration->kind) {
@@ -117,6 +119,12 @@ int generate_c_from_declaration(
 			return generate_c_from_function_declaration(
 				output_file,
 				declaration->value.function_declaration
+			);
+		} break;
+		case AstImportStatement: {
+			return generate_c_from_import_statement(
+				output_file,
+				declaration->value.import_statement
 			);
 		} break;
 		case AstTypeDeclaration: {
@@ -127,7 +135,7 @@ int generate_c_from_declaration(
 		} break;
 		default: {
 			LOG_ERROR(
-				"Failed to generate C code from DeclarationNode. Unknown DeclarationNode kind %d",
+				"Failed to generate C code from ModuleStatementNode. Unknown ModuleStatementNode kind %d",
 				declaration->kind
 			);
 			return 1;
@@ -135,17 +143,17 @@ int generate_c_from_declaration(
 	}
 }
 
-int generate_c_from_declaration_list(
+int generate_c_from_module_statement_list(
 	FILE* output_file,
-	const struct DeclarationListNode* declaration_list
+	const struct ModuleStatementListNode* module_statement_list
 ) {
-	if (!declaration_list) {
-		LOG_ERROR("Failed to generate C code from DeclarationListNode. NULL DeclarationListNode.");
+	if (!module_statement_list) {
+		LOG_ERROR("Failed to generate C code from ModuleStatementListNode. NULL ModuleStatementListNode.");
 		return 1;
 	}
-	struct DeclarationNode** declarations = declaration_list->declarations;
-	for (size_t i = 0; i < declaration_list->length; i++) {
-		const int error = generate_c_from_declaration(output_file, declarations[i]);
+	struct ModuleStatementNode** module_statements = module_statement_list->module_statements;
+	for (size_t i = 0; i < module_statement_list->length; i++) {
+		const int error = generate_c_from_module_statement(output_file, module_statements[i]);
 		if (error != 0) {
 			return error;
 		}
@@ -354,6 +362,39 @@ int generate_c_from_identifier_expression(FILE* output_file, const struct Identi
 	return 0;
 }
 
+int generate_c_from_import_statement(FILE* output_file, const struct ImportStatementNode* import_statement) {
+	if (!import_statement) {
+		LOG_ERROR("Failed to generate C code from ImportStatementNode. NULL ImportStatementNode.");
+		return 1;
+	}
+
+	const size_t length = (strlen(import_statement->module_name->value) - 2);
+	char* source_file_path = malloc(sizeof(char) * length);
+	memset(source_file_path, '\0', sizeof(char) * length);
+	strncpy(source_file_path, (import_statement->module_name->value + 1), length);
+
+	FILE* source_file = lex_open_file(source_file_path);
+	if (!source_file) {
+		return 1;
+	}
+	struct Token* tokens = lex_file(source_file_path, source_file);
+	fclose(source_file);
+	struct ProgramNode* imported_program = ast_parse_program(&tokens);
+	if (!imported_program) {
+		LOG_ERROR("Failed to parse imported program: %s", source_file_path);
+		return 1;
+	}
+
+	const int error = generate_c_from_module_statement_list(
+		output_file,
+		imported_program->module_statements
+	);
+	if (error != 0) {
+		return error;
+	}
+	return 0;
+}
+
 int generate_c_from_match_expression(FILE* output_file, const struct MatchExpressionNode* match_expression) {
 	if (!match_expression) {
 		LOG_ERROR("Failed to generate C code from MatchExpressionNode. NULL MatchExpressionNode.");
@@ -454,13 +495,13 @@ int generate_c_from_program(
 		LOG_ERROR("Failed to generate C code from ProgramNode. NULL ProgramNode.");
 		return 1;
 	}
-	if (!program->declarations) {
-		LOG_ERROR("Failed to generate C code. No declarations found. At minimum, a main function must be provided as an entrypoint.");
+	if (!program->module_statements) {
+		LOG_ERROR("Failed to generate C code. No module statements found. At minimum, a main function must be provided as an entrypoint.");
 		return 3;
 	}
-	const int error = generate_c_from_declaration_list(
+	const int error = generate_c_from_module_statement_list(
 		output_file,
-		program->declarations
+		program->module_statements
 	);
 	if (error != 0) {
 		return error;

@@ -69,6 +69,7 @@ static inline void token_chomp(struct Token** tokens) {
 #define TOKEN_END end
 #define TOKEN_FAT_ARROW_SYMBOL =>
 #define TOKEN_FUN fun
+#define TOKEN_IMPORT import
 #define TOKEN_IS is
 #define TOKEN_LEFT_ANGLE <
 #define TOKEN_LET let
@@ -107,6 +108,9 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	type
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
+	import
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	match
