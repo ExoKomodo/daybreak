@@ -46,6 +46,11 @@ typedef enum {
   AstTypeIdentifier,
 } AstNodeKind;
 
+typedef enum {
+  ImportStatement,
+  ImportCStatement
+} ImportNodeKind;
+
 struct AstNode;
 
 struct BindingExpressionNode;
@@ -184,7 +189,7 @@ void ast_free_identifier_expression_node(struct IdentifierExpressionNode*);
 struct IdentifierExpressionNode* ast_parse_identifier_expression(struct Token**);
 bool ast_identifier_expression_token_matches_first_set(struct Token);
 
-struct ImportStatementNode* ast_new_import_statement_node(struct StringExpressionNode*);
+struct ImportStatementNode* ast_new_import_statement_node(ImportNodeKind, struct StringExpressionNode*);
 void ast_free_import_statement_node(struct ImportStatementNode*);
 struct ImportStatementNode* ast_parse_import_statement(struct Token**);
 bool ast_import_statement_token_matches_first_set(struct Token);
@@ -347,6 +352,7 @@ struct IdentifierExpressionNode {
 
 struct ImportStatementNode {
   AstNodeKind kind;
+  ImportNodeKind import_kind;
   struct StringExpressionNode* module_name;
 };
 
@@ -1178,9 +1184,13 @@ inline bool ast_identifier_expression_token_matches_first_set(struct Token token
 /***********************/
 /* ImportStatementNode */
 /***********************/
-struct ImportStatementNode* ast_new_import_statement_node(struct StringExpressionNode* module_name) {
+struct ImportStatementNode* ast_new_import_statement_node(
+  ImportNodeKind import_kind,
+  struct StringExpressionNode* module_name
+) {
   struct ImportStatementNode* node = malloc(sizeof(struct ImportStatementNode));
   node->kind = AstImportStatement;
+  node->import_kind = import_kind;
   node->module_name = module_name;
   return node;
 }
@@ -1196,16 +1206,23 @@ struct ImportStatementNode* ast_parse_import_statement(struct Token** tokens) {
   _CHECK_TOKENS();
 
   if (!ast_import_statement_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_IMPORT), (*tokens)->name);
+    LOG_ERROR("Expected import statement, but got '%s'", (*tokens)->name);
     exit(1);
+  }
+  ImportNodeKind import_kind = ImportStatement;
+  if (token_is_importc(**tokens)) {
+    import_kind = ImportCStatement;
   }
   _ADVANCE_TOKEN(tokens);
   struct StringExpressionNode* module_name = ast_parse_string_expression(tokens);
-  return ast_new_import_statement_node(module_name);
+  return ast_new_import_statement_node(import_kind, module_name);
 }
 
 inline bool ast_import_statement_token_matches_first_set(struct Token token) {
-  return token_is_import(token);
+  return (
+    token_is_import(token) || 
+    token_is_importc(token)
+  );
 }
 
 /*********************/
@@ -1468,7 +1485,7 @@ struct ModuleStatementNode* ast_parse_module_statement(struct Token** tokens) {
         .type_declaration = ast_parse_type_declaration(tokens)
       }
     );
-  } else if (token_is_import(**tokens)) {
+  } else if (ast_import_statement_token_matches_first_set(**tokens)) {
     return ast_new_module_statement_node(
       AstImportStatement,
       (union ModuleStatementNodeUnion) {
