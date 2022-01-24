@@ -33,7 +33,6 @@
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
-      "console": "integratedTerminal",
       "miDebuggerPath": "gdb",
       "osx": {
         "miDebuggerPath": "lldb-mi",
@@ -51,7 +50,23 @@
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
-      "console": "integratedTerminal",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      },
+    },
+    {
+      "name": "Modules",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/modules/modules.day",
+        "-o",
+        "${workspaceFolder}/out/modules"
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "cmake build [daybreak]",
       "miDebuggerPath": "gdb",
       "osx": {
         "miDebuggerPath": "lldb-mi",
@@ -69,7 +84,6 @@
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
-      "console": "integratedTerminal",
       "miDebuggerPath": "gdb",
       "osx": {
         "miDebuggerPath": "lldb-mi",
@@ -87,7 +101,6 @@
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
-      "console": "integratedTerminal",
       "miDebuggerPath": "gdb",
       "osx": {
         "miDebuggerPath": "lldb-mi",
@@ -105,7 +118,6 @@
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
-      "console": "integratedTerminal",
       "miDebuggerPath": "gdb",
       "osx": {
         "miDebuggerPath": "lldb-mi",
@@ -118,7 +130,6 @@
       "program": "${workspaceFolder}/bin/daybreak_test",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak_test]",
-      "console": "integratedTerminal",
       "miDebuggerPath": "gdb",
       "osx": {
         "miDebuggerPath": "lldb-mi",
