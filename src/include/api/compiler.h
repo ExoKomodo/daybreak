@@ -8,7 +8,7 @@
 
 
 #if defined(_WIN32) || defined(_WIN64)
-  #define OUTPUT_FILE_NAME "C:\\Windows\\Temp"
+  #define OUTPUT_FILE_NAME "C:\\Windows\\Temp\\main.day"
 #else
 	#define OUTPUT_FILE_NAME "/tmp/main.day"
 #endif

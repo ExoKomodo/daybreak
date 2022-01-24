@@ -14,9 +14,11 @@ cd /app
 bash ./compose_scripts/build.sh daybreak
 
 # Directly compile programs using the compiler executable
-${WRAPPER} ./bin/daybreak ./examples/hello/hello.day
 ${WRAPPER} ./bin/daybreak ./examples/foobar/foobar.day
+${WRAPPER} ./bin/daybreak ./examples/hello/hello.day
 ${WRAPPER} ./bin/daybreak ./examples/match/match.day
+${WRAPPER} ./bin/daybreak ./examples/modules/modules.day
+${WRAPPER} ./bin/daybreak ./examples/pointers/pointers.day
 ${WRAPPER} ./bin/daybreak ./examples/types/types.day
 ${WRAPPER} ./bin/daybreak ./examples/variables/variables.day
 
