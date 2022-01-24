@@ -1,0 +1,5 @@
+import "foo.day"
+
+fun main() int is
+	(do_work 1)
+end

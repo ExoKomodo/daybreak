@@ -28,11 +28,15 @@ int main(int argc, const char** argv) {
 		return 1;
 	}
 	LOG_INFO("Compiling source file: %s", source_file_path);
-	LOG_INFO("Output file: %s", output_file_path);
-	return daybreak_compile(
+	const int error = daybreak_compile(
 		source_file_path,
 		output_file_path
 	);
+	if (error != 0) {
+		return error;
+	}
+	LOG_INFO("Output file: %s", output_file_path);
+	return 0;
 }
 
 bool _parse_args(
