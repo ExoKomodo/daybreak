@@ -1,11 +1,10 @@
-? include "string.h"
+importc "string.h"
 
 fun do_work (a: int) int is
 	( printf
-		"a: %d\n'Hello world' length: %d\n"
+		"a: %d\n'Hello world' length: %lu\n"
 		a
-		0 )
-		? (strlen "Hello world") )
+		(strlen "Hello world") )
 	
 	match
 	  (equals a 0) => return 0

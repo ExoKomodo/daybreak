@@ -372,25 +372,38 @@ int generate_c_from_import_statement(FILE* output_file, const struct ImportState
 	char* source_file_path = malloc(sizeof(char) * length);
 	memset(source_file_path, '\0', sizeof(char) * length);
 	strncpy(source_file_path, (import_statement->module_name->value + 1), length);
+	switch (import_statement->import_kind) {
+		case ImportStatement: {
+			FILE* source_file = lex_open_file(source_file_path);
+			if (!source_file) {
+				return 1;
+			}
+			struct Token* tokens = lex_file(source_file_path, source_file);
+			fclose(source_file);
+			struct ProgramNode* imported_program = ast_parse_program(&tokens);
+			if (!imported_program) {
+				LOG_ERROR("Failed to parse imported program: %s", source_file_path);
+				return 1;
+			}
 
-	FILE* source_file = lex_open_file(source_file_path);
-	if (!source_file) {
-		return 1;
-	}
-	struct Token* tokens = lex_file(source_file_path, source_file);
-	fclose(source_file);
-	struct ProgramNode* imported_program = ast_parse_program(&tokens);
-	if (!imported_program) {
-		LOG_ERROR("Failed to parse imported program: %s", source_file_path);
-		return 1;
-	}
-
-	const int error = generate_c_from_module_statement_list(
-		output_file,
-		imported_program->module_statements
-	);
-	if (error != 0) {
-		return error;
+			const int error = generate_c_from_module_statement_list(
+				output_file,
+				imported_program->module_statements
+			);
+			if (error != 0) {
+				return error;
+			}
+		} break;
+		case ImportCStatement: {
+			fprintf(output_file, "#include \"%s\"\n", source_file_path);
+		} break;
+		default: {
+			LOG_ERROR(
+				"Failed to generate C code from ImportStatementNode. Invalid ImportKind %d",
+				import_statement->import_kind
+			);
+			return 1;
+		}
 	}
 	return 0;
 }
