@@ -9,6 +9,8 @@
 #include <macros/helpers.h>
 
 #define CC_FLAGS "" \
+  "-O " \
+  "-foptimize-sibling-calls " \
   "-Werror " \
   "-Wall " \
   "-Wextra " \
