@@ -17,9 +17,11 @@
 #define _LEX_RESET_BUFFER(buffer, length) \
 	memset((buffer), '\0', sizeof(char) * (length));
 
-void _build_token(const char* filename, char token_buffer[], size_t* buffer_length, size_t line, size_t column, struct Token** current_token);
-struct Token* lex_file(const char* filename, FILE* file);
-FILE* lex_open_file(const char* filename);
+struct Token* lex_file(const char*, FILE*);
+
+void _lex_build_token(const char*, char[], size_t*, size_t, size_t, struct Token**);
+FILE* _lex_check_path(const char*, const char*);
+FILE* lex_open_file(const char*);
 
 struct Token* lex_file(const char* filename, FILE* file) {
 	if (!file) {
@@ -53,14 +55,14 @@ struct Token* lex_file(const char* filename, FILE* file) {
 			is_equals = false;
 			if (character == '>') {
 				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
-				_build_token(filename, token_buffer, &token_length, current_lex_line, current_lex_column, &current);
+				_lex_build_token(filename, token_buffer, &token_length, current_lex_line, current_lex_column, &current);
 				continue;
 			}
-			_build_token(filename, token_buffer, &token_length, current_lex_line, current_lex_column, &current);
+			_lex_build_token(filename, token_buffer, &token_length, current_lex_line, current_lex_column, &current);
 		}
 		if (is_less_than && character != '-'){
 			is_less_than = false;
-			_build_token(
+			_lex_build_token(
 				filename,
 				token_buffer,
 				&token_length,
@@ -78,7 +80,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 					continue;
 				}
 				if (token_length > 0) {
-					_build_token(
+					_lex_build_token(
 						filename,
 						token_buffer,
 						&token_length,
@@ -93,7 +95,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 				if (is_string) {
 					is_string = false;
 					_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
-					_build_token(
+					_lex_build_token(
 						filename,
 						token_buffer,
 						&token_length,
@@ -109,7 +111,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 			} break;
 			case '<': {
 				if (token_length > 0) {
-					_build_token(
+					_lex_build_token(
 						filename,
 						token_buffer,
 						&token_length,
@@ -126,7 +128,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 				if (is_less_than) {
 					is_less_than = false;
 					_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
-					_build_token(
+					_lex_build_token(
 						filename,
 						token_buffer,
 						&token_length,
@@ -140,7 +142,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 			case '=': {
 				is_equals = true;
 				if (token_length > 0) {
-					_build_token(
+					_lex_build_token(
 						filename,
 						token_buffer,
 						&token_length,
@@ -154,7 +156,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 			} break;
 			case '>': {
 				if (token_length > 0) {
-					_build_token(
+					_lex_build_token(
 						filename,
 						token_buffer,
 						&token_length,
@@ -164,7 +166,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 					);
 				}
 				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
-				_build_token(
+				_lex_build_token(
 					filename,
 					token_buffer,
 					&token_length,
@@ -181,7 +183,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 			case '(':
 			case ')': {
 				if (token_length > 0) {
-					_build_token(
+					_lex_build_token(
 						filename,
 						token_buffer,
 						&token_length,
@@ -191,7 +193,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 					);
 				}
 				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
-				_build_token(
+				_lex_build_token(
 					filename,
 					token_buffer,
 					&token_length,
@@ -212,7 +214,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 		}
 		if (isspace(character)){
 			if (token_length > 0) {
-				_build_token(
+				_lex_build_token(
 					filename,
 					token_buffer,
 					&token_length,
@@ -226,7 +228,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 		_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
 	}
 	if (token_length > 0) {
-		_build_token(
+		_lex_build_token(
 			filename,
 			token_buffer,
 			&token_length,
@@ -242,30 +244,25 @@ struct Token* lex_file(const char* filename, FILE* file) {
 }
 
 FILE* lex_open_file(const char* filename) {
-	FILE* file = fopen(filename, "r");
-	if (file != NULL) {
+	const char* standard_library_directory = get_standard_library_directory();
+	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(PACKAGE_DIRECTORY) + 2));
+	sprintf(package_directory, "%s" PACKAGE_DIRECTORY, standard_library_directory);
+	FILE* file = _lex_check_path(package_directory, filename);
+	free(package_directory);
+	package_directory = NULL;
+	if (file) {
 		return file;
 	}
-	char cwd[PATH_MAX];
-	if (getcwd(cwd, sizeof(cwd)) == NULL) {
-		LOG_ERROR("Failed to get current working directory");
-		return NULL;
-	}
-	char* full_path = malloc(strlen(cwd) + strlen(filename) + 2);
-	sprintf(full_path, "%s/%s", cwd, filename);
-	file = fopen(full_path, "r");
-	if (file != NULL) {
-		free(full_path);
-		full_path = NULL;
+
+	file = _lex_check_path("./", filename);
+	if (file) {
 		return file;
 	}
-	LOG_ERROR("Could not open file from either '%s' or '%s'", filename, full_path);
-	free(full_path);
-	full_path = NULL;
-	return NULL;
+
+	return fopen(filename, "r");
 }
 
-void _build_token(
+void _lex_build_token(
 	const char* filename,
 	char token_buffer[],
 	size_t* buffer_length,
@@ -273,7 +270,7 @@ void _build_token(
 	size_t column,
 	struct Token** current_token
 ) {
-	char* name = malloc(sizeof(char) * *buffer_length + 1);
+	char* name = malloc(sizeof(char) * (*buffer_length + 1));
 	_LEX_RESET_BUFFER(name, *buffer_length + 1);
 	strncpy(name, token_buffer, *buffer_length);
 	(*current_token)->next = token_new(filename, name, NULL, line, column - *buffer_length);
@@ -282,4 +279,19 @@ void _build_token(
 	(*buffer_length) = 0;
 
 	(*current_token) = (*current_token)->next;
+}
+
+FILE* _lex_check_path(const char* base_path, const char* filename) {
+	char* full_path = malloc(strlen(base_path) + strlen(filename) + 2);
+	sprintf(full_path, "%s/%s", base_path, filename);
+	FILE* file = fopen(full_path, "r");
+	if (file) {
+		LOG_DEBUG("Found file '%s'", full_path);
+		free(full_path);
+		full_path = NULL;
+		return file;
+	}
+	free(full_path);
+	full_path = NULL;
+	return NULL;
 }

@@ -4,12 +4,6 @@
 
 #define USAGE_TEXT "Usage: daybreak <filename> [-o <output>]"
 
-#if defined(_WIN32) || defined(_WIN64)
-  #define EXECUTABLE "out\\out.exe"
-#else
-  #define EXECUTABLE "out/a.out"
-#endif
-
 bool _parse_args(int, const char**, const char**, const char**);
 void _greeting();
 
@@ -27,6 +21,11 @@ int main(int argc, const char** argv) {
 	) {
 		return 1;
 	}
+	bool must_free_output_file_path = false;
+	if (!output_file_path) {
+		must_free_output_file_path = true;
+		output_file_path = get_default_output_file();
+	}
 	LOG_INFO("Compiling source file: %s", source_file_path);
 	const int error = daybreak_compile(
 		source_file_path,
@@ -36,6 +35,10 @@ int main(int argc, const char** argv) {
 		return error;
 	}
 	LOG_INFO("Output file: %s", output_file_path);
+	if (must_free_output_file_path) {
+		free((void*)output_file_path);
+		output_file_path = NULL;
+	}
 	return 0;
 }
 
@@ -50,7 +53,7 @@ bool _parse_args(
 		return false;
 	}
 	bool is_output = false;
-	const char* temp_output_file_path = EXECUTABLE;
+	const char* temp_output_file_path = NULL;
 	const char* temp_source_file_path = NULL;
 	for (int i = 1; i < argc; i++) {
 		if (is_output) {

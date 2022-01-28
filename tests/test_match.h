@@ -8,12 +8,12 @@
 
 #if defined(_WIN32) || defined(_WIN64)
   #define MATCH "examples\\match\\match.day"
-  #define MATCH_EXECUTABLE "out\\test_match.exe"
-  #define MATCH_OUTPUT_FILE "out\\output.txt"
+  #define MATCH_EXECUTABLE "tests\\out\\test_match.exe"
+  #define MATCH_OUTPUT_FILE "tests\\out\\output.txt"
 #else
   #define MATCH "examples/match/match.day"
-  #define MATCH_EXECUTABLE "out/test_match"
-  #define MATCH_OUTPUT_FILE "out/output.txt"
+  #define MATCH_EXECUTABLE "tests/out/test_match"
+  #define MATCH_OUTPUT_FILE "tests/out/output.txt"
 #endif
 
 #define MATCH_OUTPUT "x was 10"

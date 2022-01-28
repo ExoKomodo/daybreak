@@ -3,15 +3,9 @@
 #include <stdio.h>
 
 #include <generation/prelude.h>
+#include <helpers/system.h>
 #include <lex/prelude.h>
 #include <parser/prelude.h>
-
-
-#if defined(_WIN32) || defined(_WIN64)
-  #define OUTPUT_FILE_NAME "C:\\Windows\\Temp\\main.day"
-#else
-	#define OUTPUT_FILE_NAME "/tmp/main.day"
-#endif
 
 int daybreak_compile(const char*, const char*);
 
@@ -19,6 +13,11 @@ int daybreak_compile(
 	const char* source_file_path,
 	const char* output_file_path
 ) {
+	int error = setup_language_directories();
+	if (error != 0) {
+		return error;
+	}
+
 	FILE* source_file = lex_open_file(source_file_path);
 	if (!source_file) {
 		return 1;
@@ -32,12 +31,13 @@ int daybreak_compile(
 	}
 	// TODO: Need to grab the end of the filename to give to the output file
 
-	size_t output_c_file_length = strlen(OUTPUT_FILE_NAME) + 3;
+	const char* standard_library_directory = get_standard_library_directory();
+	size_t output_c_file_length = strlen(standard_library_directory) + strlen(OUTPUT_DIRECTORY) + strlen(DEFAULT_SOURCE_OUTPUT) + 1;
 	char* output_c_file_path = malloc(sizeof(char) * output_c_file_length);
 	memset(output_c_file_path, '\0', sizeof(char) * output_c_file_length);
-	sprintf(output_c_file_path, "%s.c", OUTPUT_FILE_NAME);
+	sprintf(output_c_file_path, "%s" OUTPUT_DIRECTORY DEFAULT_SOURCE_OUTPUT, standard_library_directory);
 	
-	int error = generate_c_code(program, output_c_file_path);
+	error = generate_c_code(program, output_c_file_path);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C code. Received error: %d", error);
 		if (program) {

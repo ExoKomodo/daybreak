@@ -65,8 +65,5 @@ CTestTestfile.cmake
 _deps
 bin/
 
-out/*
-!out/.gitkeep
-
 build/
 .cmake/

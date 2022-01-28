@@ -8,12 +8,12 @@
 
 #if defined(_WIN32) || defined(_WIN64)
   #define MODULES "examples\\modules\\modules.day"
-  #define MODULES_EXECUTABLE "out\\test_modules.exe"
-  #define MODULES_OUTPUT_FILE "out\\output.txt"
+  #define MODULES_EXECUTABLE "tests\\out\\test_modules.exe"
+  #define MODULES_OUTPUT_FILE "tests\\out\\output.txt"
 #else
   #define MODULES "examples/modules/modules.day"
-  #define MODULES_EXECUTABLE "out/test_modules"
-  #define MODULES_OUTPUT_FILE "out/output.txt"
+  #define MODULES_EXECUTABLE "tests/out/test_modules"
+  #define MODULES_OUTPUT_FILE "tests/out/output.txt"
 #endif
 
 #define BUFFER_SIZE 1024
