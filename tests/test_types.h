@@ -8,12 +8,12 @@
 
 #if defined(_WIN32) || defined(_WIN64)
   #define TYPES "examples\\types\\types.day"
-  #define TYPES_EXECUTABLE "out\\test_types.exe"
-  #define TYPES_OUTPUT_FILE "out\\output.txt"
+  #define TYPES_EXECUTABLE "tests\\out\\test_types.exe"
+  #define TYPES_OUTPUT_FILE "tests\\out\\output.txt"
 #else
   #define TYPES "examples/types/types.day"
-  #define TYPES_EXECUTABLE "out/test_types"
-  #define TYPES_OUTPUT_FILE "out/output.txt"
+  #define TYPES_EXECUTABLE "tests/out/test_types"
+  #define TYPES_OUTPUT_FILE "tests/out/output.txt"
 #endif
 
 #define TYPES_OUTPUT "Foo: 1 2, Bar: 3"

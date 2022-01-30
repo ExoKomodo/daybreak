@@ -8,12 +8,12 @@
 
 #if defined(_WIN32) || defined(_WIN64)
   #define VARIABLES "examples\\variables\\variables.day"
-  #define VARIABLES_EXECUTABLE "out\\test_variables.exe"
-  #define VARIABLES_OUTPUT_FILE "out\\output.txt"
+  #define VARIABLES_EXECUTABLE "tests\\out\\test_variables.exe"
+  #define VARIABLES_OUTPUT_FILE "tests\\out\\output.txt"
 #else
   #define VARIABLES "examples/variables/variables.day"
-  #define VARIABLES_EXECUTABLE "out/test_variables"
-  #define VARIABLES_OUTPUT_FILE "out/output.txt"
+  #define VARIABLES_EXECUTABLE "tests/out/test_variables"
+  #define VARIABLES_OUTPUT_FILE "tests/out/output.txt"
 #endif
 
 #define VARIABLES_OUTPUT "x = 10, y = 20"

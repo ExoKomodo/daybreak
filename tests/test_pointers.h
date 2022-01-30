@@ -8,12 +8,12 @@
 
 #if defined(_WIN32) || defined(_WIN64)
   #define POINTERS "examples\\pointers\\pointers.day"
-  #define POINTERS_EXECUTABLE "out\\test_pointers.exe"
-  #define POINTERS_OUTPUT_FILE "out\\output.txt"
+  #define POINTERS_EXECUTABLE "tests\\out\\test_pointers.exe"
+  #define POINTERS_OUTPUT_FILE "tests\\out\\output.txt"
 #else
   #define POINTERS "examples/pointers/pointers.day"
-  #define POINTERS_EXECUTABLE "out/test_pointers"
-  #define POINTERS_OUTPUT_FILE "out/output.txt"
+  #define POINTERS_EXECUTABLE "tests/out/test_pointers"
+  #define POINTERS_OUTPUT_FILE "tests/out/output.txt"
 #endif
 
 

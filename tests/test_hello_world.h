@@ -8,12 +8,12 @@
 
 #if defined(_WIN32) || defined(_WIN64)
   #define HELLO_WORLD "examples\\hello\\hello.day"
-  #define HELLO_WORLD_EXECUTABLE "out\\test_hello_world.exe"
-  #define HELLO_WORLD_OUTPUT_FILE "out\\output.txt"
+  #define HELLO_WORLD_EXECUTABLE "tests\\out\\test_hello_world.exe"
+  #define HELLO_WORLD_OUTPUT_FILE "tests\\out\\output.txt"
 #else
   #define HELLO_WORLD "examples/hello/hello.day"
-  #define HELLO_WORLD_EXECUTABLE "out/test_hello_world"
-  #define HELLO_WORLD_OUTPUT_FILE "out/output.txt"
+  #define HELLO_WORLD_EXECUTABLE "tests/out/test_hello_world"
+  #define HELLO_WORLD_OUTPUT_FILE "tests/out/output.txt"
 #endif
 
 #define HELLO_WORLD_OUTPUT "Hello world"
