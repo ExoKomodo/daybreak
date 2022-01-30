@@ -54,6 +54,7 @@ int _create_dir(const char* directory) {
   const int error = mkdir(directory, 0777);
 #endif
   if (error && errno != EEXIST) {
+    LOG_ERROR("Failed to create directory %s: errno=%d", directory, errno);
     return error;
   }
   return 0;
