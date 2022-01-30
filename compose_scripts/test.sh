@@ -5,7 +5,7 @@ set -ex
 WRAPPER=""
 
 if [ $# -gt 0 ]; then
-	WRAPPER="$1"
+	WRAPPER="$@"
 	echo "Wrapping test commands with: ${WRAPPER}"
 fi
 
