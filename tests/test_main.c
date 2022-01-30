@@ -1,4 +1,4 @@
-#define DEBUG true
+#define DEBUG false
 
 #include "test_foobar.h"
 #include "test_hello_world.h"
