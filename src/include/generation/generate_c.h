@@ -384,7 +384,6 @@ int generate_c_from_import_statement(FILE* output_file, const struct ImportState
 			struct ProgramNode* imported_program = ast_parse_program(&tokens);
 			if (!imported_program) {
 				LOG_ERROR("Failed to parse imported program: %s", source_file_path);
-program) {
 				free(source_file_path);
 				return 1;
 			}
