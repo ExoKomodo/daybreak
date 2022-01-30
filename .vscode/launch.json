@@ -10,9 +10,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/daybreak",
       "args": [
-        "${workspaceFolder}/examples/hello/hello.day",
-        "-o",
-        "${workspaceFolder}/out/hello"
+        "${workspaceFolder}/examples/hello/hello.day"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
@@ -27,9 +25,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/daybreak",
       "args": [
-        "${workspaceFolder}/examples/foobar/foobar.day",
-        "-o",
-        "${workspaceFolder}/out/foobar"
+        "${workspaceFolder}/examples/foobar/foobar.day"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
@@ -44,9 +40,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/daybreak",
       "args": [
-        "${workspaceFolder}/examples/match/match.day",
-        "-o",
-        "${workspaceFolder}/out/match"
+        "${workspaceFolder}/examples/match/match.day"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
@@ -61,9 +55,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/daybreak",
       "args": [
-        "${workspaceFolder}/examples/modules/modules.day",
-        "-o",
-        "${workspaceFolder}/out/modules"
+        "${workspaceFolder}/examples/modules/modules.day"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
@@ -78,9 +70,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/daybreak",
       "args": [
-        "${workspaceFolder}/examples/pointers/pointers.day",
-        "-o",
-        "${workspaceFolder}/out/pointers"
+        "${workspaceFolder}/examples/pointers/pointers.day"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
@@ -95,9 +85,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/daybreak",
       "args": [
-        "${workspaceFolder}/examples/types/types.day",
-        "-o",
-        "${workspaceFolder}/out/types"
+        "${workspaceFolder}/examples/types/types.day"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",
@@ -112,9 +100,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/daybreak",
       "args": [
-        "${workspaceFolder}/examples/variables/variables.day",
-        "-o",
-        "${workspaceFolder}/out/variables"
+        "${workspaceFolder}/examples/variables/variables.day"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "cmake build [daybreak]",

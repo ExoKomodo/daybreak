@@ -22,7 +22,7 @@
   "-Wdouble-promotion " \
   "-Wno-endif-labels "
 
-#define CC_COMPILE_COMMAND_FORMAT "cc %s -o %s %s"
+#define CC_COMPILE_COMMAND_FORMAT "cc %s -o \"%s\" \"%s\""
 
 int compile_c_code(const char*, const char*);
 char* _build_command(const char*, const char*);

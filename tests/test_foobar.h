@@ -8,12 +8,12 @@
 
 #if defined(_WIN32) || defined(_WIN64)
   #define FOOBAR "examples\\foobar\\foobar.day"
-  #define FOOBAR_EXECUTABLE "out\\test_foobar.exe"
-  #define FOOBAR_OUTPUT_FILE "out\\output.txt"
+  #define FOOBAR_EXECUTABLE "tests\\out\\test_foobar.exe"
+  #define FOOBAR_OUTPUT_FILE "tests\\out\\output.txt"
 #else
   #define FOOBAR "examples/foobar/foobar.day"
-  #define FOOBAR_EXECUTABLE "out/test_foobar"
-  #define FOOBAR_OUTPUT_FILE "out/output.txt"
+  #define FOOBAR_EXECUTABLE "tests/out/test_foobar"
+  #define FOOBAR_OUTPUT_FILE "tests/out/output.txt"
 #endif
 
 #define BUFFER_SIZE 1024
