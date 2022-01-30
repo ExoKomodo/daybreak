@@ -16,12 +16,12 @@ int setup_language_directories();
 int _create_subdir(const char*, const char*);
 
 #if defined(_WIN32) || defined(_WIN64)
-  #define STANDARD_DIRECTORY "C:\\Program Files\\.daybreak"
+  #define STANDARD_DIRECTORY "C:\\Program Files\\daybreak"
   #define OUTPUT_DIRECTORY "\\out\\"
   #define PACKAGE_DIRECTORY "\\packages\\"
   #define DEFAULT_EXECUTABLE "a.exe"
 #else
-  #define STANDARD_DIRECTORY "~/.daybreak"
+  #define STANDARD_DIRECTORY "/opt/daybreak"
   #define OUTPUT_DIRECTORY "/out/"
   #define PACKAGE_DIRECTORY "/packages/"
   #define DEFAULT_EXECUTABLE "a.out"
