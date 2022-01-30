@@ -64,6 +64,8 @@ int _create_subdir(const char* directory, const char* subdirectory) {
   char* full_path = malloc(sizeof(char) * (strlen(directory) + strlen(subdirectory) + 2));
   sprintf(full_path, "%s/%s", directory, subdirectory);
   const int error = _create_dir(full_path);
+  free(full_path);
+  full_path = NULL;
   if (error != 0) {
     return error;
   }
