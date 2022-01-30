@@ -67,3 +67,5 @@ bin/
 
 build/
 .cmake/
+tests/out/*
+!tests/out/.gitkeep
