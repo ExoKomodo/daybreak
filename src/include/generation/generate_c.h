@@ -377,6 +377,7 @@ int generate_c_from_import_statement(FILE* output_file, const struct ImportState
 			FILE* source_file = lex_open_file(source_file_path);
 			if (!source_file) {
 				free(source_file_path);
+				source_file_path = NULL;
 				return 1;
 			}
 			struct Token* tokens = lex_file(source_file_path, source_file);
@@ -385,16 +386,19 @@ int generate_c_from_import_statement(FILE* output_file, const struct ImportState
 			if (!imported_program) {
 				LOG_ERROR("Failed to parse imported program: %s", source_file_path);
 				free(source_file_path);
+				source_file_path = NULL;
 				return 1;
 			}
 
 			free(source_file_path);
+			source_file_path = NULL;
 
 			const int error = generate_c_from_module_statement_list(
 				output_file,
 				imported_program->module_statements
 			);
 			ast_free_program_node(imported_program);
+			imported_program = NULL;
 			if (error != 0) {
 				return error;
 			}
