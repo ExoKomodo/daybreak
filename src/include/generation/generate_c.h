@@ -394,6 +394,7 @@ int generate_c_from_import_statement(FILE* output_file, const struct ImportState
 				output_file,
 				imported_program->module_statements
 			);
+			ast_free_program_node(imported_program);
 			if (error != 0) {
 				return error;
 			}
