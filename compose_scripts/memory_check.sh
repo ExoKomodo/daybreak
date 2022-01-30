@@ -4,4 +4,4 @@ set -ex
 
 cd /app
 
-bash ./compose_scripts/test.sh valgrind
+bash ./compose_scripts/test.sh valgrind --error-exitcode=42
