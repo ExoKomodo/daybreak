@@ -1,0 +1,6 @@
+fun do_work (a: int) int is
+	return (add
+		( mul a 2)
+		3
+	)
+end

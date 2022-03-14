@@ -7,6 +7,9 @@
 #include <log/prelude.h>
 
 #define COMMAND_BUFFER_SIZE 1024
+#ifndef MAX_PATH
+  #define MAX_PATH 260
+#endif
 
 char* get_default_output_file();
 const char* get_standard_library_directory();

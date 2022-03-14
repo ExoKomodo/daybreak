@@ -65,6 +65,21 @@
       },
     },
     {
+      "name": "Multiple Imports",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/multiple_imports/multiple_imports.day"
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "cmake build [daybreak]",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      },
+    },
+    {
       "name": "Pointers",
       "type": "cppdbg",
       "request": "launch",
