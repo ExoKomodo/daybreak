@@ -18,7 +18,7 @@ int daybreak_compile(
 		return error;
 	}
 
-	FILE* source_file = lex_open_file(source_file_path);
+	FILE* source_file = lex_open_file(source_file_path, imported_file_paths[imported_file_count++]);
 	if (!source_file) {
 		return 1;
 	}

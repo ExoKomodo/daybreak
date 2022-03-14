@@ -1,0 +1,7 @@
+import "examples/multiple_imports/foo.day"
+import "examples/multiple_imports/foo.day"
+
+fun main() int is
+	(printf "Multiple imports: %d\n"
+		(do_work 1) )
+end
