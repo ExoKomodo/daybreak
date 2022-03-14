@@ -7,12 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#include <helpers/system.h>
 #include <lex/token.h>
 
 #define _TOKEN_BUFFER_SIZE 64
-#ifndef MAX_PATH
-#define MAX_PATH 260
-#endif
 
 #define _LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character) \
 	(token_buffer)[(token_length)++] = (character);
