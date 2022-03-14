@@ -686,12 +686,16 @@ bool _is_file_imported(const char* source_file_path) {
 			strcmp(imported_file_path, full_package_path) == 0 ||
 			strcmp(imported_file_path, full_local_path) == 0
 		) {
+			free(full_local_path);
 			free(full_package_path);
+			full_local_path = NULL;
 			full_package_path = NULL;
 			return true;
 		}
 	}
+	free(full_local_path);
 	free(full_package_path);
+	full_local_path = NULL;
 	full_package_path = NULL;
 	return false;
 }
