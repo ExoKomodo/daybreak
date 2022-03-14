@@ -1,10 +1,4 @@
-import "examples/modules/bar.day"
-
 fun do_work (a: int) int is
-	return (do_work_i_said a)
-end
-
-fun multiply_and_add(a: int) int is
 	return (add
 		( mul a 2)
 		3

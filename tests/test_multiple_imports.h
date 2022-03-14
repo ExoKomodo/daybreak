@@ -18,7 +18,7 @@
 
 #define BUFFER_SIZE 1024
 
-#define MULTIPLE_IMPORTS_OUTPUT "x was 10"
+#define MULTIPLE_IMPORTS_OUTPUT "Multiple imports: 5"
 
 bool test_multiple_imports();
 
@@ -42,7 +42,7 @@ bool test_multiple_imports() {
   fgets(buffer, BUFFER_SIZE, output_file);
   if (strcmp(buffer, MULTIPLE_IMPORTS_OUTPUT "\n") != 0) {
     fclose(output_file);
-    LOG_ERROR("Failed to output '" MULTIPLE_IMPORTS_OUTPUT "', got '%s'", buffer);
+    LOG_ERROR("Expected: " MULTIPLE_IMPORTS_OUTPUT ", got: %s", buffer);
     return false;
   }
   fclose(output_file);

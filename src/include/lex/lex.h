@@ -20,9 +20,8 @@
 struct Token* lex_file(const char*, FILE*);
 
 void _lex_build_token(const char*, char[], size_t*, size_t, size_t, struct Token**);
-FILE* _lex_check_path(const char*, const char*);
-bool lex_is_file_lexed(const char*);
-FILE* lex_open_file(const char*);
+FILE* _lex_check_path(const char*);
+FILE* lex_open_file(const char*, char[_MAX_PATH]);
 
 struct Token* lex_file(const char* filename, FILE* file) {
 	if (!file) {
@@ -244,27 +243,44 @@ struct Token* lex_file(const char* filename, FILE* file) {
 	return tokens;
 }
 
-bool lex_is_file_lexed(const char* filename) {
-	return false;
-}
-
-FILE* lex_open_file(const char* filename) {
+FILE* lex_open_file(const char* filename, char opened_file_name[_MAX_PATH]) {
 	const char* standard_library_directory = get_standard_library_directory();
 	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(PACKAGE_DIRECTORY) + 2));
 	sprintf(package_directory, "%s" PACKAGE_DIRECTORY, standard_library_directory);
-	FILE* file = _lex_check_path(package_directory, filename);
+	char* full_path = malloc(strlen(package_directory) + strlen(filename) + 2);
+	sprintf(full_path, "%s/%s", package_directory, filename);
 	free(package_directory);
 	package_directory = NULL;
+	
+	FILE* file = _lex_check_path(full_path);
 	if (file) {
+		memcpy(opened_file_name, full_path, strlen(full_path));
+		free(full_path);
+		full_path = NULL;
 		return file;
 	}
 
-	file = _lex_check_path("./", filename);
+	free(full_path);
+	full_path = NULL;
+	full_path = malloc(strlen("./") + strlen(filename) + 1);
+	sprintf(full_path, "./%s", filename);
+	file = _lex_check_path(full_path);
 	if (file) {
+		memcpy(opened_file_name, full_path, strlen(full_path));
+		free(full_path);
+		full_path = NULL;
+		return file;
+	}
+	free(full_path);
+	full_path = NULL;
+
+	file = _lex_check_path(filename);
+	if (file) {
+		memcpy(opened_file_name, filename, strlen(filename));
 		return file;
 	}
 
-	return fopen(filename, "r");
+	return NULL;
 }
 
 void _lex_build_token(
@@ -286,17 +302,11 @@ void _lex_build_token(
 	(*current_token) = (*current_token)->next;
 }
 
-FILE* _lex_check_path(const char* base_path, const char* filename) {
-	char* full_path = malloc(strlen(base_path) + strlen(filename) + 2);
-	sprintf(full_path, "%s/%s", base_path, filename);
+FILE* _lex_check_path(const char* full_path) {
 	FILE* file = fopen(full_path, "r");
 	if (file) {
 		LOG_DEBUG("Found file '%s'", full_path);
-		free(full_path);
-		full_path = NULL;
 		return file;
 	}
-	free(full_path);
-	full_path = NULL;
 	return NULL;
 }

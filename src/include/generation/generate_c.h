@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits.h>
 #include <stdbool.h>
 
 #include <lex/prelude.h>
@@ -35,7 +36,13 @@ int generate_c_from_type_expression(FILE*, const struct TypeExpressionNode*);
 int generate_c_from_type_identifier(FILE*, const struct TypeIdentifierNode*);
 int generate_c_include_prelude(FILE*);
 int generate_c_macros(FILE*);
+bool _is_file_imported(const char*);
 FILE* _open_output_file(const char*);
+
+#define IMPORTED_FILE_MAX 1024
+
+char imported_file_paths[IMPORTED_FILE_MAX][_MAX_PATH] = {'\0'};
+int imported_file_count = 0;
 
 int generate_c_code(
 	const struct ProgramNode* program,
@@ -69,6 +76,8 @@ int generate_c_code(
 		return error;
 	}
 	fclose(output_file);
+
+	imported_file_count = 0;
 
 	return 0;
 }
@@ -374,12 +383,12 @@ int generate_c_from_import_statement(FILE* output_file, const struct ImportState
 	strncpy(source_file_path, (import_statement->module_name->value + 1), length - 1);
 	switch (import_statement->import_kind) {
 		case ImportStatement: {
-			if (lex_is_file_lexed(source_file_path)) {
+			if (_is_file_imported(source_file_path)) {
 				free(source_file_path);
 				source_file_path = NULL;
 				break;
 			}
-			FILE* source_file = lex_open_file(source_file_path);
+			FILE* source_file = lex_open_file(source_file_path, imported_file_paths[imported_file_count++]);
 			if (!source_file) {
 				free(source_file_path);
 				source_file_path = NULL;
@@ -656,6 +665,30 @@ int generate_c_macros(FILE* output_file) {
 	fputc('\n', output_file);
 
 	return 0;
+}
+
+bool _is_file_imported(const char* source_file_path) {
+	const char* standard_library_directory = get_standard_library_directory();
+	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(PACKAGE_DIRECTORY) + 2));
+	sprintf(package_directory, "%s" PACKAGE_DIRECTORY, standard_library_directory);
+	char* full_package_path = malloc(strlen(package_directory) + strlen(source_file_path) + 2);
+	sprintf(full_package_path, "%s/%s", package_directory, source_file_path);
+	free(package_directory);
+	package_directory = NULL;
+	
+	char* full_local_path = malloc(strlen("./") + strlen(source_file_path) + 2);
+	sprintf(full_local_path, "./%s", source_file_path);
+	
+	for (int i = 0; i < imported_file_count; i++) {
+		const char* imported_file_path = imported_file_paths[i];
+		if (
+			strcmp(imported_file_path, full_package_path) == 0 ||
+			strcmp(imported_file_path, full_local_path) == 0
+		) {
+			return true;
+		}
+	}
+	return false;
 }
 
 FILE* _open_output_file(const char* output_file_path) {
