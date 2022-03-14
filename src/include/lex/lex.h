@@ -10,6 +10,9 @@
 #include <lex/token.h>
 
 #define _TOKEN_BUFFER_SIZE 64
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
 
 #define _LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character) \
 	(token_buffer)[(token_length)++] = (character);
@@ -21,7 +24,7 @@ struct Token* lex_file(const char*, FILE*);
 
 void _lex_build_token(const char*, char[], size_t*, size_t, size_t, struct Token**);
 FILE* _lex_check_path(const char*);
-FILE* lex_open_file(const char*, char[_MAX_PATH]);
+FILE* lex_open_file(const char*, char[MAX_PATH]);
 
 struct Token* lex_file(const char* filename, FILE* file) {
 	if (!file) {
@@ -243,7 +246,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 	return tokens;
 }
 
-FILE* lex_open_file(const char* filename, char opened_file_name[_MAX_PATH]) {
+FILE* lex_open_file(const char* filename, char opened_file_name[MAX_PATH]) {
 	const char* standard_library_directory = get_standard_library_directory();
 	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(PACKAGE_DIRECTORY) + 2));
 	sprintf(package_directory, "%s" PACKAGE_DIRECTORY, standard_library_directory);

@@ -40,8 +40,11 @@ bool _is_file_imported(const char*);
 FILE* _open_output_file(const char*);
 
 #define IMPORTED_FILE_MAX 1024
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
 
-char imported_file_paths[IMPORTED_FILE_MAX][_MAX_PATH] = {'\0'};
+char imported_file_paths[IMPORTED_FILE_MAX][MAX_PATH] = {'\0'};
 int imported_file_count = 0;
 
 int generate_c_code(
