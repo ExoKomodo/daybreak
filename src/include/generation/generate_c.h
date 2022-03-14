@@ -374,6 +374,11 @@ int generate_c_from_import_statement(FILE* output_file, const struct ImportState
 	strncpy(source_file_path, (import_statement->module_name->value + 1), length - 1);
 	switch (import_statement->import_kind) {
 		case ImportStatement: {
+			if (lex_is_file_lexed(source_file_path)) {
+				free(source_file_path);
+				source_file_path = NULL;
+				break;
+			}
 			FILE* source_file = lex_open_file(source_file_path);
 			if (!source_file) {
 				free(source_file_path);

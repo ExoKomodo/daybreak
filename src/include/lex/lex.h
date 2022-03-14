@@ -21,6 +21,7 @@ struct Token* lex_file(const char*, FILE*);
 
 void _lex_build_token(const char*, char[], size_t*, size_t, size_t, struct Token**);
 FILE* _lex_check_path(const char*, const char*);
+bool lex_is_file_lexed(const char*);
 FILE* lex_open_file(const char*);
 
 struct Token* lex_file(const char* filename, FILE* file) {
@@ -241,6 +242,10 @@ struct Token* lex_file(const char* filename, FILE* file) {
 	// Skip empty head node
 	token_chomp(&tokens);
 	return tokens;
+}
+
+bool lex_is_file_lexed(const char* filename) {
+	return false;
 }
 
 FILE* lex_open_file(const char* filename) {
