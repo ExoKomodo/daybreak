@@ -1,0 +1,5 @@
+import "examples/modules/foo.day"
+
+fun do_work_i_said (a: int) int is
+	return (multiply_and_add a)
+end
