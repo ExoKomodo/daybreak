@@ -14,7 +14,7 @@ int generate_c_from_call_expression(FILE*, const struct CallExpressionNode*);
 int generate_c_from_module_statement(FILE*, const struct ModuleStatementNode*);
 int generate_c_from_module_statement_list(FILE*, const struct ModuleStatementListNode*);
 int generate_c_from_expression(FILE*, const struct ExpressionNode*);
-int generate_c_from_expression_list(FILE*, const struct ExpressionListNode*, bool);
+int generate_c_from_expression_list(FILE*, const struct ExpressionListNode*);
 int generate_c_from_field(FILE*, const struct FieldNode*);
 int generate_c_from_field_binding(FILE*, const struct FieldBindingNode*);
 int generate_c_from_field_binding_list(FILE*, const struct FieldBindingListNode*);
@@ -25,12 +25,14 @@ int generate_c_from_identifier_expression(FILE*, const struct IdentifierExpressi
 int generate_c_from_import_statement(FILE*, const struct ImportStatementNode*);
 int generate_c_from_match_case(FILE*, const struct MatchCaseNode*);
 int generate_c_from_match_case_list(FILE*, const struct MatchCaseListNode*);
-int generate_c_from_match_expression(FILE*, const struct MatchExpressionNode*);
+int generate_c_from_match_statement(FILE*, const struct MatchStatementNode*);
 int generate_c_from_parameter(FILE*, const struct ParameterNode*);
 int generate_c_from_parameter_list(FILE*, const struct ParameterListNode*);
 int generate_c_from_numeric_expression(FILE*, const struct NumericExpressionNode*);
 int generate_c_from_program(FILE*, const struct ProgramNode*);
-int generate_c_from_return_expression(FILE*, const struct ReturnExpressionNode*);
+int generate_c_from_return_statement(FILE*, const struct ReturnStatementNode*);
+int generate_c_from_statement(FILE*, const struct StatementNode*);
+int generate_c_from_statement_list(FILE*, const struct StatementListNode*);
 int generate_c_from_string_expression(FILE*, const struct StringExpressionNode*);
 int generate_c_from_type_declaration(FILE*, const struct TypeDeclarationNode*);
 int generate_c_from_type_expression(FILE*, const struct TypeExpressionNode*);
@@ -111,7 +113,7 @@ int generate_c_from_call_expression(FILE* output_file, const struct CallExpressi
 	}
 
 	fprintf(output_file, "%s(", call_expression->function->name);
-	const int error = generate_c_from_expression_list(output_file, call_expression->arguments, false);
+	const int error = generate_c_from_expression_list(output_file, call_expression->arguments);
 	fputc(')', output_file);
 	return error;
 }
@@ -188,14 +190,8 @@ int generate_c_from_expression(FILE* output_file, const struct ExpressionNode* e
 		case AstIdentifierExpression: {
 			return generate_c_from_identifier_expression(output_file, expression->value.identifier_expression);
 		} break;
-		case AstMatchExpression: {
-			return generate_c_from_match_expression(output_file, expression->value.match_expression);
-		} break;
 		case AstNumericExpression: {
 			return generate_c_from_numeric_expression(output_file, expression->value.numeric_expression);
-		} break;
-		case AstReturnExpression: {
-			return generate_c_from_return_expression(output_file, expression->value.return_expression);
 		} break;
 		case AstStringExpression: {
 			return generate_c_from_string_expression(output_file, expression->value.string_expression);
@@ -215,8 +211,7 @@ int generate_c_from_expression(FILE* output_file, const struct ExpressionNode* e
 
 int generate_c_from_expression_list(
 	FILE* output_file,
-	const struct ExpressionListNode* expression_list,
-	bool is_function_body
+	const struct ExpressionListNode* expression_list
 ) {
 	if (!expression_list) {
 		LOG_ERROR("Failed to generate C code from ExpressionListNode. NULL ExpressionListNode.");
@@ -229,12 +224,7 @@ int generate_c_from_expression_list(
 		if (error != 0) {
 			return error;
 		}
-		if (is_function_body) {
-			if (expression->kind == AstMatchExpression) {
-				continue;
-			}
-			fputs(";\n", output_file);
-		} else if (i < expression_list->length - 1) {
+		if (i < expression_list->length - 1) {
 			fputs(", ", output_file);
 		}
 	}
@@ -333,8 +323,8 @@ int generate_c_from_function_declaration(
 		return error;
 	}
 	fputs(") {\n", output_file);
-	struct ExpressionListNode* expressions = function_declaration->expressions;
-	error = generate_c_from_expression_list(output_file, expressions, true);
+	struct StatementListNode* statements = function_declaration->statements;
+	error = generate_c_from_statement_list(output_file, statements);
 	if (error != 0) {
 		return error;
 	}
@@ -436,9 +426,9 @@ int generate_c_from_import_statement(FILE* output_file, const struct ImportState
 	return 0;
 }
 
-int generate_c_from_match_expression(FILE* output_file, const struct MatchExpressionNode* match_expression) {
+int generate_c_from_match_statement(FILE* output_file, const struct MatchStatementNode* match_expression) {
 	if (!match_expression) {
-		LOG_ERROR("Failed to generate C code from MatchExpressionNode. NULL MatchExpressionNode.");
+		LOG_ERROR("Failed to generate C code from MatchStatementNode. NULL MatchStatementNode.");
 		return 1;
 	}
 
@@ -468,7 +458,7 @@ int generate_c_from_match_case_list(FILE* output_file, const struct MatchCaseLis
 			}
 			fputs("\n{\n", output_file);
 		}
-		const int error = generate_c_from_expression(output_file, match_case->expression);
+		const int error = generate_c_from_statement(output_file, match_case->statement);
 		if (error != 0) {
 			return error;
 		}
@@ -551,15 +541,65 @@ int generate_c_from_program(
 	return 0;
 }
 
-int generate_c_from_return_expression(FILE* output_file, const struct ReturnExpressionNode* return_expression) {
+int generate_c_from_return_statement(FILE* output_file, const struct ReturnStatementNode* return_expression) {
 	if (!return_expression) {
-		LOG_ERROR("Failed to generate C code from ReturnExpressionNode. NULL ReturnExpressionNode.");
+		LOG_ERROR("Failed to generate C code from ReturnStatementNode. NULL ReturnStatementNode.");
 		return 1;
 	}
 	fputs("return ", output_file);
 	const int error = generate_c_from_expression(output_file, return_expression->expression);
 	if (error != 0) {
 		return error;
+	}
+
+	return 0;
+}
+
+int generate_c_from_statement(FILE* output_file, const struct StatementNode* statement) {
+	if (!statement) {
+		LOG_ERROR("Failed to generate C code from StatementNode. NULL StatementNode.");
+		return 1;
+	}
+
+	switch (statement->kind) {
+		case AstMatchStatement: {
+			return generate_c_from_match_statement(output_file, statement->value.match_statement);
+		} break;
+		case AstReturnStatement: {
+			return generate_c_from_return_statement(output_file, statement->value.return_statement);
+		} break;
+		case AstExpression: {
+			return generate_c_from_expression(output_file, statement->value.expression);
+		} break;
+		default: {
+			LOG_ERROR(
+				"Failed to generate C code from StatementNode. Unknown StatementNode kind %d.",
+				statement->kind
+			);
+			return 2;
+		} break;
+	}
+}
+
+int generate_c_from_statement_list(
+	FILE* output_file,
+	const struct StatementListNode* statement_list
+) {
+	if (!statement_list) {
+		LOG_ERROR("Failed to generate C code from StatementListNode. NULL StatementListNode.");
+		return 1;
+	}
+
+	for (size_t i = 0; i < statement_list->length; i++) {
+		struct StatementNode* statement = statement_list->statements[i];
+		const int error = generate_c_from_statement(output_file, statement);
+		if (error != 0) {
+			return error;
+		}
+		if (statement->kind == AstMatchStatement) {
+			continue;
+		}
+		fputs(";\n", output_file);
 	}
 
 	return 0;
