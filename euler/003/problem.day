@@ -1,0 +1,82 @@
+import "euler/helpers.day"
+
+type FilterResult struct is
+	n: int64_t
+	did_reduce: bool
+end
+
+fun filter_factor (n: int64_t factor: int64_t) FilterResult is
+	return (_filter_factor n n factor)
+end
+
+fun get_largest_prime_factor (n: int64_t) int64_t is
+	let loop_factor: int64_t <- 5
+	let de_even_result: FilterResult <- (filter_factor n 2)
+	let de_three_result: FilterResult <- (filter_factor de_even_result.n 3)
+	
+	match
+		(truthy de_three_result.did_reduce) => return (_get_largest_prime_factor de_three_result.n loop_factor 3)
+		(and
+			(truthy de_even_result.did_reduce)
+			(falsey de_three_result.did_reduce)) => return (_get_largest_prime_factor de_even_result.n loop_factor 2)
+		(default) => return (_get_largest_prime_factor n loop_factor 0)
+	end
+end
+
+fun problem003 () int is
+	(welcome 3)
+	let solution: int64_t <- (_problem003 600851475143)
+	(check_solution solution 6857)
+	return 0
+end
+
+fun _filter_factor (original_n: int64_t n: int64_t factor: int64_t) FilterResult is
+	match
+		(eq
+			0
+			(mod
+				n
+				factor)) => return (_filter_factor original_n (div n factor) factor)
+		(default) => return {FilterResult
+			n <- n
+			did_reduce <- (lt n original_n)
+		}
+	end
+end
+
+fun _get_largest_prime_factor (n: int64_t factor: int64_t max_prime: int64_t) int64_t is
+	let n_square_root: int64_t <-
+		(add
+			(cast
+				int64_t
+				(sqrt n))
+			1)
+	let is_done: bool <-
+		(gt
+			factor
+			n_square_root)
+	match
+		(and
+			is_done
+			(gt n 4)) => return n
+		(truthy
+		  is_done) => return max_prime
+	end
+	
+	let next_factor: int64_t <- (add factor 2)
+	let loop_factor: int64_t <- (add factor 6)
+	let de_factor_result: FilterResult <- (filter_factor n factor)
+	let de_factor_next_result: FilterResult <- (filter_factor de_factor_result.n next_factor)
+	
+	match
+		(truthy de_factor_next_result.did_reduce) => return (_get_largest_prime_factor de_factor_next_result.n loop_factor next_factor)
+		(and
+			(truthy de_factor_result.did_reduce)
+			(falsey de_factor_next_result.did_reduce)) => return (_get_largest_prime_factor de_factor_result.n loop_factor factor)
+		(default) => return (_get_largest_prime_factor n loop_factor max_prime)
+	end
+end
+
+fun _problem003 (n: int64_t) int64_t is
+	return (get_largest_prime_factor n)
+end

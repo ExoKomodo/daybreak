@@ -1,0 +1,24 @@
+import "euler/001/problem.day"
+import "euler/002/problem.day"
+import "euler/003/problem.day"
+import "euler/004/problem.day"
+import "euler/005/problem.day"
+import "euler/006/problem.day"
+import "euler/007/problem.day"
+import "euler/008/problem.day"
+import "euler/009/problem.day"
+import "euler/010/problem.day"
+
+
+fun main () int is
+	(problem001)
+	(problem002)
+	(problem003)
+	(problem004)
+	(problem005)
+	(problem006)
+	(problem007)
+	(problem008)
+	(problem009)
+	(problem010)
+end
