@@ -95,6 +95,7 @@ int generate_c_include_prelude(FILE* output_file) {
 	fputs("#include <assert.h>\n", output_file);
 	fputs("#include <math.h>\n", output_file);
 	fputs("#include <stdbool.h>\n", output_file);
+	fputs("#include <stdint.h>\n", output_file);
 	fputs("#include <stdlib.h>\n", output_file);
 	fputs("#include <stdio.h>\n", output_file);
 	fputc('\n', output_file);

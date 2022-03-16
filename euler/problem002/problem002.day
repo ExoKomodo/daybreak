@@ -1,0 +1,33 @@
+import "euler/helpers.day"
+
+fun _fib_add_evens(limit: int a: int b: int acc: int) int is
+	let total: int <- (add a b)
+	match
+		(gt b limit) => return acc
+		(equals 0 (mod b 2)) => return
+			(_fib_add_evens
+				limit
+				b
+				total
+				(add acc b)
+			)
+		(default) => return
+			(_fib_add_evens
+				limit
+				b
+				total
+				acc)
+	end
+end
+
+fun _solve_problem002 (limit: int) int is
+	return (_fib_add_evens limit 0 1 0)
+end
+
+fun problem002 () int is
+	(print_problem_welcome 2)
+	
+	let solution: int <- (_solve_problem002 4000000)
+	(printf "Solution: %d\n\n" solution)
+	return solution
+end

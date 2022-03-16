@@ -5,6 +5,35 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Euler",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/daybreak",
+      "args": [
+        "${workspaceFolder}/euler/euler.day"
+      ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build [daybreak]",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      },
+    },
+    {
       "name": "Hello world",
       "type": "cppdbg",
       "request": "launch",

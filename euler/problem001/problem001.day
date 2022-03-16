@@ -1,0 +1,37 @@
+import "euler/helpers.day"
+
+fun partial_sum (n: int scale: int) int is
+	let limit: int <- (div (sub n 1) scale)
+	return (div
+		(mul scale
+			(mul limit
+				(add limit 1)
+				)
+			)
+			2)
+end
+
+fun _solve_problem001 (limit: int) int is
+	let n: int <- 3
+	let m: int <- 5
+	let nm: int <- (mul n m)
+	
+	let threes: int <- (partial_sum limit n)
+	let fives: int <- (partial_sum limit m)
+	let combined: int <- (partial_sum limit nm)
+	
+	return (sub 
+		(add
+			threes
+			fives
+		)
+		combined)
+end
+
+fun problem001 () int is
+	(print_problem_welcome 1)
+	
+	let solution: int <- (_solve_problem001 1000)
+	(printf "Solution: %d\n\n" solution)
+	return solution
+end

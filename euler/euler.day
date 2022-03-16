@@ -1,0 +1,10 @@
+import "euler/problem001/problem001.day"
+import "euler/problem002/problem002.day"
+import "euler/problem003/problem003.day"
+
+
+fun main () int is
+	(problem001)
+	(problem002)
+	(problem003)
+end

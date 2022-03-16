@@ -16,7 +16,6 @@
   "-Wextra " \
   "-Wshadow " \
   "-pedantic " \
-  "-Wconversion " \
   "-Wsign-conversion " \
   "-Wnull-dereference " \
   "-Wdouble-promotion " \
