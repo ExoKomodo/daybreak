@@ -1,20 +1,4 @@
 {
-  "triggerTaskOnSave.tasks": {
-    "cmake build [daybreak]": [
-      "src/include/**/*.h",
-      "src/main.c",
-    ],
-    "cmake build [daybreak_test]": [
-      "src/include/**/*.h",
-      "src/main.c",
-      "tests/*.h",
-      "tests/test_main.c",
-    ],
-    "cmake configure": [
-      "CMakeLists.txt",
-      "**/CMakeLists.txt",
-    ],
-  },
   "files.associations": {
     "*.script": "lua",
     "*.py": "python",

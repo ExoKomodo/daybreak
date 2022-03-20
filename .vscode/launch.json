@@ -8,133 +8,133 @@
       "name": "Hello world",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/daybreak",
+      "program": "${workspaceFolder}/out/daybreak",
       "args": [
         "${workspaceFolder}/examples/hello/hello.day"
       ],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "cmake build [daybreak]",
       "miDebuggerPath": "gdb",
       "osx": {
-        "miDebuggerPath": "lldb-mi",
+        "MIMode": "lldb",
       },
+      "preLaunchTask": "build [daybreak]",
     },
     {
       "name": "FooBar",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/daybreak",
+      "program": "${workspaceFolder}/out/daybreak",
       "args": [
         "${workspaceFolder}/examples/foobar/foobar.day"
       ],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "cmake build [daybreak]",
       "miDebuggerPath": "gdb",
       "osx": {
-        "miDebuggerPath": "lldb-mi",
+        "MIMode": "lldb",
       },
+      "preLaunchTask": "build [daybreak]",
     },
     {
       "name": "Match",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/daybreak",
+      "program": "${workspaceFolder}/out/daybreak",
       "args": [
         "${workspaceFolder}/examples/match/match.day"
       ],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "cmake build [daybreak]",
       "miDebuggerPath": "gdb",
       "osx": {
-        "miDebuggerPath": "lldb-mi",
+        "MIMode": "lldb",
       },
+      "preLaunchTask": "build [daybreak]",
     },
     {
       "name": "Modules",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/daybreak",
+      "program": "${workspaceFolder}/out/daybreak",
       "args": [
         "${workspaceFolder}/examples/modules/modules.day"
       ],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "cmake build [daybreak]",
       "miDebuggerPath": "gdb",
       "osx": {
-        "miDebuggerPath": "lldb-mi",
+        "MIMode": "lldb",
       },
+      "preLaunchTask": "build [daybreak]",
     },
     {
       "name": "Multiple Imports",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/daybreak",
+      "program": "${workspaceFolder}/out/daybreak",
       "args": [
         "${workspaceFolder}/examples/multiple_imports/multiple_imports.day"
       ],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "cmake build [daybreak]",
       "miDebuggerPath": "gdb",
       "osx": {
-        "miDebuggerPath": "lldb-mi",
+        "MIMode": "lldb",
       },
+      "preLaunchTask": "build [daybreak]",
     },
     {
       "name": "Pointers",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/daybreak",
+      "program": "${workspaceFolder}/out/daybreak",
       "args": [
         "${workspaceFolder}/examples/pointers/pointers.day"
       ],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "cmake build [daybreak]",
       "miDebuggerPath": "gdb",
       "osx": {
-        "miDebuggerPath": "lldb-mi",
+        "MIMode": "lldb",
       },
+      "preLaunchTask": "build [daybreak]",
     },
     {
       "name": "Types",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/daybreak",
+      "program": "${workspaceFolder}/out/daybreak",
       "args": [
         "${workspaceFolder}/examples/types/types.day"
       ],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "cmake build [daybreak]",
       "miDebuggerPath": "gdb",
       "osx": {
-        "miDebuggerPath": "lldb-mi",
+        "MIMode": "lldb",
       },
+      "preLaunchTask": "build [daybreak]",
     },
     {
       "name": "Variables",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/daybreak",
+      "program": "${workspaceFolder}/out/daybreak",
       "args": [
         "${workspaceFolder}/examples/variables/variables.day"
       ],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "cmake build [daybreak]",
       "miDebuggerPath": "gdb",
       "osx": {
-        "miDebuggerPath": "lldb-mi",
+        "MIMode": "lldb",
       },
+      "preLaunchTask": "build [daybreak]",
     },
     {
       "name": "Test",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/daybreak_test",
+      "program": "${workspaceFolder}/out/daybreak_test",
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "cmake build [daybreak_test]",
       "miDebuggerPath": "gdb",
       "osx": {
-        "miDebuggerPath": "lldb-mi",
-      }
+        "MIMode": "lldb",
+      },
+      "preLaunchTask": "build [daybreak_test]",
     }
   ]
 }

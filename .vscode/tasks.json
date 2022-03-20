@@ -4,34 +4,17 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "cmake build [all]",
-      "type": "shell",
-      "command": "cmake",
+      "label": "build [daybreak]",
+      "linux": {
+        "command": "${workspaceFolder}/bootstrap/linux/daybreak",
+      },
+      "osx": {
+        "command": "${workspaceFolder}/bootstrap/osx/daybreak",
+      },
       "args": [
-        "--build",
-        "${workspaceFolder}",
-        "--target",
-        "all",
-        "--",
-      ],
-      "problemMatcher": [
-        "$gcc",
-      ],
-      "group": "build",
-      "dependsOn": [
-        "cmake configure",
-      ],
-    },
-    {
-      "label": "cmake build [daybreak]",
-      "type": "shell",
-      "command": "cmake",
-      "args": [
-        "--build",
-        "${workspaceFolder}",
-        "--target",
-        "daybreak",
-        "--",
+        "src/main.day",
+        "-o",
+        "${workspaceFolder}/out/daybreak",
       ],
       "problemMatcher": [
         "$gcc",
@@ -40,33 +23,40 @@
         "kind": "build",
         "isDefault": true,
       },
-      "dependsOn": [
-        "cmake configure",
-      ],
+      "options": {
+        "env": {
+          "C_INCLUDE_PATH": "${workspaceFolder}/src/include:${C_INCLUDE_PATH",
+        },
+      },
     },
     {
-      "label": "cmake build [daybreak_test]",
+      "label": "build [daybreak_test]",
       "type": "shell",
-      "command": "cmake",
+      "linux": {
+        "command": "${workspaceFolder}/bootstrap/linux/daybreak",
+      },
+      "osx": {
+        "command": "${workspaceFolder}/bootstrap/osx/daybreak",
+      },
       "args": [
-        "--build",
-        "${workspaceFolder}",
-        "--target",
-        "daybreak_test",
-        "--",
+        "tests/test_main.day",
+        "-o",
+        "${workspaceFolder}/out/daybreak_test",
       ],
       "problemMatcher": [
         "$gcc",
       ],
       "group": "test",
-      "dependsOn": [
-        "cmake configure",
-      ],
+      "options": {
+        "env": {
+          "C_INCLUDE_PATH": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include:${C_INCLUDE_PATH",
+        },
+      },
     },
     {
       "label": "test",
       "type": "shell",
-      "command": "${workspaceFolder}/bin/daybreak_test",
+      "command": "${workspaceFolder}/out/daybreak_test",
       "problemMatcher": [
         "$gcc",
       ],
@@ -75,34 +65,22 @@
         "isDefault": true,
       },
       "dependsOn": [
-        "cmake build [daybreak_test]",
+        "build [daybreak_test]",
       ],
+      "options": {
+        "env": {
+          "C_INCLUDE_PATH": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include:${C_INCLUDE_PATH",
+        },
+      },
     },
     {
-      "label": "cmake configure",
+      "label": "clean",
       "type": "shell",
-      "command": "cmake",
+      "command": "rm",
       "args": [
-        "${workspaceFolder}",
-        "-DCMAKE_BUILD_TYPE:STRING=Debug",
-        "-G",
-        "Unix Makefiles",
-      ],
-      "problemMatcher": [
-        "$gcc",
-      ],
-      "group": "none",
-    },
-    {
-      "label": "cmake clean",
-      "type": "shell",
-      "command": "cmake",
-      "args": [
-        "--build",
-        "${workspaceFolder}",
-        "--target",
-        "clean",
-        "--",
+        "-f",
+        "${workspaceFolder}/out/daybreak",
+        "${workspaceFolder}/out/daybreak_test",
       ],
       "problemMatcher": [
         "$gcc",
