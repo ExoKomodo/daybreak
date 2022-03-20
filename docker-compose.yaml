@@ -1,30 +1,38 @@
 version: '3'
 services:
-  configure:
-    build:
-      context: .
-    command: bash /app/compose_scripts/configure.sh
   memory_check:
+    env_file:
+      - config.env
     build:
       context: .
     command: bash /app/compose_scripts/memory_check.sh
   test:
+    env_file:
+      - config.env
     build:
       context: .
     command: bash /app/compose_scripts/test.sh
-  build_all:
+  bootstrap:
+    env_file:
+      - config.env
     build:
       context: .
-    command: bash /app/compose_scripts/build.sh all
+    command: bash /app/compose_scripts/bootstrap.sh
   build_daybreak:
+    env_file:
+      - config.env
     build:
       context: .
-    command: bash /app/compose_scripts/build.sh daybreak
+    command: bash /app/compose_scripts/build.sh /app/src/main.day
   build_daybreak_test:
+    env_file:
+      - config.env
     build:
       context: .
-    command: bash /app/compose_scripts/build.sh daybreak_test
+    command: bash /app/compose_scripts/build.sh /app/tests/test_main.day
   fix_ownership:
+    env_file:
+      - config.env
     build:
       context: .
     command: bash /app/compose_scripts/fix_ownership.sh
