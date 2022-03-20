@@ -44,7 +44,7 @@ FILE* _open_output_file(const char*);
 
 #define IMPORTED_FILE_MAX 1024
 
-char imported_file_paths[IMPORTED_FILE_MAX][MAX_PATH] = {'\0'};
+char imported_file_paths[IMPORTED_FILE_MAX][MAX_PATH] = {{'\0'}};
 int imported_file_count = 0;
 
 int generate_c_code(
@@ -695,7 +695,9 @@ int generate_c_macros(FILE* output_file) {
 	fputs("#define cstring char *\n", output_file);
 	fputs("#define deref(x) *(x)\n", output_file);
 	fputs("#define div(x, y) ((x) / (y))\n", output_file);
+	fputs("#define eq(x, y) ((x) == (y))\n", output_file);
 	fputs("#define equals(x, y) ((x) == (y))\n", output_file);
+	fputs("#define truthy(x) (x)\n", output_file);
 	fputs("#define mod(x, y) ((x) % (y))\n", output_file);
 	fputs("#define mul(x, y) ((x) * (y))\n", output_file);
 	fputs("#define not(x) !(x)\n", output_file);

@@ -1,0 +1,21 @@
+importc "api/prelude.h"
+
+fun main (argc:int argv:ptr<ccstring>) int is
+	(daybreak_greeting)
+	
+	let source_file_path: cstring <- NULL
+	let output_file_path: cstring <- NULL
+	
+	let arg_result: bool <- (daybreak_parse_args
+		argc
+		argv
+		(point source_file_path)
+		(point output_file_path))
+	match
+		(not arg_result) => return 1
+	end
+
+	return (daybreak_compile
+		source_file_path
+		output_file_path)
+end

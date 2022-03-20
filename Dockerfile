@@ -1,7 +1,9 @@
 FROM gcc:11
 
 RUN apt update -y
-RUN apt install -y cmake valgrind
+RUN apt install -y valgrind
+
+ENV C_INCLUDE_PATH=/app/src/include:/app/tests/include
 
 COPY . /app
 

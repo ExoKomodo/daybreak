@@ -1,8 +1,7 @@
-# /bin/bash
+#! /bin/bash
 
 set -ex
 
-cd /app
+bash ./compose_scripts/check_env.sh
 
-bash ./compose_scripts/configure.sh
-cmake --build . --target $1 --
+${DAYBREAK_BOOTSTRAP} $@
