@@ -25,6 +25,12 @@ pipeline {
 				sh "docker-compose up ${COMPOSE_ARGS} memory_check"
 			}
 		}
+
+		stage('Bootstrap') {
+			steps {
+				sh "docker-compose up ${COMPOSE_ARGS} bootstrap"
+			}
+		}
 	}
 
 	post {

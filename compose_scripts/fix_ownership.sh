@@ -1,5 +1,7 @@
-# /bin/bash
+#! /bin/bash
 
 set -ex
 
-chown -R $JENKINS_USER:$JENKINS_GROUP /app
+bash ./compose_scripts/check_env.sh
+
+chown -R ${JENKINS_USER}:${JENKINS_GROUP} .

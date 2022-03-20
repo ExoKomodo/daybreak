@@ -1,28 +1,26 @@
-# /bin/bash
+#! /bin/bash
 
 set -ex
 
 WRAPPER=""
+
+bash ./compose_scripts/check_env.sh
 
 if [ $# -gt 0 ]; then
 	WRAPPER="$@"
 	echo "Wrapping test commands with: ${WRAPPER}"
 fi
 
-cd /app
-
-bash ./compose_scripts/build.sh daybreak
-
 # Directly compile programs using the compiler executable
-${WRAPPER} ./bin/daybreak ./examples/foobar/foobar.day
-${WRAPPER} ./bin/daybreak ./examples/hello/hello.day
-${WRAPPER} ./bin/daybreak ./examples/match/match.day
-${WRAPPER} ./bin/daybreak ./examples/modules/modules.day
-${WRAPPER} ./bin/daybreak ./examples/pointers/pointers.day
-${WRAPPER} ./bin/daybreak ./examples/types/types.day
-${WRAPPER} ./bin/daybreak ./examples/variables/variables.day
+${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./examples/foobar/foobar.day
+${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./examples/hello/hello.day
+${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./examples/match/match.day
+${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./examples/modules/modules.day
+${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./examples/pointers/pointers.day
+${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./examples/types/types.day
+${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./examples/variables/variables.day
 
-bash ./compose_scripts/build.sh daybreak_test
+bash ./compose_scripts/build.sh ./tests/test_main.day -o ${DAYBREAK_TEST_BOOTSTRAP}
 
 # Run tests with the compiler's test executable
-${WRAPPER} ./bin/daybreak_test
+${WRAPPER} ${DAYBREAK_TEST_BOOTSTRAP}

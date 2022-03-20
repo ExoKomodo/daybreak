@@ -1,0 +1,34 @@
+importc "test_foobar.h"
+importc "test_hello_world.h"
+importc "test_match.h"
+importc "test_modules.h"
+importc "test_multiple_imports.h"
+importc "test_pointers.h"
+importc "test_types.h"
+importc "test_variables.h"
+
+importc "log/prelude.h"
+
+fun main () int is
+	match
+		(not (test_foobar)) =>
+			return 1
+		(not (test_hello_world)) =>
+			return 2
+		(not (test_match)) =>
+			return 3
+		(not (test_modules)) =>
+			return 4
+		(not (test_multiple_imports)) =>
+			return 5
+		(not (test_pointers)) =>
+			return 6
+		(not (test_types)) =>
+			return 7
+		(not (test_variables)) =>
+			return 8
+	end
+  
+	(LOG_INFO "Successfully passed all tests!")
+  return 0
+end
