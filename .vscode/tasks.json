@@ -11,6 +11,14 @@
       "osx": {
         "command": "${workspaceFolder}/bootstrap/osx/daybreak",
       },
+      "windows": {
+        "command": "${workspaceFolder}\\bootstrap\\windows\\daybreak.exe",
+        "options": {
+          "env": {
+            "C_INCLUDE_PATH": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          },
+        },
+      },
       "args": [
         "src/main.day",
         "-o",
@@ -38,6 +46,14 @@
       "osx": {
         "command": "${workspaceFolder}/bootstrap/osx/daybreak",
       },
+      "windows": {
+        "command": "${workspaceFolder}\\bootstrap\\windows\\daybreak.exe",
+        "options": {
+          "env": {
+            "C_INCLUDE_PATH": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          },
+        },
+      },
       "args": [
         "tests/test_main.day",
         "-o",
@@ -49,7 +65,7 @@
       "group": "test",
       "options": {
         "env": {
-          "C_INCLUDE_PATH": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include:${C_INCLUDE_PATH",
+          "C_INCLUDE_PATH": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include:${C_INCLUDE_PATH}",
         },
       },
     },
@@ -57,6 +73,13 @@
       "label": "test",
       "type": "shell",
       "command": "${workspaceFolder}/out/daybreak_test",
+      "windows": {
+        "options": {
+          "env": {
+            "C_INCLUDE_PATH": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          },
+        },
+      },
       "problemMatcher": [
         "$gcc",
       ],
@@ -69,7 +92,7 @@
       ],
       "options": {
         "env": {
-          "C_INCLUDE_PATH": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include:${C_INCLUDE_PATH",
+          "C_INCLUDE_PATH": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include:${C_INCLUDE_PATH}",
         },
       },
     },

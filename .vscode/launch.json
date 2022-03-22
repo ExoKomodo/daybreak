@@ -12,6 +12,49 @@
       "args": [
         "${workspaceFolder}/examples/hello/hello.day"
       ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
+      "cwd": "${workspaceFolder}",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "MIMode": "lldb",
+      },
+      "preLaunchTask": "build [daybreak]",
+    },
+    {
+      "name": "Double",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/double/double.day"
+      ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
       "cwd": "${workspaceFolder}",
       "miDebuggerPath": "gdb",
       "osx": {
@@ -27,6 +70,49 @@
       "args": [
         "${workspaceFolder}/examples/foobar/foobar.day"
       ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
+      "cwd": "${workspaceFolder}",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "MIMode": "lldb",
+      },
+      "preLaunchTask": "build [daybreak]",
+    },
+    {
+      "name": "Integer",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/integer/integer.day"
+      ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
       "cwd": "${workspaceFolder}",
       "miDebuggerPath": "gdb",
       "osx": {
@@ -42,6 +128,20 @@
       "args": [
         "${workspaceFolder}/examples/match/match.day"
       ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
       "cwd": "${workspaceFolder}",
       "miDebuggerPath": "gdb",
       "osx": {
@@ -57,6 +157,20 @@
       "args": [
         "${workspaceFolder}/examples/modules/modules.day"
       ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
       "cwd": "${workspaceFolder}",
       "miDebuggerPath": "gdb",
       "osx": {
@@ -72,6 +186,20 @@
       "args": [
         "${workspaceFolder}/examples/multiple_imports/multiple_imports.day"
       ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
       "cwd": "${workspaceFolder}",
       "miDebuggerPath": "gdb",
       "osx": {
@@ -87,6 +215,20 @@
       "args": [
         "${workspaceFolder}/examples/pointers/pointers.day"
       ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
       "cwd": "${workspaceFolder}",
       "miDebuggerPath": "gdb",
       "osx": {
@@ -102,6 +244,20 @@
       "args": [
         "${workspaceFolder}/examples/types/types.day"
       ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
       "cwd": "${workspaceFolder}",
       "miDebuggerPath": "gdb",
       "osx": {
@@ -117,6 +273,20 @@
       "args": [
         "${workspaceFolder}/examples/variables/variables.day"
       ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
       "cwd": "${workspaceFolder}",
       "miDebuggerPath": "gdb",
       "osx": {
@@ -129,6 +299,20 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/out/daybreak_test",
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
       "cwd": "${workspaceFolder}",
       "miDebuggerPath": "gdb",
       "osx": {

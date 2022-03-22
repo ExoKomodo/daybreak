@@ -1,0 +1,30 @@
+fun distance_squared (x1: double y1: double x2: double y2: double) double is
+	return (add
+		(pow
+			(sub x2 x1)
+			2 )
+		(pow
+			(sub y2 y1)
+			2 ))
+end
+
+fun main () int is
+	let x1: double <- 0.
+	let y1: double <- 1.2
+	let x2: double <- 3.4
+	let y2: double <- 5.6
+	let answer: double <- (distance_squared
+		x1
+		y1
+		x2
+		y2 )
+
+	(printf
+		"Distance Squared: (%F, %F) (%F, %F) = %F\n"
+		x1
+		y1
+		x2
+		y2
+		answer)
+	return 0
+end

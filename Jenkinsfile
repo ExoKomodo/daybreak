@@ -3,8 +3,8 @@ def COMPOSE_ARGS = '--build --abort-on-container-exit --no-log-prefix'
 pipeline {
 	agent any
 
-	options { 
-		disableConcurrentBuilds() 
+	options {
+		disableConcurrentBuilds()
 	}
 
 	stages {
@@ -23,12 +23,6 @@ pipeline {
 		stage('Memory Check') {
 			steps {
 				sh "docker-compose up ${COMPOSE_ARGS} memory_check"
-			}
-		}
-
-		stage('Bootstrap') {
-			steps {
-				sh "docker-compose up ${COMPOSE_ARGS} bootstrap"
 			}
 		}
 	}

@@ -173,6 +173,42 @@ static inline bool token_is_string_literal(struct Token token) {
 }
 
 static inline bool token_is_numeric(struct Token token) {
+	bool is_double = false;
+	for (size_t i = 0; i < token.length; i++) {
+		const char character = token.name[i];
+		if (character == '.') {
+			if (is_double) {
+				return false;
+			}
+			is_double = true;
+			continue;
+		}
+		if (!isdigit(token.name[i])) {
+			return false;
+		}
+	}
+	return true;
+}
+
+static inline bool token_is_double(struct Token token) {
+	bool is_double = false;
+	for (size_t i = 0; i < token.length; i++) {
+		const char character = token.name[i];
+		if (character == '.') {
+			if (is_double) {
+				return false;
+			}
+			is_double = true;
+			continue;
+		}
+		if (!isdigit(token.name[i])) {
+			return false;
+		}
+	}
+	return is_double;
+}
+
+static inline bool token_is_integer(struct Token token) {
 	for (size_t i = 0; i < token.length; i++) {
 		if (!isdigit(token.name[i])) {
 			return false;
@@ -181,7 +217,18 @@ static inline bool token_is_numeric(struct Token token) {
 	return true;
 }
 
+static inline bool token_is_keyword(struct Token token) {
+	return (
+		token_is_end(token) ||
+		token_is_return(token) ||
+		token_is_match(token)
+	);
+}
+
 static inline bool token_is_identifier(struct Token token) {
+	if (token_is_keyword(token)) {
+		return false;
+	}
 	for (size_t i = 0; i < token.length; i++) {
 		const char c = token.name[i];
 		if (
