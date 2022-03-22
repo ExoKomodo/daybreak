@@ -8,9 +8,9 @@ then
 	exit 1
 fi
 
-if [ -z ${DAYBREAK_TEST_BOOTSTRAP} ];
+if [ -z ${DAYBREAK_TEST} ];
 then
-	echo "Must define env var: DAYBREAK_TEST_BOOTSTRAP"
+	echo "Must define env var: DAYBREAK_TEST"
 	exit 1
 fi
 

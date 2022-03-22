@@ -11,8 +11,7 @@
 int generate_c_code(const struct ProgramNode*, const char*);
 int generate_c_from_binding_expression(FILE*, const struct BindingExpressionNode*);
 int generate_c_from_call_expression(FILE*, const struct CallExpressionNode*);
-int generate_c_from_module_statement(FILE*, const struct ModuleStatementNode*);
-int generate_c_from_module_statement_list(FILE*, const struct ModuleStatementListNode*);
+int generate_c_from_double_expression(FILE*, const struct DoubleExpressionNode*);
 int generate_c_from_expression(FILE*, const struct ExpressionNode*);
 int generate_c_from_expression_list(FILE*, const struct ExpressionListNode*);
 int generate_c_from_field(FILE*, const struct FieldNode*);
@@ -23,12 +22,15 @@ int generate_c_from_function_declaration(FILE*, const struct FunctionDeclaration
 int generate_c_from_identifier(FILE*, const struct IdentifierNode*);
 int generate_c_from_identifier_expression(FILE*, const struct IdentifierExpressionNode*);
 int generate_c_from_import_statement(FILE*, const struct ImportStatementNode*);
+int generate_c_from_integer_expression(FILE*, const struct IntegerExpressionNode*);
 int generate_c_from_match_case(FILE*, const struct MatchCaseNode*);
 int generate_c_from_match_case_list(FILE*, const struct MatchCaseListNode*);
 int generate_c_from_match_statement(FILE*, const struct MatchStatementNode*);
+int generate_c_from_module_statement(FILE*, const struct ModuleStatementNode*);
+int generate_c_from_module_statement_list(FILE*, const struct ModuleStatementListNode*);
+int generate_c_from_numeric_expression(FILE*, const struct NumericExpressionNode*);
 int generate_c_from_parameter(FILE*, const struct ParameterNode*);
 int generate_c_from_parameter_list(FILE*, const struct ParameterListNode*);
-int generate_c_from_numeric_expression(FILE*, const struct NumericExpressionNode*);
 int generate_c_from_program(FILE*, const struct ProgramNode*);
 int generate_c_from_return_statement(FILE*, const struct ReturnStatementNode*);
 int generate_c_from_statement(FILE*, const struct StatementNode*);
@@ -86,9 +88,12 @@ int generate_c_code(
 }
 
 int generate_c_include_prelude(FILE* output_file) {
+	fputs("#include <math.h>\n", output_file);
 	fputs("#include <stdbool.h>\n", output_file);
 	fputs("#include <stdlib.h>\n", output_file);
-	fputs("#include <stdio.h>\n\n", output_file);
+	fputs("#include <stdio.h>\n", output_file);
+	fputc('\n', output_file);
+
 	return 0;
 }
 
@@ -118,59 +123,14 @@ int generate_c_from_call_expression(FILE* output_file, const struct CallExpressi
 	return error;
 }
 
-int generate_c_from_module_statement(
-	FILE* output_file,
-	const struct ModuleStatementNode* declaration
-) {
-	if (!declaration) {
-		LOG_ERROR("Failed to generate C code from ModuleStatementNode. NULL ModuleStatementNode.");
+int generate_c_from_double_expression(FILE* output_file, const struct DoubleExpressionNode* double_expression) {
+	if (!double_expression) {
+		LOG_ERROR("Failed to generate C code from DoubleExpressionNode. NULL DoubleExpressionNode.");
 		return 1;
 	}
-	switch (declaration->kind) {
-		case AstFunctionDeclaration: {
-			return generate_c_from_function_declaration(
-				output_file,
-				declaration->value.function_declaration
-			);
-		} break;
-		case AstImportStatement: {
-			return generate_c_from_import_statement(
-				output_file,
-				declaration->value.import_statement
-			);
-		} break;
-		case AstTypeDeclaration: {
-			return generate_c_from_type_declaration(
-				output_file,
-				declaration->value.type_declaration
-			);
-		} break;
-		default: {
-			LOG_ERROR(
-				"Failed to generate C code from ModuleStatementNode. Unknown ModuleStatementNode kind %d",
-				declaration->kind
-			);
-			return 1;
-		} break;
-	}
-}
 
-int generate_c_from_module_statement_list(
-	FILE* output_file,
-	const struct ModuleStatementListNode* module_statement_list
-) {
-	if (!module_statement_list) {
-		LOG_ERROR("Failed to generate C code from ModuleStatementListNode. NULL ModuleStatementListNode.");
-		return 1;
-	}
-	struct ModuleStatementNode** module_statements = module_statement_list->module_statements;
-	for (size_t i = 0; i < module_statement_list->length; i++) {
-		const int error = generate_c_from_module_statement(output_file, module_statements[i]);
-		if (error != 0) {
-			return error;
-		}
-		fputc('\n', output_file);
-	}
+	fprintf(output_file, "%F", double_expression->value);
+
 	return 0;
 }
 
@@ -426,6 +386,17 @@ int generate_c_from_import_statement(FILE* output_file, const struct ImportState
 	return 0;
 }
 
+int generate_c_from_integer_expression(FILE* output_file, const struct IntegerExpressionNode* integer_expression) {
+	if (!integer_expression) {
+		LOG_ERROR("Failed to generate C code from IntegerExpressionNode. NULL IntegerExpressionNode.");
+		return 1;
+	}
+
+	fprintf(output_file, "%lld", integer_expression->value);
+
+	return 0;
+}
+
 int generate_c_from_match_statement(FILE* output_file, const struct MatchStatementNode* match_expression) {
 	if (!match_expression) {
 		LOG_ERROR("Failed to generate C code from MatchStatementNode. NULL MatchStatementNode.");
@@ -471,15 +442,83 @@ int generate_c_from_match_case_list(FILE* output_file, const struct MatchCaseLis
 	return 0;
 }
 
+int generate_c_from_module_statement(
+	FILE* output_file,
+	const struct ModuleStatementNode* declaration
+) {
+	if (!declaration) {
+		LOG_ERROR("Failed to generate C code from ModuleStatementNode. NULL ModuleStatementNode.");
+		return 1;
+	}
+	switch (declaration->kind) {
+		case AstFunctionDeclaration: {
+			return generate_c_from_function_declaration(
+				output_file,
+				declaration->value.function_declaration
+			);
+		} break;
+		case AstImportStatement: {
+			return generate_c_from_import_statement(
+				output_file,
+				declaration->value.import_statement
+			);
+		} break;
+		case AstTypeDeclaration: {
+			return generate_c_from_type_declaration(
+				output_file,
+				declaration->value.type_declaration
+			);
+		} break;
+		default: {
+			LOG_ERROR(
+				"Failed to generate C code from ModuleStatementNode. Unknown ModuleStatementNode kind %d",
+				declaration->kind
+			);
+			return 1;
+		} break;
+	}
+}
+
+int generate_c_from_module_statement_list(
+	FILE* output_file,
+	const struct ModuleStatementListNode* module_statement_list
+) {
+	if (!module_statement_list) {
+		LOG_ERROR("Failed to generate C code from ModuleStatementListNode. NULL ModuleStatementListNode.");
+		return 1;
+	}
+	struct ModuleStatementNode** module_statements = module_statement_list->module_statements;
+	for (size_t i = 0; i < module_statement_list->length; i++) {
+		const int error = generate_c_from_module_statement(output_file, module_statements[i]);
+		if (error != 0) {
+			return error;
+		}
+		fputc('\n', output_file);
+	}
+	return 0;
+}
+
 int generate_c_from_numeric_expression(FILE* output_file, const struct NumericExpressionNode* numeric_expression) {
 	if (!numeric_expression) {
 		LOG_ERROR("Failed to generate C code from NumericExpressionNode. NULL NumericExpressionNode.");
 		return 1;
 	}
 
-	fprintf(output_file, "%d", numeric_expression->value);
-
-	return 0;
+	switch (numeric_expression->kind) {
+		case AstDoubleExpression: {
+			return generate_c_from_double_expression(output_file, numeric_expression->value.double_expression);
+		} break;
+		case AstIntegerExpression: {
+			return generate_c_from_integer_expression(output_file, numeric_expression->value.integer_expression);
+		} break;
+		default: {
+			LOG_ERROR(
+				"Failed to generate C code from NumericExpressionNode. Unknown NumericExpressionNode kind %d.",
+				numeric_expression->kind
+			);
+			return 2;
+		} break;
+	}
 }
 
 int generate_c_from_parameter(FILE* output_file, const struct ParameterNode* parameter) {
@@ -691,18 +730,20 @@ int generate_c_from_type_identifier(FILE* output_file, const struct TypeIdentifi
 
 int generate_c_macros(FILE* output_file) {
 	fputs("#define add(x, y) ((x) + (y))\n", output_file);
+	fputs("#define cast(type, x) ((type) x)\n", output_file);
 	fputs("#define ccstring const char *\n", output_file);
 	fputs("#define cstring char *\n", output_file);
 	fputs("#define deref(x) *(x)\n", output_file);
 	fputs("#define div(x, y) ((x) / (y))\n", output_file);
 	fputs("#define eq(x, y) ((x) == (y))\n", output_file);
 	fputs("#define equals(x, y) ((x) == (y))\n", output_file);
-	fputs("#define truthy(x) (x)\n", output_file);
 	fputs("#define mod(x, y) ((x) % (y))\n", output_file);
 	fputs("#define mul(x, y) ((x) * (y))\n", output_file);
+	fputs("#define neg(x) (-(x))\n", output_file);
 	fputs("#define not(x) !(x)\n", output_file);
 	fputs("#define point(x) &(x)\n", output_file);
 	fputs("#define sub(x, y) ((x) - (y))\n", output_file);
+	fputs("#define truthy(x) (x)\n", output_file);
 	fputs("#define unsafe_index(arr, index) (arr)[(index)]\n", output_file);
 	fputs("#define unused(x) (void)(x)\n", output_file);
 	fputc('\n', output_file);

@@ -42,6 +42,9 @@ struct Token* lex_file(const char* filename, FILE* file) {
 	bool is_string = false;
 	bool is_less_than = false;
 	bool is_equals = false;
+	bool is_number = false;
+	bool is_double = false;
+	bool is_period = false;
 	while ((character = (char)fgetc(file)) != EOF) {
 		column++;
 		const size_t current_lex_column = column;
@@ -73,6 +76,32 @@ struct Token* lex_file(const char* filename, FILE* file) {
 				&current
 			);
 		}
+		if (is_number){
+			if (character == '.') {
+				if (is_double) {
+					LOG_ERROR("Lexer error: Unexpected character '%c' at %zu:%zu", character, line, column);
+					exit(1);
+				}
+				is_double = true;
+				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
+				continue;
+			} else if (!isdigit(character)) {
+				is_number = false;
+				is_double = false;
+				_lex_build_token(
+					filename,
+					token_buffer,
+					&token_length,
+					current_lex_line,
+					current_lex_column,
+					&current
+				);
+			} else {
+				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
+				continue;
+			}
+		}
+
 		switch (character) {
 			case '\n': {
 				column = 0;
@@ -210,7 +239,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 			} continue;
 			case ';':
 			case ',': {
-				LOG_ERROR("Unexpected '%c'", character);
+				LOG_ERROR("Unexpected '%c' at %zu:%zu", character, line, column);
 				exit(1);
 			} break;
 		}
@@ -226,6 +255,11 @@ struct Token* lex_file(const char* filename, FILE* file) {
 				);
 			}
 			continue;
+		}
+		if (isdigit(character)) {
+			if (token_length == 0) {
+				is_number = true;
+			}
 		}
 		_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
 	}
