@@ -730,6 +730,7 @@ int generate_c_from_type_identifier(FILE* output_file, const struct TypeIdentifi
 
 int generate_c_macros(FILE* output_file) {
 	fputs("#define add(x, y) ((x) + (y))\n", output_file);
+	fputs("#define and(x, y) ((x) && (y))\n", output_file);
 	fputs("#define cast(type, x) ((type) x)\n", output_file);
 	fputs("#define ccstring const char *\n", output_file);
 	fputs("#define cstring char *\n", output_file);
@@ -737,13 +738,23 @@ int generate_c_macros(FILE* output_file) {
 	fputs("#define div(x, y) ((x) / (y))\n", output_file);
 	fputs("#define eq(x, y) ((x) == (y))\n", output_file);
 	fputs("#define equals(x, y) ((x) == (y))\n", output_file);
+	fputs("#define falsey(x) (!(x))\n", output_file);
+	fputs("#define gt(x, y) ((x) > (y))\n", output_file);
+	fputs("#define gte(x, y) ((x) >= (y))\n", output_file);
+	fputs("#define lt(x, y) ((x) < (y))\n", output_file);
+	fputs("#define lte(x, y) ((x) <= (y))\n", output_file);
 	fputs("#define mod(x, y) ((x) % (y))\n", output_file);
 	fputs("#define mul(x, y) ((x) * (y))\n", output_file);
+	fputs("#define nand(x, y) (!((x) && (y)))\n", output_file);
 	fputs("#define neg(x) (-(x))\n", output_file);
-	fputs("#define not(x) !(x)\n", output_file);
+	fputs("#define nor(x, y) (!((x) || (y)))\n", output_file);
+	fputs("#define not(x) (!(x))\n", output_file);
+	fputs("#define or(x, y) ((x) || (y))\n", output_file);
 	fputs("#define point(x) &(x)\n", output_file);
 	fputs("#define sub(x, y) ((x) - (y))\n", output_file);
 	fputs("#define truthy(x) (x)\n", output_file);
+	fputs("#define xor(x, y) ((x) ^ (y))\n", output_file);
+	fputs("#define xnor(x, y) (!((x) ^ (y)))\n", output_file);
 	fputs("#define unsafe_index(arr, index) (arr)[(index)]\n", output_file);
 	fputs("#define unused(x) (void)(x)\n", output_file);
 	fputc('\n', output_file);
