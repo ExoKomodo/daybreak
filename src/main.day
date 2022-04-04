@@ -11,6 +11,7 @@ fun main (argc:int argv:ptr<ccstring>) int is
 		argv
 		(point source_file_path)
 		(point output_file_path))
+	
 	match
 		(not arg_result) => return 1
 	end

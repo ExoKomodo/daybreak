@@ -1,3 +1,5 @@
 fun print_problem_welcome (problem_number: int) void is
 	(printf "Solving Euler problem #%03d\n" problem_number)
 end
+
+fun not_implemented () void is exit(1) end

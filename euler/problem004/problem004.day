@@ -1,0 +1,15 @@
+import "euler/helpers.day"
+
+
+
+fun _solve_problem004 (digits: int64_t) int64_t is
+	(not_implemented)
+	return 0
+end
+
+fun problem004 () int is
+	(print_problem_welcome 4)
+	let solution: int64_t <- (_solve_problem004 2)
+	(printf "Solution: %lld\n\n" solution)
+	return 0
+end
