@@ -1,15 +1,31 @@
 import "euler/helpers.day"
 
 
+fun _is_palindrome (str: cstring len: size_t) bool is
+	return false
+end
 
-fun _solve_problem004 (digits: int64_t) int64_t is
-	(not_implemented)
+fun _find_palindromic_pair_inner (upper_bound: int number: int) int is
+	return 0
+end
+
+fun _find_palindromic_pair (upper_bound: int) int is
+	return 0
+end
+
+fun _solve_problem004 (digits: int) int is
+	(_find_palindromic_pair
+		(sub
+			(pow
+				10
+				digits)
+			1))
 	return 0
 end
 
 fun problem004 () int is
 	(print_problem_welcome 4)
-	let solution: int64_t <- (_solve_problem004 2)
-	(printf "Solution: %lld\n\n" solution)
+	let solution: int <- (_solve_problem004 2)
+	(printf "Solution: %d\n\n" solution)
 	return 0
 end
