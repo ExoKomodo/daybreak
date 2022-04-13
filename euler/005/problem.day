@@ -1,14 +1,61 @@
 import "euler/helpers.day"
 
 
-fun _problem005 (upper_bound: int) int is
-	(unused upper_bound)
-	return 0
+fun get_prime_factor_polynomial_degree (upper_bound: int prime: int) int is
+	return (cast
+		int
+		(floor
+			(div
+				(log upper_bound)
+				(log prime))))
+end
+
+fun _construct_polynomial_term (upper_bound: int prime: int) int is
+	return (pow
+		prime
+		(get_prime_factor_polynomial_degree upper_bound prime))
+end
+
+fun foo (a: array<int>) bool is
+	(unused a)
+	return false
+end
+
+
+fun _problem005 () int is
+	let upper_bound: int <- 20
+	let primes: array<int> <- [
+		2
+		3
+		5
+		7
+		11
+		13
+		17
+		19
+	]
+	
+	return (mul
+		(_construct_polynomial_term upper_bound (unsafe_index primes 0))
+		(mul
+			(_construct_polynomial_term upper_bound (unsafe_index primes 1))
+			(mul
+				(_construct_polynomial_term upper_bound (unsafe_index primes 2))
+				(mul
+					(_construct_polynomial_term upper_bound (unsafe_index primes 3))
+					(mul
+						(_construct_polynomial_term upper_bound (unsafe_index primes 4))
+						(mul
+							(_construct_polynomial_term upper_bound (unsafe_index primes 5))
+							(mul
+								(_construct_polynomial_term upper_bound (unsafe_index primes 6))
+								(_construct_polynomial_term upper_bound (unsafe_index primes 7)))))))))
 end
 
 fun problem005 () int is
 	(print_problem_welcome 5)
-	let solution: int <- (_problem005 20)
+	let solution: int <- (_problem005)
+	(assert (eq solution 232792560))
 	(printf "Solution: %d\n\n" solution)
 	return 0
 end
