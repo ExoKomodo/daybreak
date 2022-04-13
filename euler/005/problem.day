@@ -1,0 +1,14 @@
+import "euler/helpers.day"
+
+
+fun _solve_problem005 (upper_bound: int) int is
+	(unused upper_bound)
+	return 0
+end
+
+fun problem005 () int is
+	(print_problem_welcome 5)
+	let solution: int <- (_solve_problem005 20)
+	(printf "Solution: %d\n\n" solution)
+	return 0
+end
