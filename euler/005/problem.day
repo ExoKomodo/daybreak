@@ -10,20 +10,35 @@ fun get_prime_factor_polynomial_degree (upper_bound: int prime: int) int is
 				(log prime))))
 end
 
-fun _construct_polynomial_term (upper_bound: int prime: int) int is
+fun construct_polynomial_term (upper_bound: int prime: int) int is
 	return (pow
 		prime
 		(get_prime_factor_polynomial_degree upper_bound prime))
 end
 
-fun foo (a: array<int>) bool is
-	(unused a)
-	return false
+fun _recursive_multiply (upper_bound: int arr: array<int> len: size_t index: size_t acc: int) int is
+	match
+		(gte
+			index
+			len) => return acc
+		(default) => return (_recursive_multiply
+			upper_bound
+			arr
+			len
+			(add index 1)
+			(mul
+				acc
+				(construct_polynomial_term
+					upper_bound
+					(unsafe_index arr index))))
+	end
 end
 
+fun recursive_multiply (upper_bound: intarr: array<int> len: size_t) int is
+	return (_recursive_multiply upper_bound arr len 0 1)
+end
 
 fun _problem005 () int is
-	let upper_bound: int <- 20
 	let primes: array<int> <- [
 		2
 		3
@@ -32,24 +47,14 @@ fun _problem005 () int is
 		11
 		13
 		17
-		19
-	]
+		19]
 	
-	return (mul
-		(_construct_polynomial_term upper_bound (unsafe_index primes 0))
-		(mul
-			(_construct_polynomial_term upper_bound (unsafe_index primes 1))
-			(mul
-				(_construct_polynomial_term upper_bound (unsafe_index primes 2))
-				(mul
-					(_construct_polynomial_term upper_bound (unsafe_index primes 3))
-					(mul
-						(_construct_polynomial_term upper_bound (unsafe_index primes 4))
-						(mul
-							(_construct_polynomial_term upper_bound (unsafe_index primes 5))
-							(mul
-								(_construct_polynomial_term upper_bound (unsafe_index primes 6))
-								(_construct_polynomial_term upper_bound (unsafe_index primes 7)))))))))
+	return (recursive_multiply
+		20
+		primes
+		(div
+			(sizeof primes)
+			(sizeof int)))
 end
 
 fun problem005 () int is
