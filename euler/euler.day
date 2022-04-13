@@ -1,7 +1,7 @@
-import "euler/problem001/problem001.day"
-import "euler/problem002/problem002.day"
-import "euler/problem003/problem003.day"
-import "euler/problem004/problem004.day"
+import "euler/001/problem.day"
+import "euler/002/problem.day"
+import "euler/003/problem.day"
+import "euler/004/problem.day"
 
 
 fun main () int is
