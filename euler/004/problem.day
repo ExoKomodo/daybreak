@@ -81,7 +81,6 @@ end
 fun problem004 () int is
 	(print_problem_welcome 4)
 	let solution: int <- (_problem004 3)
-	(assert (eq solution 906609))
-	(printf "Solution: %d\n\n" solution)
+	(print_problem_solution solution 906609)
 	return 0
 end
