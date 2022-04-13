@@ -1,31 +1,86 @@
+importc "string.h"
 import "euler/helpers.day"
 
 
-fun _is_palindrome (str: cstring len: size_t) bool is
-	return false
+fun _is_palindrome_inner (str: ccstring len: size_t left_index: size_t) bool is
+	let right_index: size_t <- (sub
+		len
+		(add
+			left_index
+			1))
+	match
+		(gte
+			left_index
+			right_index) => return true
+		(not
+			(eq
+				(unsafe_index str left_index)
+				(unsafe_index str right_index))) => return false
+		(default) => return (_is_palindrome_inner str len (add left_index 1))
+	end
 end
 
-fun _find_palindromic_pair_inner (upper_bound: int number: int) int is
-	return 0
+fun _is_palindrome (str: ccstring len: size_t) bool is
+	return (_is_palindrome_inner str len 0)
+end
+
+fun _is_palindromic_number (number: int) bool is
+	let len: size_t <- 20
+	let buffer: cstring <- (malloc (mul len (sizeof char)))
+	(sprintf
+		(cast
+			cstring
+			buffer)
+		"%d"
+		number)
+	let result: bool <- (_is_palindrome buffer (strlen buffer))
+	(delete buffer)
+	return result
+end
+
+fun _find_palindromic_pair_inner (upper_bound: int test_number: int current_max_palindrome: int) int is
+	let product: int <- (mul upper_bound test_number)
+	match
+		(and
+			(_is_palindromic_number product)
+			(gt product current_max_palindrome)) => return (_find_palindromic_pair_inner
+				upper_bound
+				(sub test_number 1)
+				product)
+		(lte
+			upper_bound
+			1) => return current_max_palindrome
+		(lte
+			test_number
+			1) => return (_find_palindromic_pair_inner
+				(sub upper_bound 1)
+				(sub upper_bound 1)
+				current_max_palindrome)
+		(default) => return (_find_palindromic_pair_inner
+			upper_bound
+			(sub test_number 1)
+			current_max_palindrome)
+	end
 end
 
 fun _find_palindromic_pair (upper_bound: int) int is
-	return 0
+	return (_find_palindromic_pair_inner upper_bound upper_bound 0)
 end
 
 fun _solve_problem004 (digits: int) int is
-	(_find_palindromic_pair
+	return (_find_palindromic_pair
 		(sub
-			(pow
-				10
-				digits)
+			(cast
+				int
+				(pow
+					10
+					digits))
 			1))
-	return 0
 end
 
 fun problem004 () int is
 	(print_problem_welcome 4)
-	let solution: int <- (_solve_problem004 2)
+	let solution: int <- (_solve_problem004 3)
 	(printf "Solution: %d\n\n" solution)
 	return 0
 end

@@ -838,6 +838,7 @@ int generate_c_macros(FILE* output_file) {
 	fputs("#define cast(type, x) ((type) x)\n", output_file);
 	fputs("#define ccstring const char *\n", output_file);
 	fputs("#define cstring char *\n", output_file);
+	fputs("#define delete(x) (free((void*)x))\n", output_file);
 	fputs("#define deref(x) *(x)\n", output_file);
 	fputs("#define div(x, y) ((x) / (y))\n", output_file);
 	fputs("#define eq(x, y) ((x) == (y))\n", output_file);
@@ -855,8 +856,10 @@ int generate_c_macros(FILE* output_file) {
 	fputs("#define not(x) (!(x))\n", output_file);
 	fputs("#define or(x, y) ((x) || (y))\n", output_file);
 	fputs("#define point(x) &(x)\n", output_file);
+	fputs("#define ptr_type(x) x *\n", output_file);
 	fputs("#define sub(x, y) ((x) - (y))\n", output_file);
 	fputs("#define truthy(x) (x)\n", output_file);
+	fputs("#define voidptr void *\n", output_file);
 	fputs("#define xor(x, y) ((x) ^ (y))\n", output_file);
 	fputs("#define xnor(x, y) (!((x) ^ (y)))\n", output_file);
 	fputs("#define unsafe_index(arr, index) (arr)[(index)]\n", output_file);
