@@ -11,7 +11,7 @@ fun partial_sum (n: int scale: int) int is
 			2)
 end
 
-fun _solve_problem001 (limit: int) int is
+fun _problem001 (limit: int) int is
 	let n: int <- 3
 	let m: int <- 5
 	let nm: int <- (mul n m)
@@ -31,7 +31,7 @@ end
 fun problem001 () int is
 	(print_problem_welcome 1)
 	
-	let solution: int <- (_solve_problem001 1000)
+	let solution: int <- (_problem001 1000)
 	(printf "Solution: %d\n\n" solution)
 	return solution
 end

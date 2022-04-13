@@ -2,7 +2,7 @@ importc "string.h"
 import "euler/helpers.day"
 
 
-fun _is_palindrome_inner (str: ccstring len: size_t left_index: size_t) bool is
+fun _is_palindrome (str: ccstring len: size_t left_index: size_t) bool is
 	let right_index: size_t <- (sub
 		len
 		(add
@@ -16,15 +16,15 @@ fun _is_palindrome_inner (str: ccstring len: size_t left_index: size_t) bool is
 			(eq
 				(unsafe_index str left_index)
 				(unsafe_index str right_index))) => return false
-		(default) => return (_is_palindrome_inner str len (add left_index 1))
+		(default) => return (_is_palindrome str len (add left_index 1))
 	end
 end
 
-fun _is_palindrome (str: ccstring len: size_t) bool is
-	return (_is_palindrome_inner str len 0)
+fun is_palindrome (str: ccstring len: size_t) bool is
+	return (_is_palindrome str len 0)
 end
 
-fun _is_palindromic_number (number: int) bool is
+fun is_palindromic_number (number: int) bool is
 	let len: size_t <- 20
 	let buffer: cstring <- (malloc (mul len (sizeof char)))
 	(sprintf
@@ -33,17 +33,17 @@ fun _is_palindromic_number (number: int) bool is
 			buffer)
 		"%d"
 		number)
-	let result: bool <- (_is_palindrome buffer (strlen buffer))
+	let result: bool <- (is_palindrome buffer (strlen buffer))
 	(delete buffer)
 	return result
 end
 
-fun _find_palindromic_pair_inner (upper_bound: int test_number: int current_max_palindrome: int) int is
+fun _find_palindromic_pair (upper_bound: int test_number: int current_max_palindrome: int) int is
 	let product: int <- (mul upper_bound test_number)
 	match
 		(and
-			(_is_palindromic_number product)
-			(gt product current_max_palindrome)) => return (_find_palindromic_pair_inner
+			(is_palindromic_number product)
+			(gt product current_max_palindrome)) => return (_find_palindromic_pair
 				upper_bound
 				(sub test_number 1)
 				product)
@@ -52,23 +52,23 @@ fun _find_palindromic_pair_inner (upper_bound: int test_number: int current_max_
 			1) => return current_max_palindrome
 		(lte
 			test_number
-			1) => return (_find_palindromic_pair_inner
+			1) => return (_find_palindromic_pair
 				(sub upper_bound 1)
 				(sub upper_bound 1)
 				current_max_palindrome)
-		(default) => return (_find_palindromic_pair_inner
+		(default) => return (_find_palindromic_pair
 			upper_bound
 			(sub test_number 1)
 			current_max_palindrome)
 	end
 end
 
-fun _find_palindromic_pair (upper_bound: int) int is
-	return (_find_palindromic_pair_inner upper_bound upper_bound 0)
+fun find_palindromic_pair (upper_bound: int) int is
+	return (_find_palindromic_pair upper_bound upper_bound 0)
 end
 
-fun _solve_problem004 (digits: int) int is
-	return (_find_palindromic_pair
+fun _problem004 (digits: int) int is
+	return (find_palindromic_pair
 		(sub
 			(cast
 				int
@@ -80,7 +80,7 @@ end
 
 fun problem004 () int is
 	(print_problem_welcome 4)
-	let solution: int <- (_solve_problem004 3)
+	let solution: int <- (_problem004 3)
 	(printf "Solution: %d\n\n" solution)
 	return 0
 end
