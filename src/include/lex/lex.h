@@ -211,6 +211,8 @@ struct Token* lex_file(const char* filename, FILE* file) {
 			case ':':
 			case '{':
 			case '}':
+			case '[':
+			case ']':
 			case '(':
 			case ')': {
 				if (token_length > 0) {
