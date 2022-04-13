@@ -23,6 +23,7 @@ int generate_c_from_identifier(FILE*, const struct IdentifierNode*);
 int generate_c_from_identifier_expression(FILE*, const struct IdentifierExpressionNode*);
 int generate_c_from_import_statement(FILE*, const struct ImportStatementNode*);
 int generate_c_from_integer_expression(FILE*, const struct IntegerExpressionNode*);
+int generate_c_from_list_expression(FILE*, const struct ListExpressionNode*);
 int generate_c_from_match_case(FILE*, const struct MatchCaseNode*);
 int generate_c_from_match_case_list(FILE*, const struct MatchCaseListNode*);
 int generate_c_from_match_statement(FILE*, const struct MatchStatementNode*);
@@ -88,6 +89,7 @@ int generate_c_code(
 }
 
 int generate_c_include_prelude(FILE* output_file) {
+	fputs("#include <assert.h>\n", output_file);
 	fputs("#include <math.h>\n", output_file);
 	fputs("#include <stdbool.h>\n", output_file);
 	fputs("#include <stdlib.h>\n", output_file);
@@ -106,9 +108,34 @@ int generate_c_from_binding_expression(
 		return 1;
 	}
 
-	fprintf(output_file, "const %s %s = ", binding_expression->type->name, binding_expression->binding->name);
-	const int error = generate_c_from_expression(output_file, binding_expression->expression);
-	return error;
+	fputs("const ", output_file);
+	int error = generate_c_from_type_identifier(output_file, binding_expression->type);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C code from BindingExpressionNode. Failed to generate type identifier.");
+		return error;
+	}
+	fputc(' ', output_file);
+	error = generate_c_from_identifier(output_file, binding_expression->binding);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C code from BindingExpressionNode. Failed to generate binding identifier.");
+		return error;
+	}
+	
+	struct TypeIdentifierNode* current_type = binding_expression->type;
+	while (
+		current_type &&
+		(strcmp(current_type->identifier->name, "array") == 0)
+	 ) {
+		fputs("[]", output_file);
+		current_type = current_type->contained_type;
+	}
+	fputc('=', output_file);
+	error = generate_c_from_expression(output_file, binding_expression->expression);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C code from BindingExpressionNode. Failed to generate expression.");
+		return error;
+	}
+	return 0;
 }
 
 int generate_c_from_call_expression(FILE* output_file, const struct CallExpressionNode* call_expression) {
@@ -149,6 +176,9 @@ int generate_c_from_expression(FILE* output_file, const struct ExpressionNode* e
 		} break;
 		case AstIdentifierExpression: {
 			return generate_c_from_identifier_expression(output_file, expression->value.identifier_expression);
+		} break;
+		case AstListExpression: {
+			return generate_c_from_list_expression(output_file, expression->value.list_expression);
 		} break;
 		case AstNumericExpression: {
 			return generate_c_from_numeric_expression(output_file, expression->value.numeric_expression);
@@ -397,6 +427,25 @@ int generate_c_from_integer_expression(FILE* output_file, const struct IntegerEx
 	return 0;
 }
 
+int generate_c_from_list_expression(FILE* output_file, const struct ListExpressionNode* list_expression) {
+	if (!list_expression) {
+		LOG_ERROR("Failed to generate C code from ListExpressionNode. NULL ListExpressionNode.");
+		return 1;
+	}
+	
+	fputc('{', output_file);
+	const int error = generate_c_from_expression_list(
+		output_file,
+		list_expression->expressions
+	);
+	if (error != 0) {
+		return error;
+	}
+	fputc('}', output_file);
+
+	return 0;	
+}
+
 int generate_c_from_match_statement(FILE* output_file, const struct MatchStatementNode* match_expression) {
 	if (!match_expression) {
 		LOG_ERROR("Failed to generate C code from MatchStatementNode. NULL MatchStatementNode.");
@@ -534,6 +583,14 @@ int generate_c_from_parameter(FILE* output_file, const struct ParameterNode* par
 	error = generate_c_from_identifier(output_file, parameter->identifier);
 	if (error != 0) {
 		return error;
+	}
+	struct TypeIdentifierNode* current_type = parameter->type_identifier;
+	while (
+		current_type &&
+		(strcmp(current_type->identifier->name, "array") == 0)
+	 ) {
+		fputs("[]", output_file);
+		current_type = current_type->contained_type;
 	}
 
 	return 0;
@@ -687,7 +744,7 @@ int generate_c_from_type_expression(FILE* output_file, const struct TypeExpressi
 	}
 
 	fputc('(', output_file);
-	int error = generate_c_from_identifier(output_file, type_expression->object);
+	int error = generate_c_from_type_identifier(output_file, type_expression->type);
 	fputc(')', output_file);
 	if (error != 0) {
 		return error;
@@ -719,6 +776,15 @@ int generate_c_from_type_identifier(FILE* output_file, const struct TypeIdentifi
 			}
 		}
 		fputc('*', output_file);
+		return 0;
+	}
+	if (strcmp(type_identifier->identifier->name, "array") == 0) {
+		if (type_identifier->contained_type) {
+			const int error = generate_c_from_type_identifier(output_file, type_identifier->contained_type);
+			if (error != 0) {
+				return error;
+			}
+		}
 		return 0;
 	}
 	const int error = generate_c_from_identifier(output_file, type_identifier->identifier);
