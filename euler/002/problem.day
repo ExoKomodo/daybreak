@@ -28,6 +28,7 @@ fun problem002 () int is
 	(print_problem_welcome 2)
 	
 	let solution: int <- (_problem002 4000000)
+	(assert (eq solution 4613732))
 	(printf "Solution: %d\n\n" solution)
 	return solution
 end
