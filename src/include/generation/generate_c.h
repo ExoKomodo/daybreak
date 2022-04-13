@@ -112,7 +112,6 @@ int generate_c_from_binding_expression(
 		return 1;
 	}
 
-	fputs("const ", output_file);
 	int error = generate_c_from_type_identifier(output_file, binding_expression->type);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C code from BindingExpressionNode. Failed to generate type identifier.");
