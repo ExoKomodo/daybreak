@@ -1,0 +1,15 @@
+import "euler/helpers.day"
+
+
+fun _problem006 (count: int) int is
+	(unused count)
+	return 0
+end
+
+fun problem006 () int is
+	(print_problem_welcome 6)
+	let solution: int <- (_problem006 10)
+	(assert (eq solution 2640))
+	(printf "Solution: %d\n\n" solution)
+	return 0
+end
