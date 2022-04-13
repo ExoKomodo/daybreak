@@ -34,7 +34,7 @@ fun _recursive_multiply (upper_bound: int arr: array<int> len: size_t index: siz
 	end
 end
 
-fun recursive_multiply (upper_bound: intarr: array<int> len: size_t) int is
+fun recursive_multiply (upper_bound: int arr: array<int> len: size_t) int is
 	return (_recursive_multiply upper_bound arr len 0 1)
 end
 
