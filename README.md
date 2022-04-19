@@ -1,8 +1,6 @@
 # Daybreak
 Programming language that compiles to C
 
-[![Jenkins Build Status](https://jenkins.exokomodo.com/job/Daybreak/job/main/badge/icon)](https://jenkins.exokomodo.com/job/Daybreak/job/main/)
-
 ## Important Links
 - [Repository](https://github.com/ExoKomodo/Daybreak)
 - [Jenkins](https://jenkins.exokomodo.com/job/Daybreak)
@@ -10,12 +8,15 @@ Programming language that compiles to C
 ## Suggested VSCode Extensions
 Reference [`devcontainer.json`](./.devcontainer/devcontainer.json)'s `extensions` array to see what VSCode extensions are recommended.
 
+## CI/CD
+[![Jenkins Build Status](http://jenkins.exokomodo.com/buildStatus/icon?job=Daybreak%2Fmain)](http://jenkins.exokomodo.com/job/Daybreak/job/main/)
+
 ## Setup
 
 ### Setup on Windows
 Install [MSYS2](https://www.msys2.org/)
 
-Once installed, run the following commands to install all of the dependencies:
+Once installed, run the following commands to install all of the dependencies for GCC:
 ```bash
 pacman -Syu
 pacman -Su
