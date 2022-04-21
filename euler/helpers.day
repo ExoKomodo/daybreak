@@ -20,3 +20,20 @@ fun partial_sum (n: int scale: int) int is
 end
 
 fun not_implemented () void is (exit 1) end
+
+fun _is_prime (num: int64_t factor: int64_t) bool is
+	let square_root: int64_t <- (sqrt num)
+	match
+		(gt factor square_root) => return true
+		(eq
+			0
+			(mod num factor)) => return false
+		(default) => return (_is_prime
+			num
+			(add factor 1))
+	end
+end
+
+fun is_prime (num: int64_t) bool is
+	return (_is_prime num 2)
+end
