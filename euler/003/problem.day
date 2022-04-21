@@ -75,8 +75,8 @@ fun _problem003 (n: int64_t) int64_t is
 end
 
 fun problem003 () int is
-	(print_problem_welcome 3)
+	(welcome 3)
 	let solution: int64_t <- (_problem003 600851475143)
-	(print_problem_solution solution 6857)
+	(check_solution solution 6857)
 	return 0
 end

@@ -58,8 +58,8 @@ fun _problem005 () int is
 end
 
 fun problem005 () int is
-	(print_problem_welcome 5)
+	(welcome 5)
 	let solution: int <- (_problem005)
-	(print_problem_solution solution 232792560)
+	(check_solution solution 232792560)
 	return 0
 end

@@ -25,9 +25,9 @@ fun _problem002 (limit: int) int is
 end
 
 fun problem002 () int is
-	(print_problem_welcome 2)
+	(welcome 2)
 	
 	let solution: int <- (_problem002 4000000)
-	(print_problem_solution solution 4613732)
+	(check_solution solution 4613732)
 	return solution
 end
