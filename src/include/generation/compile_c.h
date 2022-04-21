@@ -9,7 +9,7 @@
 #include <macros/helpers.h>
 
 #define CC_FLAGS "" \
-  "-O " \
+  "-O2 " \
   "-foptimize-sibling-calls " \
   "-Werror " \
   "-Wall " \
