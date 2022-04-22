@@ -1,10 +1,11 @@
-def COMPOSE_ARGS = '--build --abort-on-container-exit --no-log-prefix'
+def COMPOSE_ARGS = '--build --abort-on-container-exit'
 
 pipeline {
 	agent any
 
 	options {
 		disableConcurrentBuilds()
+		ansiColor('xterm')
 	}
 
 	stages {
