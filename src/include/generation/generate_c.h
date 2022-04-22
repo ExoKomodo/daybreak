@@ -42,8 +42,11 @@ int generate_c_from_type_expression(FILE*, const struct TypeExpressionNode*);
 int generate_c_from_type_identifier(FILE*, const struct TypeIdentifierNode*);
 int generate_c_include_prelude(FILE*);
 int generate_c_macros(FILE*);
+int _generate_c_function_signature(FILE*, const struct FunctionDeclarationNode*, const bool);
 bool _is_file_imported(const char*);
+bool _is_main(const struct FunctionDeclarationNode*);
 FILE* _open_output_file(const char*);
+bool _should_inline(const struct FunctionDeclarationNode*);
 
 #define IMPORTED_FILE_MAX 1024
 
@@ -290,14 +293,22 @@ int generate_c_from_field_list(FILE* output_file, const struct FieldListNode* fi
 	return 0;
 }
 
-int generate_c_from_function_declaration(
-	FILE* output_file,
-	const struct FunctionDeclarationNode* function_declaration
-) {
+int _generate_c_function_signature(FILE* output_file, const struct FunctionDeclarationNode* function_declaration, const bool is_inline) {
 	if (!function_declaration) {
-		LOG_ERROR("Failed to generate C code from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
+		LOG_ERROR("Failed to generate function signature from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
 		return 1;
 	}
+
+	if (is_inline) {
+		fputs(
+			#if defined(_WIN32) || defined(_WIN64)
+			"static "
+			#endif
+			"inline ",
+			output_file
+		);
+	}
+
 	int error = generate_c_from_type_identifier(output_file, function_declaration->return_type);
 	if (error != 0) {
 		return error;
@@ -312,7 +323,33 @@ int generate_c_from_function_declaration(
 	if (error != 0) {
 		return error;
 	}
-	fputs(") {\n", output_file);
+	fputc(')', output_file);
+
+	return 0;
+}
+
+int generate_c_from_function_declaration(
+	FILE* output_file,
+	const struct FunctionDeclarationNode* function_declaration
+) {
+	if (!function_declaration) {
+		LOG_ERROR("Failed to generate C code from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
+		return 1;
+	}
+
+	if (!_is_main(function_declaration)) {
+		const int error = _generate_c_function_signature(output_file, function_declaration, _should_inline(function_declaration));
+		if (error != 0) {
+			return error;
+		}
+		fputs(";\n", output_file);
+	}
+
+	int error = _generate_c_function_signature(output_file, function_declaration, false);
+	if (error != 0) {
+		return error;
+	}
+	fputs(" {\n", output_file);
 	struct StatementListNode* statements = function_declaration->statements;
 	error = generate_c_from_statement_list(output_file, statements);
 	if (error != 0) {
@@ -860,6 +897,15 @@ bool _is_file_imported(const char* source_file_path) {
 	return false;
 }
 
+bool _is_main(const struct FunctionDeclarationNode* function_declaration) {
+	return (
+		function_declaration &&
+		function_declaration->identifier &&
+		function_declaration->identifier->name &&
+		strcmp("main", function_declaration->identifier->name) == 0
+	);
+}
+
 FILE* _open_output_file(const char* output_file_path) {
 	FILE* file = fopen(output_file_path, "w+");
 	if (file == NULL) {
@@ -867,4 +913,8 @@ FILE* _open_output_file(const char* output_file_path) {
 		return NULL;
 	}
 	return file;
+}
+
+bool _should_inline(const struct FunctionDeclarationNode* function_declaration) {
+	return !_is_main(function_declaration);
 }

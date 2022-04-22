@@ -1,7 +1,7 @@
 FROM gcc:11
 
 RUN apt update -y
-RUN apt install -y valgrind
+RUN apt install valgrind -y
 
 ENV C_INCLUDE_PATH=/app/src/include:/app/tests/include
 
