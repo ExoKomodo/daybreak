@@ -44,6 +44,7 @@ int generate_c_include_prelude(FILE*);
 int generate_c_macros(FILE*);
 bool _is_file_imported(const char*);
 FILE* _open_output_file(const char*);
+bool _should_inline(const struct FunctionDeclarationNode*);
 
 #define IMPORTED_FILE_MAX 1024
 
@@ -298,6 +299,18 @@ int generate_c_from_function_declaration(
 		LOG_ERROR("Failed to generate C code from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
 		return 1;
 	}
+
+	if (_should_inline(function_declaration)) {
+		fputs(
+			#if defined(_WIN32) || defined(_WIN64)
+			"static inline ",
+			#else
+			"inline ",
+			#endif
+			output_file
+		);
+	}
+
 	int error = generate_c_from_type_identifier(output_file, function_declaration->return_type);
 	if (error != 0) {
 		return error;
@@ -867,4 +880,13 @@ FILE* _open_output_file(const char* output_file_path) {
 		return NULL;
 	}
 	return file;
+}
+
+bool _should_inline(const struct FunctionDeclarationNode* function_declaration) {
+	return (
+		function_declaration &&
+		function_declaration->identifier &&
+		function_declaration->identifier->name &&
+		strcmp("main", function_declaration->identifier->name) != 0
+	);
 }
