@@ -6,6 +6,7 @@ fun main (argc:int argv:ptr<ccstring>) int is
 	let source_file_path: cstring <- NULL
 	let output_file_path: cstring <- NULL
 	
+	? TODO: return a struct of the parsed args
 	let arg_result: bool <- (daybreak_parse_args
 		argc
 		argv

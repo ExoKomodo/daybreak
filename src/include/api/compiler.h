@@ -12,7 +12,7 @@
 
 int daybreak_compile(const char*, const char*);
 void daybreak_greeting();
-bool daybreak_parse_args(int, const char**, const char**, const char**);
+bool daybreak_parse_args(int, const char**, char**, char**);
 
 int daybreak_compile(
 	const char* source_file_path,
@@ -79,16 +79,16 @@ void daybreak_greeting() {
 bool daybreak_parse_args(
 	int argc,
 	const char** argv,
-	const char** source_file_path,
-	const char** output_file_path
+	char** source_file_path,
+	char** output_file_path
 ) {
 	if (argc < 2) {
 		puts(DAYBREAK_USAGE_TEXT);
 		return false;
 	}
 	bool is_output = false;
-	const char* temp_output_file_path = NULL;
-	const char* temp_source_file_path = NULL;
+	char* temp_output_file_path = NULL;
+	char* temp_source_file_path = NULL;
 	for (int i = 1; i < argc; i++) {
 		if (is_output) {
 			temp_output_file_path = argv[i];
