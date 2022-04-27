@@ -1,4 +1,5 @@
 importc "inttypes.h"
+importc "math.h"
 
 fun welcome (problem_number: int) void is
 	(printf "Solving Euler problem #%03d\n" problem_number)

@@ -8,7 +8,7 @@
 #include <log/prelude.h>
 #include <macros/helpers.h>
 
-#define CC_FLAGS "" \
+#define CC_ARGS "" \
   "-O2 " \
   "-foptimize-sibling-calls " \
   "-Werror " \
@@ -21,7 +21,9 @@
   "-Wdouble-promotion " \
   "-Wno-endif-labels "
 
-#define CC_COMPILE_COMMAND_FORMAT "cc %s -o \"%s\" \"%s\""
+#define CC_LINKER_ARGS "-lm "
+
+#define CC_COMPILE_COMMAND_FORMAT "cc %s -o \"%s\" \"%s\" %s"
 
 int compile_c_code(const char*, const char*);
 char* _build_command(const char*, const char*);
@@ -45,22 +47,25 @@ int compile_c_code(
 }
 
 char* _build_command(const char* source_file_path, const char* executable_path) {
+  // TODO: Consider making this a macro for appending constant strings together - jamesaorson@gmail.com
   char* command = malloc(
     sizeof(char) *
     (
       strlen(CC_COMPILE_COMMAND_FORMAT) +
-      strlen(CC_FLAGS) +
+      strlen(CC_ARGS) +
       strlen(executable_path) +
       strlen(source_file_path) +
+      strlen(CC_LINKER_ARGS) +
       1
     )
   );
   sprintf(
     command,
     CC_COMPILE_COMMAND_FORMAT,
-    CC_FLAGS,
+    CC_ARGS,
     executable_path,
-    source_file_path
+    source_file_path,
+    CC_LINKER_ARGS
   );
   return command;
 }

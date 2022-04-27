@@ -1,3 +1,4 @@
+importc "math.h"
 import "euler/helpers.day"
 
 
