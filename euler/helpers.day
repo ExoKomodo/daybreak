@@ -1,10 +1,25 @@
+importc "inttypes.h"
+
 fun welcome (problem_number: int) void is
 	(printf "Solving Euler problem #%03d\n" problem_number)
 end
 
 fun check_solution (solution: int64_t correct_answer: int64_t) void is
 	let padding: int <- 20
-	(printf "Found Solution: %*lld\nCorrect Answer: %*lld\n\n" padding solution padding correct_answer)
+	(printf
+		(string_interpolate
+			"Found Solution: %*"
+			(string_interpolate
+				PRId64
+				(string_interpolate
+					"\nCorrect Answer: %*"
+					(string_interpolate
+						PRId64
+						"\n\n"))))
+		padding
+		solution
+		padding
+		correct_answer)
 	(assert (eq solution correct_answer))
 end
 

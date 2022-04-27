@@ -845,6 +845,7 @@ int generate_c_macros(FILE* output_file) {
 	fputs("#define falsey(x) (!(x))\n", output_file);
 	fputs("#define gt(x, y) ((x) > (y))\n", output_file);
 	fputs("#define gte(x, y) ((x) >= (y))\n", output_file);
+	fputs("#define string_interpolate(x, y) x y\n", output_file);
 	fputs("#define lt(x, y) ((x) < (y))\n", output_file);
 	fputs("#define lte(x, y) ((x) <= (y))\n", output_file);
 	fputs("#define mod(x, y) ((x) % (y))\n", output_file);
