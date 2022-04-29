@@ -5,6 +5,7 @@ import "euler/004/problem.day"
 import "euler/005/problem.day"
 import "euler/006/problem.day"
 import "euler/007/problem.day"
+import "euler/008/problem.day"
 
 
 fun main () int is
@@ -15,4 +16,5 @@ fun main () int is
 	(problem005)
 	(problem006)
 	(problem007)
+	(problem008)
 end
