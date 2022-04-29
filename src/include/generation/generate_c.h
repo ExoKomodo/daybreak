@@ -42,7 +42,10 @@ int generate_c_from_type_expression(FILE*, const struct TypeExpressionNode*);
 int generate_c_from_type_identifier(FILE*, const struct TypeIdentifierNode*);
 int generate_c_include_prelude(FILE*);
 int generate_c_macros(FILE*);
+int _generate_c_function_definition(FILE*, const struct FunctionDeclarationNode*);
+int _generate_c_function_declaration(FILE*, const struct FunctionDeclarationNode*);
 int _generate_c_function_signature(FILE*, const struct FunctionDeclarationNode*, const bool);
+int _generate_c_from_module_statement_list_by_kind(FILE*, const struct ModuleStatementListNode*, const AstNodeKind);
 bool _is_file_imported(const char*);
 bool _is_main(const struct FunctionDeclarationNode*);
 FILE* _open_output_file(const char*);
@@ -327,12 +330,12 @@ int _generate_c_function_signature(FILE* output_file, const struct FunctionDecla
 	return 0;
 }
 
-int generate_c_from_function_declaration(
+int _generate_c_function_declaration(
 	FILE* output_file,
 	const struct FunctionDeclarationNode* function_declaration
 ) {
 	if (!function_declaration) {
-		LOG_ERROR("Failed to generate C code from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
+		LOG_ERROR("Failed to generate C function declaration from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
 		return 1;
 	}
 
@@ -343,18 +346,54 @@ int generate_c_from_function_declaration(
 		}
 		fputs(";\n", output_file);
 	}
+	return 0;
+}
+
+int _generate_c_function_definition(
+	FILE* output_file,
+	const struct FunctionDeclarationNode* function_declaration
+) {
+	if (!function_declaration) {
+		LOG_ERROR("Failed to generate C function definition from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
+		return 1;
+	}
 
 	int error = _generate_c_function_signature(output_file, function_declaration, false);
 	if (error != 0) {
+		LOG_ERROR("Failed to generate C function signature from FunctionDeclarationNode: %d", error);
 		return error;
 	}
 	fputs(" {\n", output_file);
 	struct StatementListNode* statements = function_declaration->statements;
 	error = generate_c_from_statement_list(output_file, statements);
 	if (error != 0) {
+		LOG_ERROR("Failed to generate C function statements from Statement List: %d", error);
 		return error;
 	}
 	fputs("}\n", output_file);
+
+	return 0;
+}
+
+int generate_c_from_function_declaration(
+	FILE* output_file,
+	const struct FunctionDeclarationNode* function_declaration
+) {
+	if (!function_declaration) {
+		LOG_ERROR("Failed to generate C code from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
+		return 1;
+	}
+
+	int error = _generate_c_function_declaration(output_file, function_declaration);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C function definition from FunctionDeclarationNode: %d", error);
+		return error;
+	}
+	error = _generate_c_function_definition(output_file, function_declaration);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C function declaration from FunctionDeclarationNode: %d", error);
+		return error;
+	}
 
 	return 0;
 }
@@ -564,6 +603,31 @@ int generate_c_from_module_statement(
 	}
 }
 
+// TODO: Simplify by passing in a function to generate code
+int _generate_c_from_module_statement_list_by_kind(
+	FILE* output_file,
+	const struct ModuleStatementListNode* module_statement_list,
+	const AstNodeKind kind
+) {
+	if (!module_statement_list) {
+		LOG_ERROR("Failed to generate C code from ModuleStatementListNode for AstNodeKind: %d. NULL ModuleStatementListNode.", kind);
+		return 1;
+	}
+	struct ModuleStatementNode** module_statements = module_statement_list->module_statements;
+	for (size_t i = 0; i < module_statement_list->length; i++) {
+		const struct ModuleStatementNode* module_statement = module_statements[i];
+		if (module_statement->kind != kind) {
+			continue;
+		}
+		const int error = generate_c_from_module_statement(output_file, module_statement);
+		if (error != 0) {
+			return error;
+		}
+		fputc('\n', output_file);
+	}
+	return 0;
+}
+
 int generate_c_from_module_statement_list(
 	FILE* output_file,
 	const struct ModuleStatementListNode* module_statement_list
@@ -572,13 +636,39 @@ int generate_c_from_module_statement_list(
 		LOG_ERROR("Failed to generate C code from ModuleStatementListNode. NULL ModuleStatementListNode.");
 		return 1;
 	}
-	struct ModuleStatementNode** module_statements = module_statement_list->module_statements;
+	int error = _generate_c_from_module_statement_list_by_kind(output_file, module_statement_list, AstImportStatement);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C code for import statements.");
+		return error;
+	}
+	error = _generate_c_from_module_statement_list_by_kind(output_file, module_statement_list, AstTypeDeclaration);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C code for type declarations.");
+		return error;
+	}
+	
+	const struct ModuleStatementNode** module_statements = module_statement_list->module_statements;
 	for (size_t i = 0; i < module_statement_list->length; i++) {
-		const int error = generate_c_from_module_statement(output_file, module_statements[i]);
+		const struct ModuleStatementNode* module_statement = module_statements[i];
+		if (module_statement->kind != AstFunctionDeclaration) {
+			continue;
+		}
+		error = _generate_c_function_declaration(output_file, module_statement->value.function_declaration);
 		if (error != 0) {
+			LOG_ERROR("Failed to generate C function declaration from module statement list: %d", error);
 			return error;
 		}
-		fputc('\n', output_file);
+	}
+	for (size_t i = 0; i < module_statement_list->length; i++) {
+		const struct ModuleStatementNode* module_statement = module_statements[i];
+		if (module_statement->kind != AstFunctionDeclaration) {
+			continue;
+		}
+		error = _generate_c_function_definition(output_file, module_statement->value.function_declaration);
+		if (error != 0) {
+			LOG_ERROR("Failed to generate C function definition from module statement list: %d", error);
+			return error;
+		}
 	}
 	return 0;
 }
