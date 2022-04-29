@@ -25,7 +25,12 @@ bool test_integer();
 bool test_integer() {
   LOG_INFO("Running test [test_integer] %s %s", INTEGER, INTEGER_EXECUTABLE);
 
-  int error = daybreak_compile(INTEGER, INTEGER_EXECUTABLE);
+  int error = daybreak_compile(
+    (DaybreakArgs) {
+      .source_file_path = INTEGER,
+      .output_file_path = INTEGER_EXECUTABLE,
+    }
+  );
   if (error != 0) {
     LOG_ERROR("Failed compiling integer program via compiler API");
     return false;

@@ -25,7 +25,12 @@ bool test_match();
 bool test_match() {
   LOG_INFO("Running test [test_match] %s %s", MATCH, MATCH_EXECUTABLE);
 
-  int error = daybreak_compile(MATCH, MATCH_EXECUTABLE);
+  int error = daybreak_compile(
+    (DaybreakArgs) {
+      .source_file_path = MATCH,
+      .output_file_path = MATCH_EXECUTABLE,
+    }
+  );
   if (error != 0) {
     LOG_ERROR("Failed compiling match program via compiler API");
     return false;
