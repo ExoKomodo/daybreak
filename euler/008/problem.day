@@ -25,6 +25,7 @@ fun _problem008 (digits: size_t) int is
 												"71636269561882670428252483600823257530420752963450"
 		)))))))))))))))))))
 	(unused series)
+	(unused digits)
 	return 0
 end
 
