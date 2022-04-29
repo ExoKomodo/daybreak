@@ -8,13 +8,13 @@ end
 fun check_solution (solution: int64_t correct_answer: int64_t) void is
 	let padding: int <- 20
 	(printf
-		(string_interpolate
+		(interpolate_cstring
 			"Found Solution: %*"
-			(string_interpolate
+			(interpolate_cstring
 				PRId64
-				(string_interpolate
+				(interpolate_cstring
 					"\nCorrect Answer: %*"
-					(string_interpolate
+					(interpolate_cstring
 						PRId64
 						"\n\n"))))
 		padding
