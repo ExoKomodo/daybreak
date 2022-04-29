@@ -23,7 +23,12 @@ bool test_modules();
 bool test_modules() {
   LOG_INFO("Running test [test_modules] %s %s", MODULES, MODULES_EXECUTABLE);
 
-  int error = daybreak_compile(MODULES, MODULES_EXECUTABLE);
+  int error = daybreak_compile(
+    (DaybreakArgs) {
+      .source_file_path = MODULES,
+      .output_file_path = MODULES_EXECUTABLE,
+    }
+  );
   if (error != 0) {
     LOG_ERROR("Failed compiling modules program via compiler API");
     return false;

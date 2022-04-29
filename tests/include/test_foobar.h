@@ -23,7 +23,12 @@ bool test_foobar();
 bool test_foobar() {
   LOG_INFO("Running test [test_foobar] %s %s", FOOBAR, FOOBAR_EXECUTABLE);
 
-  int error = daybreak_compile(FOOBAR, FOOBAR_EXECUTABLE);
+  int error = daybreak_compile(
+    (DaybreakArgs) {
+      .source_file_path = FOOBAR,
+      .output_file_path = FOOBAR_EXECUTABLE,
+    }
+  );
   if (error != 0) {
     LOG_ERROR("Failed compiling foobar program via compiler API");
     return false;

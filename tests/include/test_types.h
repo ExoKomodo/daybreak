@@ -25,7 +25,12 @@ bool test_types();
 bool test_types() {
   LOG_INFO("Running test [test_types] %s %s", TYPES, TYPES_EXECUTABLE);
 
-  int error = daybreak_compile(TYPES, TYPES_EXECUTABLE);
+  int error = daybreak_compile(
+    (DaybreakArgs) {
+      .source_file_path = TYPES,
+      .output_file_path = TYPES_EXECUTABLE,
+    }
+  );
   if (error != 0) {
     LOG_ERROR("Failed compiling hello world program via compiler API");
     return false;
