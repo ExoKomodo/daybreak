@@ -25,7 +25,12 @@ bool test_double();
 bool test_double() {
   LOG_INFO("Running test [test_double] %s %s", DOUBLE, DOUBLE_EXECUTABLE);
 
-  int error = daybreak_compile(DOUBLE, DOUBLE_EXECUTABLE);
+  int error = daybreak_compile(
+    (DaybreakArgs) {
+      .source_file_path = DOUBLE,
+      .output_file_path = DOUBLE_EXECUTABLE,
+    }
+  );
   if (error != 0) {
     LOG_ERROR("Failed compiling double program via compiler API");
     return false;

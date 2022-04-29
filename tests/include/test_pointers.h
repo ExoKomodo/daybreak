@@ -24,7 +24,12 @@ bool test_pointers();
 bool test_pointers() {
   LOG_INFO("Running test [test_pointers] %s %s", POINTERS, POINTERS_EXECUTABLE);
 
-  int error = daybreak_compile(POINTERS, POINTERS_EXECUTABLE);
+  int error = daybreak_compile(
+    (DaybreakArgs) {
+      .source_file_path = POINTERS,
+      .output_file_path = POINTERS_EXECUTABLE,
+    }
+  );
   if (error != 0) {
     LOG_ERROR("Failed compiling pointers program via compiler API");
     return false;

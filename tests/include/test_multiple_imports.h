@@ -25,7 +25,12 @@ bool test_multiple_imports();
 bool test_multiple_imports() {
   LOG_INFO("Running test [test_multiple_imports] %s %s", MULTIPLE_IMPORTS, MULTIPLE_IMPORTS_EXECUTABLE);
 
-  int error = daybreak_compile(MULTIPLE_IMPORTS, MULTIPLE_IMPORTS_EXECUTABLE);
+  int error = daybreak_compile(
+    (DaybreakArgs) {
+      .source_file_path = MULTIPLE_IMPORTS,
+      .output_file_path = MULTIPLE_IMPORTS_EXECUTABLE,
+    }
+  );
   if (error != 0) {
     LOG_ERROR("Failed compiling multiple_imports program via compiler API");
     return false;

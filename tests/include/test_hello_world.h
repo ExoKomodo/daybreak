@@ -25,7 +25,12 @@ bool test_hello_world();
 bool test_hello_world() {
   LOG_INFO("Running test [test_hello_world] %s %s", HELLO_WORLD, HELLO_WORLD_EXECUTABLE);
 
-  int error = daybreak_compile(HELLO_WORLD, HELLO_WORLD_EXECUTABLE);
+  int error = daybreak_compile(
+    (DaybreakArgs) {
+      .source_file_path = HELLO_WORLD,
+      .output_file_path = HELLO_WORLD_EXECUTABLE,
+    }
+  );
   if (error != 0) {
     LOG_ERROR("Failed compiling hello world program via compiler API");
     return false;

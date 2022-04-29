@@ -25,7 +25,12 @@ bool test_variables();
 bool test_variables() {
   LOG_INFO("Running test [test_variables] %s %s", VARIABLES, VARIABLES_EXECUTABLE);
 
-  int error = daybreak_compile(VARIABLES, VARIABLES_EXECUTABLE);
+  int error = daybreak_compile(
+    (DaybreakArgs) {
+      .source_file_path = VARIABLES,
+      .output_file_path = VARIABLES_EXECUTABLE,
+    }
+  );
   if (error != 0) {
     LOG_ERROR("Failed compiling variables program via compiler API");
     return false;
