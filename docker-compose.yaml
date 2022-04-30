@@ -3,36 +3,48 @@ services:
   memory_check:
     env_file:
       - config.env
+    environment:
+      - CC_COMPILER=${CC_COMPILER}
     build:
       context: .
     command: bash /app/compose_scripts/memory_check.sh
   test:
     env_file:
       - config.env
+    environment:
+      - CC_COMPILER=${CC_COMPILER}
     build:
       context: .
     command: bash /app/compose_scripts/test.sh
   bootstrap:
     env_file:
       - config.env
+    environment:
+      - CC_COMPILER=${CC_COMPILER}
     build:
       context: .
     command: bash /app/compose_scripts/bootstrap.sh
   build_daybreak:
     env_file:
       - config.env
+    environment:
+      - CC_COMPILER=${CC_COMPILER}
     build:
       context: .
     command: bash /app/compose_scripts/build.sh /app/src/main.day
   build_daybreak_test:
     env_file:
       - config.env
+    environment:
+      - CC_COMPILER=${CC_COMPILER}
     build:
       context: .
     command: bash /app/compose_scripts/build.sh /app/tests/test_main.day
   fix_ownership:
     env_file:
       - config.env
+    environment:
+      - CC_COMPILER=${CC_COMPILER}
     build:
       context: .
     command: bash /app/compose_scripts/fix_ownership.sh
