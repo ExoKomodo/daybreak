@@ -8,6 +8,11 @@ pipeline {
 		ansiColor('xterm')
 	}
 
+	environment {
+		DAYBREAK_BOOTSTRAP="./bootstrap/linux/daybreak"
+		DAYBREAK_TEST="./out/daybreak_test"
+	}
+
 	stages {
 		stage('[gcc] Build Daybreak') {
 			environment {
