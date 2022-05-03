@@ -25,3 +25,8 @@ then
 	echo "Must define env var: JENKINS_GROUP"
 	exit 1
 fi
+
+if [ -n ${CC_COMPILER} ];
+then
+	update-alternatives --set cc $(which $CC_COMPILER)
+fi

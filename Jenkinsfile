@@ -9,19 +9,62 @@ pipeline {
 	}
 
 	stages {
-		stage('Build Daybreak') {
+		stage('[gcc] Build Daybreak') {
+			environment {
+				CC_COMPILER = "gcc"
+			}
+
 			steps {
 				sh "docker-compose up ${COMPOSE_ARGS} build_daybreak"
 			}
 		}
 
-		stage('Test') {
+
+		stage('[gcc] Test') {
+			environment {
+				CC_COMPILER = "gcc"
+			}
+
 			steps {
 				sh "docker-compose up ${COMPOSE_ARGS} test"
 			}
 		}
 
-		stage('Memory Check') {
+		stage('[gcc] Memory Check') {
+			environment {
+				CC_COMPILER = "gcc"
+			}
+
+			steps {
+				sh "docker-compose up ${COMPOSE_ARGS} memory_check"
+			}
+		}
+		
+		stage('[clang] Build Daybreak') {
+			environment {
+				CC_COMPILER = "clang"
+			}
+
+			steps {
+				sh "docker-compose up ${COMPOSE_ARGS} build_daybreak"
+			}
+		}
+
+		stage('[clang] Test') {
+			environment {
+				CC_COMPILER = "clang"
+			}
+
+			steps {
+				sh "docker-compose up ${COMPOSE_ARGS} test"
+			}
+		}
+
+		stage('[clang] Memory Check') {
+			environment {
+				CC_COMPILER = "clang"
+			}
+
 			steps {
 				sh "docker-compose up ${COMPOSE_ARGS} memory_check"
 			}
