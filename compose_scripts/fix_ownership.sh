@@ -2,6 +2,16 @@
 
 set -ex
 
-bash ./compose_scripts/check_env.sh
+if [ -z ${JENKINS_USER} ];
+then
+	echo "Must define env var: JENKINS_USER"
+	exit 1
+fi
+
+if [ -z ${JENKINS_GROUP} ];
+then
+	echo "Must define env var: JENKINS_GROUP"
+	exit 1
+fi
 
 chown -R ${JENKINS_USER}:${JENKINS_GROUP} .
