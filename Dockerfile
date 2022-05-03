@@ -7,7 +7,8 @@ COPY . /app
 
 WORKDIR /app
 
-RUN update-alternatives --install /usr/bin/cc cc $(which clang-11) 2
+RUN update-alternatives --install /usr/bin/clang clang $(which clang-11) 1
+RUN update-alternatives --install /usr/bin/cc cc $(which clang) 2
 
 ENV JENKINS_USER=112
 ENV JENKINS_GROUP=119
