@@ -42,7 +42,7 @@ pipeline {
 		
 		stage('[clang] Build Daybreak') {
 			environment {
-				CC_COMPILER = "clang-11"
+				CC_COMPILER = "clang"
 			}
 
 			steps {
@@ -52,7 +52,7 @@ pipeline {
 
 		stage('[clang] Test') {
 			environment {
-				CC_COMPILER = "clang-11"
+				CC_COMPILER = "clang"
 			}
 
 			steps {
@@ -62,7 +62,7 @@ pipeline {
 
 		stage('[clang] Memory Check') {
 			environment {
-				CC_COMPILER = "clang-11"
+				CC_COMPILER = "clang"
 			}
 
 			steps {
