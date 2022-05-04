@@ -3,6 +3,8 @@
 set -ex
 
 WRAPPER=""
+DAYBREAK_TEST=${DAYBREAK_OUT}/daybreak_test
+DAYBREAK_EULER=${DAYBREAK_OUT}/euler
 
 bash ./compose_scripts/check_env.sh
 bash ./compose_scripts/bootstrap.sh
@@ -21,7 +23,16 @@ for example in *; do
 done
 popd
 
-bash ./compose_scripts/build.sh ./tests/test_main.day -o ${DAYBREAK_TEST}
+# Directly compile Euler programs using the compiler executable
+${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./euler/euler.day
+# Run build for actual run
+bash ./compose_scripts/build.sh ./euler/euler.day -o ${DAYBREAK_EULER}
+# Run euler problem solutions
+${WRAPPER} ${DAYBREAK_EULER}
 
+# Directly compile test programs using the compiler executable
+${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./tests/test_main.day
+# Run build for actual run
+bash ./compose_scripts/build.sh ./tests/test_main.day -o ${DAYBREAK_TEST}
 # Run tests with the compiler's test executable
 ${WRAPPER} ${DAYBREAK_TEST}

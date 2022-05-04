@@ -97,6 +97,7 @@ int generate_c_code(
 int generate_c_include_prelude(FILE* output_file) {
 	fputs("#include <assert.h>\n", output_file);
 	fputs("#include <stdbool.h>\n", output_file);
+	fputs("#include <stdint.h>\n", output_file);
 	fputs("#include <stdlib.h>\n", output_file);
 	fputs("#include <stdio.h>\n", output_file);
 	fputc('\n', output_file);
@@ -925,6 +926,7 @@ int generate_c_macros(FILE* output_file) {
 	fputs("#define cast(type, x) ((type) x)\n", output_file);
 	fputs("#define ccstring const char *\n", output_file);
 	fputs("#define cstring char *\n", output_file);
+	fputs("#define delete(x) { (free((void*)x)); x = NULL; }\n", output_file);
 	fputs("#define deref(x) *(x)\n", output_file);
 	fputs("#define div(x, y) ((x) / (y))\n", output_file);
 	fputs("#define eq(x, y) ((x) == (y))\n", output_file);
@@ -932,6 +934,7 @@ int generate_c_macros(FILE* output_file) {
 	fputs("#define falsey(x) (!(x))\n", output_file);
 	fputs("#define gt(x, y) ((x) > (y))\n", output_file);
 	fputs("#define gte(x, y) ((x) >= (y))\n", output_file);
+	fputs("#define interpolate_cstring(x, y) x y\n", output_file);
 	fputs("#define lt(x, y) ((x) < (y))\n", output_file);
 	fputs("#define lte(x, y) ((x) <= (y))\n", output_file);
 	fputs("#define mod(x, y) ((x) % (y))\n", output_file);

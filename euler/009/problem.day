@@ -1,0 +1,85 @@
+importc "math.h"
+import "euler/helpers.day"
+
+type EuclidPair struct is
+	m: int64_t
+	n: int64_t
+	a: int64_t
+	b: int64_t
+	c: int64_t
+end
+
+type EuclidPairResult struct is
+	is_success: bool
+	pair: EuclidPair
+end
+
+fun find_euclid_pair (target_sum: int64_t) EuclidPairResult is
+	let euclid_target: int64_t <- (div target_sum 2)
+	let root: int64_t <- (cast int64_t (sqrt euclid_target))
+	return (_find_euclid_pair euclid_target root root)
+end
+
+fun find_pythagorean_triplet_product (target_sum: int64_t) int64_t is
+	let result: EuclidPairResult <- (find_euclid_pair target_sum)
+	(assert result.is_success)
+	let pair: EuclidPair <- result.pair
+	return
+		(mul pair.a
+		(mul pair.b
+		     pair.c))
+end
+
+fun problem009 () int is
+	(welcome 9)
+	let solution: int64_t <- (_problem009 1000)
+	(check_solution solution 31875000)
+	return 0
+end
+
+fun _find_euclid_pair (target: int64_t square_root: int64_t m: int64_t) EuclidPairResult is
+	match
+		(lt m 1) => return {EuclidPairResult
+			is_success <- false
+		}
+		(not
+			(eq 0
+				(mod target m))) => return (_find_euclid_pair target square_root (sub m 1))
+	end
+
+	let n: int64_t <- (sub (div target m) m)
+	let a: int64_t <- (sub
+		(pow m 2)
+		(pow n 2))
+	let b: int64_t <- (mul
+		2
+		(mul m n))
+	let c: int64_t <- (add
+		(pow m 2)
+		(pow n 2))
+	match
+		(and
+			(and
+				(gt m n)
+				(gt n 0))
+			(lt
+				(llabs (sub a b))
+				a)) => return {EuclidPairResult
+						is_success <- true
+						pair <- {EuclidPair
+							m <- m
+							n <- n
+							a <- a
+							b <- b
+							c <- c
+						}
+					}
+		(default) => return {EuclidPairResult
+			is_success <- false
+		}
+	end
+end
+
+fun _problem009 (target_sum: int64_t) int64_t is
+  return (find_pythagorean_triplet_product target_sum)
+end

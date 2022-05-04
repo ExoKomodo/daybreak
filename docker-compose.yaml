@@ -4,7 +4,7 @@ services:
     environment:
       - CC_COMPILER=${CC_COMPILER}
       - DAYBREAK_BOOTSTRAP=${DAYBREAK_BOOTSTRAP}
-      - DAYBREAK_TEST=${DAYBREAK_TEST}
+      - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
     command: bash /app/compose_scripts/memory_check.sh
@@ -12,7 +12,7 @@ services:
     environment:
       - CC_COMPILER=${CC_COMPILER}
       - DAYBREAK_BOOTSTRAP=${DAYBREAK_BOOTSTRAP}
-      - DAYBREAK_TEST=${DAYBREAK_TEST}
+      - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
     command: bash /app/compose_scripts/test.sh
@@ -20,7 +20,7 @@ services:
     environment:
       - CC_COMPILER=${CC_COMPILER}
       - DAYBREAK_BOOTSTRAP=${DAYBREAK_BOOTSTRAP}
-      - DAYBREAK_TEST=${DAYBREAK_TEST}
+      - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
     command: bash /app/compose_scripts/bootstrap.sh
@@ -28,7 +28,7 @@ services:
     environment:
       - CC_COMPILER=${CC_COMPILER}
       - DAYBREAK_BOOTSTRAP=${DAYBREAK_BOOTSTRAP}
-      - DAYBREAK_TEST=${DAYBREAK_TEST}
+      - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
     command: bash /app/compose_scripts/build.sh /app/src/main.day
@@ -36,7 +36,7 @@ services:
     environment:
       - CC_COMPILER=${CC_COMPILER}
       - DAYBREAK_BOOTSTRAP=${DAYBREAK_BOOTSTRAP}
-      - DAYBREAK_TEST=${DAYBREAK_TEST}
+      - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
     command: bash /app/compose_scripts/build.sh /app/tests/test_main.day
@@ -44,7 +44,7 @@ services:
     environment:
       - CC_COMPILER=${CC_COMPILER}
       - DAYBREAK_BOOTSTRAP=${DAYBREAK_BOOTSTRAP}
-      - DAYBREAK_TEST=${DAYBREAK_TEST}
+      - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
     command: bash /app/compose_scripts/fix_ownership.sh

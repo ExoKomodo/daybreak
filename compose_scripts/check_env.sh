@@ -8,9 +8,9 @@ then
 	exit 1
 fi
 
-if [ -z ${DAYBREAK_TEST} ];
+if [ -z ${DAYBREAK_OUT} ];
 then
-	echo "Must define env var: DAYBREAK_TEST"
+	echo "Must define env var: DAYBREAK_OUT"
 	exit 1
 fi
 

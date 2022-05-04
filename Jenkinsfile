@@ -10,7 +10,7 @@ pipeline {
 
 	environment {
 		DAYBREAK_BOOTSTRAP="./bootstrap/linux/daybreak"
-		DAYBREAK_TEST="./out/daybreak_test"
+		DAYBREAK_OUT="./out"
 	}
 
 	stages {

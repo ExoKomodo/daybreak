@@ -1,0 +1,31 @@
+import "euler/helpers.day"
+
+
+fun problem006 () int is
+	(welcome 6)
+	let solution: int64_t <- (_problem006 100)
+	(check_solution solution 25164150)
+	return 0
+end
+
+fun sum_of_squares (upper_bound: int64_t) int64_t is
+	return (_sum_of_squares upper_bound 0)
+end
+
+fun _problem006 (count: int) int64_t is
+	let squared_sum: int64_t <- (pow
+		(partial_sum (add count 1) 1)
+		2)
+	return (sub squared_sum (sum_of_squares count))
+end
+
+fun _sum_of_squares (upper_bound: int64_t acc: int64_t) int64_t is
+	match
+		(gt
+			upper_bound
+			0) => return (_sum_of_squares
+				(sub upper_bound 1)
+				(add acc (pow upper_bound 2)))
+		(default) => return acc
+	end
+end
