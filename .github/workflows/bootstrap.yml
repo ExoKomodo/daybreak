@@ -1,0 +1,65 @@
+on:
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  bootstrap_linux:
+    runs-on: ubuntu-latest
+    env:
+      C_INCLUDE_PATH: './src/include:./tests/include'
+    steps:
+      - name: (linux) Checkout code
+        uses: actions/checkout@v3
+      - name: (linux) Bootstrap compiler
+        run: |
+          echo "Working directory: $(pwd)"
+          ./bootstrap/linux/daybreak ./src/main.day -o ./bootstrap/linux/daybreak
+          chmod +x ./bootstrap/linux/daybreak
+          echo "Successfully built"
+      - name: (linux) Store artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: daybreak-linux
+          path: ./bootstrap/linux/daybreak
+  bootstrap_windows:
+    runs-on: windows-latest
+    env:
+      C_INCLUDE_PATH: './src/include;./tests/include;'
+    steps:
+      - name: (windows) Checkout code
+        uses: actions/checkout@v3
+      - name: (windows) Set up MinGW
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: x64
+      - name: (windows) Bootstrap compiler
+        run: |
+          .\bootstrap\windows\daybreak.exe .\src\main.day -o .\bootstrap\windows\daybreak-new.exe
+          mv -Force .\bootstrap\windows\daybreak-new.exe .\bootstrap\windows\daybreak.exe
+          echo "Successfully built"
+      - name: (windows) Store artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: daybreak-windows
+          path: ./bootstrap/windows/daybreak.exe
+  bootstrap_osx:
+    runs-on: macos-latest
+    env:
+      C_INCLUDE_PATH: './src/include:./tests/include'
+    steps:
+      - name: (osx) Checkout code
+        uses: actions/checkout@v3
+      - name: (osx) Bootstrap compiler
+        run: |
+          sudo chmod -R 777 /opt
+          ./bootstrap/osx/daybreak ./src/main.day -o ./bootstrap/osx/daybreak
+          chmod +x ./bootstrap/osx/daybreak
+          echo "Successfully built"
+      - name: (osx) Store artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: daybreak-osx
+          path: ./bootstrap/osx/daybreak
