@@ -4,6 +4,7 @@ Programming language that compiles to C
 ## Important Links
 - [Repository](https://github.com/ExoKomodo/Daybreak)
 - [Jenkins](https://jenkins.exokomodo.com/job/Daybreak)
+- [Language Cheat Sheet](https://docs.google.com/document/d/1VsP0L_J_NGatTqUZniUga4odmSZfCDRTvfQCVJQn9ac/edit?usp=sharing)
 
 ## Suggested VSCode Extensions
 Reference [`devcontainer.json`](./.devcontainer/devcontainer.json)'s `extensions` array to see what VSCode extensions are recommended.
