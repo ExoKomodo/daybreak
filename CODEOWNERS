@@ -1,9 +1,19 @@
 * @ExoKomodo/admins
 
-.vscode @ExoKomodo/developers
-euler @ExoKomodo/developers
-examples @ExoKomodo/developers
-src @ExoKomodo/developers
-tests @ExoKomodo/developers
-.gitignore @ExoKomodo/developers
-README.md @ExoKomodo/developers
+.devcontainer       @ExoKomodo/developers
+.github             @ExoKomodo/developers
+.vscode             @ExoKomodo/developers
+admin_scripts       @ExoKomodo/developers
+bootstrap           @ExoKomodo/developers
+compose_scripts     @ExoKomodo/developers
+euler               @ExoKomodo/developers
+examples            @ExoKomodo/developers
+out                 @ExoKomodo/developers
+src                 @ExoKomodo/developers
+std                 @ExoKomodo/developers
+tests               @ExoKomodo/developers
+.gitignore          @ExoKomodo/developers
+docker-compose.yaml @ExoKomodo/developers
+Dockerfile          @ExoKomodo/developers
+Jenkinsfile         @ExoKomodo/developers
+README.md           @ExoKomodo/developers
