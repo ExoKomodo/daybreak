@@ -20,7 +20,7 @@
 
 typedef enum {
   AstBlank,
-  AstBindingExpression,
+  AstBindingStatement,
   AstCallExpression,
   AstDoubleExpression,
   AstExpression,
@@ -34,12 +34,14 @@ typedef enum {
   AstIdentifierExpression,
   AstImportStatement,
   AstIntegerExpression,
+  AstLetBinding,
   AstListExpression,
   AstMatchCase,
   AstMatchCaseList,
   AstMatchStatement,
   AstModuleStatement,
   AstModuleStatementList,
+  AstMutBinding,
   AstNumericExpression,
   AstParameter,
   AstParameterList,
@@ -60,7 +62,7 @@ typedef enum {
 
 struct AstNode;
 
-struct BindingExpressionNode;
+struct BindingStatementNode;
 struct CallExpressionNode;
 struct ExpressionListNode;
 struct ExpressionNode;
@@ -70,12 +72,14 @@ struct FunctionDeclarationNode;
 struct IdentifierNode;
 struct IdentifierExpressionNode;
 struct ImportStatementNode;
+struct LetBindingNode;
 struct ListExpressionNode;
 struct MatchCaseNode;
 struct MatchCaseListNode;
 struct MatchStatementNode;
 struct ModuleStatementListNode;
 struct ModuleStatementNode;
+struct MutBindingNode;
 struct NumericExpressionNode;
 struct ParameterListNode;
 struct ParameterNode;
@@ -89,13 +93,14 @@ struct TypeExpressionNode;
 struct TypeIdentifierNode;
 
 union AstNodeUnion;
+union BindingStatementNodeUnion;
 union ExpressionNodeUnion;
 union StatementNodeUnion;
 union NumericExpressionNodeUnion;
 union ModuleStatementNodeUnion;
 
 union AstNodeUnion {
-  struct BindingExpressionNode* binding_expression;
+  struct BindingStatementNode* binding_statement;
   struct CallExpressionNode* call_expression;
   struct DoubleExpressionNode* double_expression;
   struct ExpressionListNode* expression_list;
@@ -109,12 +114,14 @@ union AstNodeUnion {
   struct IdentifierExpressionNode* identifier_expression;
   struct IntegerExpressionNode* integer_expression;
   struct ImportStatementNode* import_statement;
+  struct LetBindingNode* let_binding;
   struct ListExpressionNode* list_expression;
   struct MatchCaseNode* match_case;
   struct MatchCaseListNode* match_case_list;
   struct MatchStatementNode* match_expression;
   struct ModuleStatementListNode* module_statement_list;
   struct ModuleStatementNode* module_statement;
+  struct MutBindingNode* mut_binding;
   struct NumericExpressionNode* numeric_expression;
   struct ParameterListNode* parameter_list;
   struct ParameterNode* parameter;
@@ -128,8 +135,12 @@ union AstNodeUnion {
   struct TypeIdentifierNode* type_identifier;
 };
 
+union BindingStatementNodeUnion {
+  struct LetBindingNode* let_binding;
+  struct MutBindingNode* mut_binding;
+};
+
 union ExpressionNodeUnion {
-  struct BindingExpressionNode* binding_expression;
   struct CallExpressionNode* call_expression;
   struct IdentifierExpressionNode* identifier_expression;
   struct ListExpressionNode* list_expression;
@@ -150,6 +161,7 @@ union NumericExpressionNodeUnion {
 };
 
 union StatementNodeUnion {
+  struct BindingStatementNode* binding_statement;
   struct ExpressionNode* expression;
   struct MatchStatementNode* match_statement;
   struct ReturnStatementNode* return_statement;
@@ -158,10 +170,10 @@ union StatementNodeUnion {
 struct AstNode* ast_new_node(AstNodeKind, union AstNodeUnion);
 void ast_free_node(struct AstNode*);
 
-struct BindingExpressionNode* ast_new_binding_expression_node(struct IdentifierNode*, struct TypeIdentifierNode*, struct ExpressionNode*);
-void ast_free_binding_expression_node(struct BindingExpressionNode*);
-struct BindingExpressionNode* ast_parse_binding_expression(struct Token**);
-bool ast_binding_expression_token_matches_first_set(struct Token);
+struct BindingStatementNode* ast_new_binding_statement_node(AstNodeKind, union BindingStatementNodeUnion);
+void ast_free_binding_statement_node(struct BindingStatementNode*);
+struct BindingStatementNode* ast_parse_binding_statement(struct Token**);
+bool ast_binding_statement_token_matches_first_set(struct Token);
 
 struct CallExpressionNode* ast_new_call_expression_node(struct IdentifierNode*, struct ExpressionListNode*);
 void ast_free_call_expression_node(struct CallExpressionNode*);
@@ -231,6 +243,11 @@ void ast_free_integer_expression_node(struct IntegerExpressionNode*);
 struct IntegerExpressionNode* ast_parse_integer_expression(struct Token**);
 bool ast_integer_expression_token_matches_first_set(struct Token);
 
+struct LetBindingNode* ast_new_let_binding_node(struct IdentifierNode*, struct TypeIdentifierNode*, struct ExpressionNode*);
+void ast_free_let_binding_node(struct LetBindingNode*);
+struct LetBindingNode* ast_parse_let_binding(struct Token**);
+bool ast_let_binding_token_matches_first_set(struct Token);
+
 struct ListExpressionNode* ast_new_list_expression_node(struct ExpressionListNode*);
 void ast_free_list_expression_node(struct ListExpressionNode*);
 struct ListExpressionNode* ast_parse_list_expression(struct Token**);
@@ -262,6 +279,11 @@ struct ModuleStatementNode* ast_new_module_statement_node(AstNodeKind, union Mod
 void ast_free_module_statement_node(struct ModuleStatementNode*);
 struct ModuleStatementNode* ast_parse_module_statement(struct Token** tokens);
 bool ast_module_statement_token_matches_first_set(struct Token);
+
+struct MutBindingNode* ast_new_mut_binding_node(struct IdentifierNode*, struct TypeIdentifierNode*, struct ExpressionNode*);
+void ast_free_mut_binding_node(struct MutBindingNode*);
+struct MutBindingNode* ast_parse_mut_binding(struct Token**);
+bool ast_mut_binding_token_matches_first_set(struct Token);
 
 struct NumericExpressionNode* ast_new_numeric_expression_node(AstNodeKind, union NumericExpressionNodeUnion);
 void ast_free_numeric_expression_node(struct NumericExpressionNode*);
@@ -325,11 +347,9 @@ struct AstNode {
   union AstNodeUnion value;
 };
 
-struct BindingExpressionNode {
+struct BindingStatementNode {
   AstNodeKind kind;
-  struct IdentifierNode* binding;
-  struct TypeIdentifierNode* type;
-  struct ExpressionNode* expression;
+  union BindingStatementNodeUnion value;
 };
 
 struct CallExpressionNode {
@@ -408,6 +428,13 @@ struct IntegerExpressionNode {
   int64_t value;
 };
 
+struct LetBindingNode {
+  AstNodeKind kind;
+  struct IdentifierNode* binding;
+  struct TypeIdentifierNode* type;
+  struct ExpressionNode* expression;
+};
+
 struct ListExpressionNode {
   AstNodeKind kind;
   struct ExpressionListNode* expressions;
@@ -439,6 +466,13 @@ struct ModuleStatementListNode {
 struct ModuleStatementNode {
   AstNodeKind kind;
   union ModuleStatementNodeUnion value;
+};
+
+struct MutBindingNode {
+  AstNodeKind kind;
+  struct IdentifierNode* binding;
+  struct TypeIdentifierNode* type;
+  struct ExpressionNode* expression;
 };
 
 struct NumericExpressionNode {
@@ -518,8 +552,8 @@ struct AstNode* ast_new_node(
 
 void ast_free_node(struct AstNode* node) {
   switch (node->kind) {
-    case AstBindingExpression: {
-      ast_free_binding_expression_node(node->value.binding_expression);
+    case AstBindingStatement: {
+      ast_free_binding_statement_node(node->value.binding_statement);
     } break;
     case AstCallExpression: {
       ast_free_call_expression_node(node->value.call_expression);
@@ -548,6 +582,9 @@ void ast_free_node(struct AstNode* node) {
     case AstImportStatement: {
       ast_free_import_statement_node(node->value.import_statement);
     } break;
+    case AstLetBinding: {
+      ast_free_let_binding_node(node->value.let_binding);
+    } break;
     case AstListExpression: {
       ast_free_list_expression_node(node->value.list_expression);
     } break;
@@ -565,6 +602,9 @@ void ast_free_node(struct AstNode* node) {
     } break;
     case AstModuleStatement: {
       ast_free_module_statement_node(node->value.module_statement);
+    } break;
+    case AstMutBinding: {
+      ast_free_mut_binding_node(node->value.mut_binding);
     } break;
     case AstNumericExpression: {
       ast_free_numeric_expression_node(node->value.numeric_expression);
@@ -606,59 +646,64 @@ void ast_free_node(struct AstNode* node) {
 }
 
 /*************************/
-/* BindingExpressionNode */
+/* BindingStatementNode */
 /*************************/
-struct BindingExpressionNode* ast_new_binding_expression_node(
-  struct IdentifierNode* binding,
-  struct TypeIdentifierNode* type,
-  struct ExpressionNode* expression
+struct BindingStatementNode* ast_new_binding_statement_node(
+  AstNodeKind kind,
+  union BindingStatementNodeUnion value
 ) {
-  struct BindingExpressionNode* node = malloc(sizeof(struct BindingExpressionNode));
-  node->kind = AstBindingExpression;
-  node->binding = binding;
-  node->type = type;
-  node->expression = expression;
+  struct BindingStatementNode* node = malloc(sizeof(struct BindingStatementNode));
+  node->kind = kind;
+  node->value = value;
   return node;
 }
 
-void ast_free_binding_expression_node(struct BindingExpressionNode* node) {
-  ast_free_identifier_node(node->binding);
-  node->binding = NULL;
-  ast_free_type_identifier_node(node->type);
-  node->type = NULL;
-  ast_free_expression_node(node->expression);
-  node->expression = NULL;
+void ast_free_binding_statement_node(struct BindingStatementNode* node) {
+  switch (node->kind) {
+    case AstLetBinding: {
+      ast_free_let_binding_node(node->value.let_binding);
+    } break;
+    case AstMutBinding: {
+      ast_free_mut_binding_node(node->value.mut_binding);
+    } break;
+    default: {
+      LOG_ERROR("Invalid AstNode kind");
+      exit(1);
+    }
+  }
 
   free(node);
 }
 
-struct BindingExpressionNode* ast_parse_binding_expression(struct Token** tokens) {
+struct BindingStatementNode* ast_parse_binding_statement(struct Token** tokens) {
   LOG_DEBUG("Parsing Binding Expression");
   _CHECK_TOKENS();
 
-  if (!ast_binding_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected 'let' got '%s'", (*tokens)->name);
+  if (ast_let_binding_token_matches_first_set(**tokens)) {
+    return ast_new_binding_statement_node(
+      AstLetBinding,
+      (union BindingStatementNodeUnion) {
+        .let_binding = ast_parse_let_binding(tokens)
+      }
+    );
+  } else if (ast_mut_binding_token_matches_first_set(**tokens)) {
+    return ast_new_binding_statement_node(
+      AstMutBinding,
+      (union BindingStatementNodeUnion) {
+        .mut_binding = ast_parse_mut_binding(tokens)
+      }
+    );
+  } else {
+    LOG_ERROR("Expected BindingStatement got '%s'", (*tokens)->name);
     exit(1);
   }
-  _ADVANCE_TOKEN(tokens);
-  struct IdentifierNode* binding = ast_parse_identifier(tokens);
-  if (!token_is_colon(**tokens)) {
-    LOG_ERROR("Expected ':' got '%s'", (*tokens)->name);
-    exit(1);
-  }
-  _ADVANCE_TOKEN(tokens);
-  struct TypeIdentifierNode* type = ast_parse_type_identifier(tokens);
-  if (!token_is_binding_arrow(**tokens)) {
-    LOG_ERROR("Expected '->' got '%s'", (*tokens)->name);
-    exit(1);
-  }
-  _ADVANCE_TOKEN(tokens);
-  struct ExpressionNode* expression = ast_parse_expression(tokens);
-  return ast_new_binding_expression_node(binding, type, expression);
 }
 
-inline bool ast_binding_expression_token_matches_first_set(struct Token token) {
-  return token_is_let(token);
+inline bool ast_binding_statement_token_matches_first_set(struct Token token) {
+  return (
+    ast_let_binding_token_matches_first_set(token) ||
+    ast_mut_binding_token_matches_first_set(token)
+  );
 }
 
 /**********************/
@@ -808,9 +853,6 @@ struct ExpressionNode* ast_new_expression_node(
 
 void ast_free_expression_node(struct ExpressionNode* node) {
   switch (node->kind) {
-    case AstBindingExpression: {
-      ast_free_binding_expression_node(node->value.binding_expression);
-    } break;
     case AstCallExpression: {
       ast_free_call_expression_node(node->value.call_expression);
     } break;
@@ -870,14 +912,6 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
         .call_expression = expression
       }
     );
-  } else if (ast_binding_expression_token_matches_first_set(**tokens)) {
-    struct BindingExpressionNode* expression = ast_parse_binding_expression(tokens);
-    return ast_new_expression_node(
-      AstBindingExpression,
-      (union ExpressionNodeUnion) {
-        .binding_expression = expression
-      }
-    );
   } else if (ast_list_expression_token_matches_first_set(**tokens)) {
     struct ListExpressionNode* expression = ast_parse_list_expression(tokens);
     return ast_new_expression_node(
@@ -910,7 +944,6 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
 
 inline bool ast_expression_token_matches_first_set(struct Token token) {
   return (
-    ast_binding_expression_token_matches_first_set(token) ||
     ast_call_expression_token_matches_first_set(token) ||
     ast_identifier_token_matches_first_set(token) ||
     ast_list_expression_token_matches_first_set(token) ||
@@ -1350,6 +1383,62 @@ inline bool ast_integer_expression_token_matches_first_set(struct Token token) {
   return token_is_integer(token);
 }
 
+/******************/
+/* LetBindingNode */
+/******************/
+struct LetBindingNode* ast_new_let_binding_node(
+  struct IdentifierNode* binding,
+  struct TypeIdentifierNode* type,
+  struct ExpressionNode* expression
+) {
+  struct LetBindingNode* node = malloc(sizeof(struct LetBindingNode));
+  node->kind = AstLetBinding;
+  node->binding = binding;
+  node->type = type;
+  node->expression = expression;
+  return node;
+}
+
+void ast_free_let_binding_node(struct LetBindingNode* node) {
+  ast_free_identifier_node(node->binding);
+  node->binding = NULL;
+  ast_free_type_identifier_node(node->type);
+  node->type = NULL;
+  ast_free_expression_node(node->expression);
+  node->expression = NULL;
+
+  free(node);
+}
+
+struct LetBindingNode* ast_parse_let_binding(struct Token** tokens) {
+  LOG_DEBUG("Parsing Let Binding");
+  _CHECK_TOKENS();
+
+  if (!ast_let_binding_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected 'let' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct IdentifierNode* binding = ast_parse_identifier(tokens);
+  if (!token_is_colon(**tokens)) {
+    LOG_ERROR("Expected ':' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct TypeIdentifierNode* type = ast_parse_type_identifier(tokens);
+  if (!token_is_binding_arrow(**tokens)) {
+    LOG_ERROR("Expected '->' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct ExpressionNode* expression = ast_parse_expression(tokens);
+  return ast_new_let_binding_node(binding, type, expression);
+}
+
+inline bool ast_let_binding_token_matches_first_set(struct Token token) {
+  return token_is_let(token);
+}
+
 /**********************/
 /* ListExpressionNode */
 /**********************/
@@ -1672,6 +1761,62 @@ inline bool ast_module_statement_token_matches_first_set(struct Token token) {
   );
 }
 
+/******************/
+/* MutBindingNode */
+/******************/
+struct MutBindingNode* ast_new_mut_binding_node(
+  struct IdentifierNode* binding,
+  struct TypeIdentifierNode* type,
+  struct ExpressionNode* expression
+) {
+  struct MutBindingNode* node = malloc(sizeof(struct MutBindingNode));
+  node->kind = AstMutBinding;
+  node->binding = binding;
+  node->type = type;
+  node->expression = expression;
+  return node;
+}
+
+void ast_free_mut_binding_node(struct MutBindingNode* node) {
+  ast_free_identifier_node(node->binding);
+  node->binding = NULL;
+  ast_free_type_identifier_node(node->type);
+  node->type = NULL;
+  ast_free_expression_node(node->expression);
+  node->expression = NULL;
+
+  free(node);
+}
+
+struct MutBindingNode* ast_parse_mut_binding(struct Token** tokens) {
+  LOG_DEBUG("Parsing Mut Binding");
+  _CHECK_TOKENS();
+
+  if (!ast_mut_binding_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected 'mut' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct IdentifierNode* binding = ast_parse_identifier(tokens);
+  if (!token_is_colon(**tokens)) {
+    LOG_ERROR("Expected ':' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct TypeIdentifierNode* type = ast_parse_type_identifier(tokens);
+  if (!token_is_binding_arrow(**tokens)) {
+    LOG_ERROR("Expected '->' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct ExpressionNode* expression = ast_parse_expression(tokens);
+  return ast_new_mut_binding_node(binding, type, expression);
+}
+
+inline bool ast_mut_binding_token_matches_first_set(struct Token token) {
+  return token_is_mut(token);
+}
+
 /*************************/
 /* NumericExpressionNode */
 /*************************/
@@ -1926,6 +2071,9 @@ struct StatementNode* ast_new_statement_node(
 
 void ast_free_statement_node(struct StatementNode* node) {
   switch (node->kind) {
+    case AstBindingStatement: {
+      ast_free_binding_statement_node(node->value.binding_statement);
+    } break;
     case AstMatchStatement: {
       ast_free_match_statement_node(node->value.match_statement);
     } break;
@@ -1956,7 +2104,7 @@ struct StatementNode* ast_parse_statement(struct Token** tokens) {
   if (ast_match_statement_token_matches_first_set(**tokens)) {
     struct MatchStatementNode* statement = ast_parse_match_statement(tokens);
     return ast_new_statement_node(
-      statement->kind,
+      AstMatchStatement,
       (union StatementNodeUnion) {
         .match_statement = statement
       }
@@ -1964,9 +2112,17 @@ struct StatementNode* ast_parse_statement(struct Token** tokens) {
   } else if (ast_return_statement_token_matches_first_set(**tokens)) {
     struct ReturnStatementNode* statement = ast_parse_return_statement(tokens);
     return ast_new_statement_node(
-      statement->kind,
+      AstReturnStatement,
       (union StatementNodeUnion) {
         .return_statement = statement
+      }
+    );
+  } else if (ast_binding_statement_token_matches_first_set(**tokens)) {
+    struct BindingStatementNode* statement = ast_parse_binding_statement(tokens);
+    return ast_new_statement_node(
+      AstBindingStatement,
+      (union StatementNodeUnion) {
+        .binding_statement = statement
       }
     );
   } else {
@@ -1984,6 +2140,7 @@ inline bool ast_statement_token_matches_first_set(struct Token token) {
   return (
     ast_match_statement_token_matches_first_set(token) ||
     ast_return_statement_token_matches_first_set(token) ||
+    ast_binding_statement_token_matches_first_set(token) ||
     ast_expression_token_matches_first_set(token)
   );
 }

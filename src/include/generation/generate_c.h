@@ -9,7 +9,7 @@
 #include <macros/helpers.h>
 
 int generate_c_code(const struct ProgramNode*, const char*);
-int generate_c_from_binding_expression(FILE*, const struct BindingExpressionNode*);
+int generate_c_from_binding_statement(FILE*, const struct BindingStatementNode*);
 int generate_c_from_call_expression(FILE*, const struct CallExpressionNode*);
 int generate_c_from_double_expression(FILE*, const struct DoubleExpressionNode*);
 int generate_c_from_expression(FILE*, const struct ExpressionNode*);
@@ -23,12 +23,14 @@ int generate_c_from_identifier(FILE*, const struct IdentifierNode*);
 int generate_c_from_identifier_expression(FILE*, const struct IdentifierExpressionNode*);
 int generate_c_from_import_statement(FILE*, const struct ImportStatementNode*);
 int generate_c_from_integer_expression(FILE*, const struct IntegerExpressionNode*);
+int generate_c_from_let_binding(FILE*, const struct LetBindingNode*);
 int generate_c_from_list_expression(FILE*, const struct ListExpressionNode*);
 int generate_c_from_match_case(FILE*, const struct MatchCaseNode*);
 int generate_c_from_match_case_list(FILE*, const struct MatchCaseListNode*);
 int generate_c_from_match_statement(FILE*, const struct MatchStatementNode*);
 int generate_c_from_module_statement(FILE*, const struct ModuleStatementNode*);
 int generate_c_from_module_statement_list(FILE*, const struct ModuleStatementListNode*);
+int generate_c_from_mut_binding(FILE*, const struct MutBindingNode*);
 int generate_c_from_numeric_expression(FILE*, const struct NumericExpressionNode*);
 int generate_c_from_parameter(FILE*, const struct ParameterNode*);
 int generate_c_from_parameter_list(FILE*, const struct ParameterListNode*);
@@ -42,6 +44,7 @@ int generate_c_from_type_expression(FILE*, const struct TypeExpressionNode*);
 int generate_c_from_type_identifier(FILE*, const struct TypeIdentifierNode*);
 int generate_c_include_prelude(FILE*);
 int generate_c_macros(FILE*);
+int _generate_c_variable_declaration(FILE*, const struct TypeIdentifierNode*, const struct IdentifierNode*, const struct ExpressionNode*);
 int _generate_c_function_definition(FILE*, const struct FunctionDeclarationNode*);
 int _generate_c_function_declaration(FILE*, const struct FunctionDeclarationNode*);
 int _generate_c_function_signature(FILE*, const struct FunctionDeclarationNode*, const bool);
@@ -105,42 +108,30 @@ int generate_c_include_prelude(FILE* output_file) {
 	return 0;
 }
 
-int generate_c_from_binding_expression(
+int generate_c_from_binding_statement(
 	FILE* output_file,
-	const struct BindingExpressionNode* binding_expression
+	const struct BindingStatementNode* binding_statement
 ) {
-	if (!binding_expression) {
-		LOG_ERROR("Failed to generate C code from BindingExpressionNode. NULL BindingExpressionNode.");
+	if (!binding_statement) {
+		LOG_ERROR("Failed to generate C code from BindingStatementNode. NULL BindingStatementNode.");
 		return 1;
 	}
 
-	int error = generate_c_from_type_identifier(output_file, binding_expression->type);
-	if (error != 0) {
-		LOG_ERROR("Failed to generate C code from BindingExpressionNode. Failed to generate type identifier.");
-		return error;
+	switch (binding_statement->kind) {
+		case AstLetBinding: {
+			return generate_c_from_let_binding(output_file, binding_statement->value.let_binding);
+		} break;
+		case AstMutBinding: {
+			return generate_c_from_mut_binding(output_file, binding_statement->value.mut_binding);
+		} break;
+		default: {
+			LOG_ERROR(
+				"Failed to generate C code from BindingStatementNode. Unknown BindingStatementNode kind %d.",
+				binding_statement->kind
+			);
+			return 3;
+		} break;
 	}
-	fputc(' ', output_file);
-	error = generate_c_from_identifier(output_file, binding_expression->binding);
-	if (error != 0) {
-		LOG_ERROR("Failed to generate C code from BindingExpressionNode. Failed to generate binding identifier.");
-		return error;
-	}
-	
-	struct TypeIdentifierNode* current_type = binding_expression->type;
-	while (
-		current_type &&
-		(strcmp(current_type->identifier->name, "array") == 0)
-	 ) {
-		fputs("[]", output_file);
-		current_type = current_type->contained_type;
-	}
-	fputc('=', output_file);
-	error = generate_c_from_expression(output_file, binding_expression->expression);
-	if (error != 0) {
-		LOG_ERROR("Failed to generate C code from BindingExpressionNode. Failed to generate expression.");
-		return error;
-	}
-	return 0;
 }
 
 int generate_c_from_call_expression(FILE* output_file, const struct CallExpressionNode* call_expression) {
@@ -173,9 +164,6 @@ int generate_c_from_expression(FILE* output_file, const struct ExpressionNode* e
 	}
 
 	switch (expression->kind) {
-		case AstBindingExpression: {
-			return generate_c_from_binding_expression(output_file, expression->value.binding_expression);
-		} break;
 		case AstCallExpression: {
 			return generate_c_from_call_expression(output_file, expression->value.call_expression);
 		} break;
@@ -502,6 +490,29 @@ int generate_c_from_integer_expression(FILE* output_file, const struct IntegerEx
 	return 0;
 }
 
+int generate_c_from_let_binding(
+	FILE* output_file,
+	const struct LetBindingNode* let_binding
+) {
+	if (!let_binding) {
+		LOG_ERROR("Failed to generate C code from LetBindingNode. NULL LetBindingNode.");
+		return 1;
+	}
+
+	fputs("const ", output_file);
+	const int error = _generate_c_variable_declaration(
+		output_file,
+		let_binding->type,
+		let_binding->binding,
+		let_binding->expression
+	);
+	if (error != 0) {
+		return error;
+	}
+	
+	return 0;
+}
+
 int generate_c_from_list_expression(FILE* output_file, const struct ListExpressionNode* list_expression) {
 	if (!list_expression) {
 		LOG_ERROR("Failed to generate C code from ListExpressionNode. NULL ListExpressionNode.");
@@ -673,6 +684,25 @@ int generate_c_from_module_statement_list(
 	return 0;
 }
 
+int generate_c_from_mut_binding(
+	FILE* output_file,
+	const struct MutBindingNode* mut_binding
+) {
+	if (!mut_binding) {
+		LOG_ERROR("Failed to generate C code from MutBindingNode. NULL MutBindingNode.");
+		return 1;
+	}
+
+	const int error = _generate_c_variable_declaration(
+		output_file,
+		mut_binding->type,
+		mut_binding->binding,
+		mut_binding->expression
+	);
+
+	return 0;
+}
+
 int generate_c_from_numeric_expression(FILE* output_file, const struct NumericExpressionNode* numeric_expression) {
 	if (!numeric_expression) {
 		LOG_ERROR("Failed to generate C code from NumericExpressionNode. NULL NumericExpressionNode.");
@@ -784,6 +814,9 @@ int generate_c_from_statement(FILE* output_file, const struct StatementNode* sta
 	}
 
 	switch (statement->kind) {
+		case AstBindingStatement: {
+			return generate_c_from_binding_statement(output_file, statement->value.binding_statement);
+		} break;
 		case AstMatchStatement: {
 			return generate_c_from_match_statement(output_file, statement->value.match_statement);
 		} break;
@@ -954,6 +987,40 @@ int generate_c_macros(FILE* output_file) {
 	fputc('\n', output_file);
 
 	return 0;
+}
+
+int _generate_c_variable_declaration(
+	FILE* output_file,
+	const struct TypeIdentifierNode* type,
+	const struct IdentifierNode* binding,
+	const struct ExpressionNode* expression
+) {
+	int error = generate_c_from_type_identifier(output_file, type);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C variable declaration. Failed to generate type identifier.");
+		return error;
+	}
+	fputc(' ', output_file);
+	error = generate_c_from_identifier(output_file, binding);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C variable declaration. Failed to generate binding identifier.");
+		return error;
+	
+	}
+	struct TypeIdentifierNode* current_type = type;
+	while (
+		current_type &&
+		(strcmp(current_type->identifier->name, "array") == 0)
+	 ) {
+		fputs("[]", output_file);
+		current_type = current_type->contained_type;
+	}
+	fputc('=', output_file);
+	error = generate_c_from_expression(output_file, expression);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C variable declaration. Failed to generate expression.");
+		return error;
+	}
 }
 
 bool _is_file_imported(const char* source_file_path) {
