@@ -46,7 +46,7 @@ fun _recursive_multiply (upper_bound: int arr: array<int> len: size_t index: siz
 end
 
 fun _problem005 () int is
-	let primes: array<int> <- [
+	mut primes: array<int> <- [
 		2
 		3
 		5
