@@ -11,6 +11,7 @@ Reference [`devcontainer.json`](./.devcontainer/devcontainer.json)'s `extensions
 
 ## CI/CD
 [![Jenkins Build Status](http://jenkins.exokomodo.com/buildStatus/icon?job=Daybreak%2Fmain)](http://jenkins.exokomodo.com/job/Daybreak/job/main/)
+![Bootstrap Workflow](https://github.com/ExoKomodo/Daybreak/actions/workflows/bootstrap.yml/badge.svg)
 
 ## Setup
 Daybreak currently uses `cc` as the backing C compiler and will fail if this cannot be found.
