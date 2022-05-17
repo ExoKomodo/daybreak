@@ -1,0 +1,208 @@
+importc "string.h"
+
+importc "generation/prelude.h"
+importc "helpers/system.h"
+importc "lex/prelude.h"
+importc "macros/helpers.h"
+
+
+type DaybreakArgs struct is
+	source_file_path: ccstring
+	output_file_path: ccstring
+	allocated_output_file_path: cstring
+end
+
+type DaybreakArgParseResult struct is
+	is_success: bool
+	args: DaybreakArgs
+end
+
+type DaybreakTokenifyResult struct is
+	error: int
+	tokens: ptr<Token>
+end
+
+type DaybreakEmissionResult struct is
+	error: int
+end
+
+fun daybreak_compile (args: DaybreakArgs) int is
+	mut tokenify_result: DaybreakTokenifyResult <- (_daybreak_tokenify_file args)
+	match
+		(not (eq tokenify_result.error 0)) => return tokenify_result.error
+	end
+	mut program: ptr<ProgramNode> <- (ast_parse_program (point tokenify_result.tokens))
+	match
+		(falsey program) => return 2
+	end
+
+	let emit_result: DaybreakEmissionResult <- (_daybreak_emit_program args program)
+	match
+		(not (eq emit_result.error 0)) => return emit_result.error
+	end
+
+	match
+		(truthy args.allocated_output_file_path) => (free args.allocated_output_file_path)
+	end
+
+	return 0
+end
+
+fun _daybreak_fail_generation (error: int) int is
+	(LOG_ERROR "Failed to generate C code. Received error: %d" error)
+	return error
+end
+
+fun _daybreak_compile_program (output_c_file_path: cstring args: DaybreakArgs) int is
+	match
+		(truthy args.output_file_path) => (LOG_INFO "Output file: %s" args.output_file_path)
+		(default) => (LOG_INFO "Output file: %s" args.allocated_output_file_path)
+	end
+	match
+		(truthy args.output_file_path) => return (compile_c_code output_c_file_path args.output_file_path)
+		(default) => return (compile_c_code output_c_file_path args.allocated_output_file_path)
+	end
+end
+
+fun _daybreak_emit_program (args: DaybreakArgs program: ptr<ProgramNode>) DaybreakEmissionResult is
+	let standard_library_directory: cstring <- (get_standard_library_directory)
+	let output_c_file_length: size_t <- (add
+		1
+		(add
+			(strlen standard_library_directory)
+			(add
+				(strlen OUTPUT_DIRECTORY)
+				(strlen DEFAULT_SOURCE_OUTPUT))))
+	mut output_c_file_path: cstring <- (malloc
+		(mul
+			(sizeof char)
+			output_c_file_length))
+	(sprintf
+		output_c_file_path
+		(interpolate_cstring "%s" (interpolate_cstring OUTPUT_DIRECTORY DEFAULT_SOURCE_OUTPUT))
+		standard_library_directory)
+
+	let generation_error: int <- (generate_c_code program output_c_file_path)
+	(ast_free_program_node program)
+	match
+		(not (eq generation_error 0)) => return {DaybreakEmissionResult
+			error <- (_daybreak_fail_generation generation_error)
+		}
+	end
+	let compiler_error: int <- (_daybreak_compile_program output_c_file_path args)
+	(delete output_c_file_path)
+	return {DaybreakEmissionResult
+		error <- compiler_error
+	}
+end
+
+fun daybreak_greeting () void is
+	(printf
+		"%s#####################################%s\n"
+		ANSI_FOREGROUND_YELLOW
+		ANSI_RESET)
+	(printf
+		"%s# Welcome to the Daybreak compiler! #%s\n"
+		ANSI_FOREGROUND_YELLOW
+		ANSI_RESET)
+	(printf
+		"%s#####################################%s\n"
+		ANSI_FOREGROUND_YELLOW
+		ANSI_RESET)
+end
+
+fun daybreak_parse_args (argc: int argv: ptr<ccstring>) DaybreakArgParseResult is
+	match
+		(lt argc 2) => return {DaybreakArgParseResult
+			is_success <- false
+		}
+	end
+	let result: DaybreakArgParseResult <- (_daybreak_parse_arg
+		(add argv 1)
+		(sub argc 1)
+		{DaybreakArgs
+			source_file_path <- NULL
+			output_file_path <- NULL
+			allocated_output_file_path <- NULL
+		}
+	)
+	match
+		(falsey result.args.output_file_path) => return {DaybreakArgParseResult
+			is_success <- result.is_success
+			args <- {DaybreakArgs
+				source_file_path <- result.args.source_file_path
+				output_file_path <- result.args.output_file_path
+				allocated_output_file_path <- (get_default_output_file)
+			}
+		}
+		(default) => return result
+	end
+end
+
+fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) DaybreakArgParseResult is
+	match
+		(lte argc 0) => return {DaybreakArgParseResult
+			is_success <- true
+			args <- acc
+		}
+		(default) => match
+			(eq
+				0
+				(strcmp (deref argv) "-o")) => match
+					(lt argc 2) => return {DaybreakArgParseResult
+						is_success <- false
+						args <- acc
+					}
+					(default) => return (_daybreak_parse_arg
+						(add argv 2)
+						(sub argc 2)
+						{DaybreakArgs
+							source_file_path <- acc.source_file_path
+							allocated_output_file_path <- acc.allocated_output_file_path
+							output_file_path <- (unsafe_index argv 1)
+						}
+					)
+				end
+			(default) => return (_daybreak_parse_arg
+				(add argv 1)
+				(sub argc 1)
+				{DaybreakArgs
+					source_file_path <- (deref argv)
+					output_file_path <- acc.output_file_path
+					allocated_output_file_path <- acc.allocated_output_file_path
+				}
+			)
+		end
+	end
+end
+
+fun _daybreak_tokenify_file (args: DaybreakArgs) DaybreakTokenifyResult is
+	let directory_setup_error: int <- (setup_language_directories)
+	match
+		(not
+			(eq
+				0
+				directory_setup_error)) => return {DaybreakTokenifyResult
+			error <- directory_setup_error
+			tokens <- NULL
+		}
+	end
+	mut source_file: ptr<FILE> <- (lex_open_file
+		args.source_file_path
+		DAYBREAK_NEXT_IMPORT_POINTER)
+	match
+		(falsey source_file) => return {DaybreakTokenifyResult
+			error <- 1
+			tokens <- NULL
+		}
+	end
+	mut tokens: ptr<Token> <- (lex_file
+		args.source_file_path
+		source_file
+	)
+	(fclose source_file)
+	return {DaybreakTokenifyResult
+		error <- 0
+		tokens <- tokens
+	}
+end

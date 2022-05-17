@@ -1,4 +1,4 @@
-importc "api/prelude.h"
+import "std/compiler/api.day"
 
 fun main (argc: int argv: ptr<ccstring>) int is
 	(daybreak_greeting)

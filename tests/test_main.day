@@ -1,3 +1,5 @@
+import "std/compiler/api.day"
+
 importc "test_double.h"
 importc "test_foobar.h"
 importc "test_hello_world.h"
