@@ -1,6 +1,6 @@
 importc "string.h"
 
-fun do_work (a: int) int is
+fun foo_do_work (a: int) int is
 	( printf
 		"a: %d, 'Hello world' length: %zu\n"
 		a
@@ -8,6 +8,6 @@ fun do_work (a: int) int is
 	
 	match
 	  (equals a 0) => return 0
-		(default) => return (do_work (sub a 1))
+		(default) => return (foo/do_work (sub a 1))
 	end
 end

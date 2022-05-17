@@ -141,8 +141,12 @@ int generate_c_from_call_expression(FILE* output_file, const struct CallExpressi
 		return 1;
 	}
 
-	fprintf(output_file, "%s(", call_expression->function->name);
-	const int error = generate_c_from_expression_list(output_file, call_expression->arguments);
+	int error = generate_c_from_identifier(output_file, call_expression->function);
+	if (error != 0) {
+		return error;
+	}
+	fputc('(', output_file);
+	error = generate_c_from_expression_list(output_file, call_expression->arguments);
 	fputc(')', output_file);
 	return error;
 }
@@ -392,7 +396,20 @@ int generate_c_from_identifier(FILE* output_file, const struct IdentifierNode* i
 		LOG_ERROR("Failed to generate C code from IdentifierNode. NULL IdentifierNode.");
 		return 1;
 	}
-	fprintf(output_file, "%s", identifier->name);
+	const size_t length = strlen(identifier->name) + 1;
+	char* transformed_name = malloc(sizeof(char) * length);
+	strncpy(transformed_name, identifier->name, length);
+	for (size_t i = 0; i < length; i++) {
+		const char c = transformed_name[i];
+		switch (c) {
+			case '/': 
+			case '\\': {
+				transformed_name[i] = '_';
+			} break;
+		}
+	}
+	fputs(transformed_name, output_file);
+	free(transformed_name);
 	return 0;
 }
 

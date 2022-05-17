@@ -251,7 +251,7 @@ static inline bool token_is_identifier(struct Token token) {
 			) && !(
 				i != 0 &&
 				(
-					isalnum(c) || c == '_'
+					isalnum(c) || c == '_' || c == '/' || c == '\\'
 				)
 			)
 		) {
