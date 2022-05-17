@@ -6,7 +6,7 @@ fun find_palindromic_pair (upper_bound: int) int is
 	return (_find_palindromic_pair upper_bound upper_bound 0)
 end
 
-fun is_palindrome (str: ccstring len: size_t) bool is
+fun is_palindrome (str: cstring len: size_t) bool is
 	return (_is_palindrome str len 0)
 end
 
@@ -56,7 +56,7 @@ fun _find_palindromic_pair (upper_bound: int test_number: int current_max_palind
 	end
 end
 
-fun _is_palindrome (str: ccstring len: size_t left_index: size_t) bool is
+fun _is_palindrome (str: cstring len: size_t left_index: size_t) bool is
 	let right_index: size_t <- (sub
 		len
 		(add

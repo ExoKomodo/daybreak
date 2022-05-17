@@ -1,14 +1,14 @@
 import "euler/helpers.day"
 
 
-fun find_largest_contiguous_product (series: ccstring digits: size_t) int64_t is
+fun find_largest_contiguous_product (series: cstring digits: size_t) int64_t is
 	return (_find_largest_contiguous_product
 		series
 		digits
 		0)
 end
 
-fun multiply_range_from_cstring (str: ccstring len: size_t) int64_t is
+fun multiply_range_from_cstring (str: cstring len: size_t) int64_t is
 	return (_multiply_range_from_cstring str len 1)
 end
 
@@ -19,7 +19,7 @@ fun problem008 () int is
 	return 0
 end
 
-fun _find_largest_contiguous_product (series: ccstring digits: size_t largest: int64_t) int64_t is
+fun _find_largest_contiguous_product (series: cstring digits: size_t largest: int64_t) int64_t is
 	match
 		(lt
 			(strlen series)
@@ -33,7 +33,7 @@ fun _find_largest_contiguous_product (series: ccstring digits: size_t largest: i
 	end
 end
 
-fun _multiply_range_from_cstring (str: ccstring len: size_t acc: int64_t) int64_t is
+fun _multiply_range_from_cstring (str: cstring len: size_t acc: int64_t) int64_t is
 	match
 		(or
 			(lt
