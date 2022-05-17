@@ -51,6 +51,7 @@ int _generate_c_function_signature(FILE*, const struct FunctionDeclarationNode*,
 int _generate_c_from_module_statement_list_by_kind(FILE*, const struct ModuleStatementListNode*, const AstNodeKind);
 bool _is_file_imported(const char*);
 bool _is_main(const struct FunctionDeclarationNode*);
+bool _is_pointer_type(const struct TypeIdentifierNode*);
 FILE* _open_output_file(const char*);
 bool _should_inline(const struct FunctionDeclarationNode*);
 
@@ -731,6 +732,9 @@ int generate_c_from_parameter(FILE* output_file, const struct ParameterNode* par
 		LOG_ERROR("Failed to generate C code from ParameterNode. NULL ParameterNode.");
 		return 1;
 	}
+	if (!_is_pointer_type(parameter->type_identifier)) {
+		fputs("const ", output_file);
+	}
 	int error = generate_c_from_type_identifier(output_file, parameter->type_identifier);
 	if (error != 0) {
 		return error;
@@ -1061,6 +1065,15 @@ bool _is_main(const struct FunctionDeclarationNode* function_declaration) {
 		function_declaration->identifier &&
 		function_declaration->identifier->name &&
 		strcmp("main", function_declaration->identifier->name) == 0
+	);
+}
+
+bool _is_pointer_type(const struct TypeIdentifierNode* type_identifier) {
+	return (
+		type_identifier &&
+		type_identifier->identifier &&
+		type_identifier->identifier->name &&
+		strcmp("ptr", type_identifier->identifier->name) == 0
 	);
 }
 
