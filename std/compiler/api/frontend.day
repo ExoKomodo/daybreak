@@ -9,7 +9,6 @@ importc "macros/helpers.h"
 type DaybreakArgs struct is
 	source_file_path: ccstring
 	output_file_path: ccstring
-	allocated_output_file_path: cstring
 end
 
 type DaybreakArgParseResult struct is
@@ -29,23 +28,24 @@ end
 fun daybreak_compile (args: DaybreakArgs) int is
 	mut tokenify_result: DaybreakTokenifyResult <- (_daybreak_tokenify_file args)
 	match
-		(not (eq tokenify_result.error 0)) => return tokenify_result.error
+		(not tokenify_result.error) => do
+			mut program: ptr<ProgramNode> <- (ast_parse_program (point tokenify_result.tokens))
+			match
+				(truthy program) => do
+					let emit_result: DaybreakEmissionResult <- (_daybreak_emit_program args program)
+					match
+						(not emit_result.error) => return 0
+						(default) => return emit_result.error
+					end
+				end
+				(default) => do
+					(LOG_ERROR "Failed to parse program")
+					return 2
+				end
+			end
+		end
+		(default) => return tokenify_result.error
 	end
-	mut program: ptr<ProgramNode> <- (ast_parse_program (point tokenify_result.tokens))
-	match
-		(falsey program) => return 2
-	end
-
-	let emit_result: DaybreakEmissionResult <- (_daybreak_emit_program args program)
-	match
-		(not (eq emit_result.error 0)) => return emit_result.error
-	end
-
-	match
-		(truthy args.allocated_output_file_path) => (free args.allocated_output_file_path)
-	end
-
-	return 0
 end
 
 fun _daybreak_fail_generation (error: int) int is
@@ -55,12 +55,18 @@ end
 
 fun _daybreak_compile_program (output_c_file_path: cstring args: DaybreakArgs) int is
 	match
-		(truthy args.output_file_path) => (LOG_INFO "Output file: %s" args.output_file_path)
-		(default) => (LOG_INFO "Output file: %s" args.allocated_output_file_path)
-	end
-	match
-		(truthy args.output_file_path) => return (compile_c_code output_c_file_path args.output_file_path)
-		(default) => return (compile_c_code output_c_file_path args.allocated_output_file_path)
+		(truthy args.output_file_path) => do
+			let output_file_path: cstring <- args.output_file_path
+			(LOG_INFO "Output file: %s" output_file_path)
+			return (compile_c_code output_c_file_path output_file_path)
+		end
+		(default) => do
+			mut output_file_path: cstring <- (get_default_output_file)
+			(LOG_INFO "Output file: %s" output_file_path)
+			let result: int <- (compile_c_code output_c_file_path output_file_path)
+			(delete output_file_path)
+			return result
+		end
 	end
 end
 
@@ -85,15 +91,20 @@ fun _daybreak_emit_program (args: DaybreakArgs program: ptr<ProgramNode>) Daybre
 	let generation_error: int <- (generate_c_code program output_c_file_path)
 	(ast_free_program_node program)
 	match
-		(not (eq generation_error 0)) => return {DaybreakEmissionResult
-			error <- (_daybreak_fail_generation generation_error)
-		}
+		(not generation_error) => do
+			let compiler_error: int <- (_daybreak_compile_program output_c_file_path args)
+			(delete output_c_file_path)
+			return {DaybreakEmissionResult
+				error <- compiler_error
+			}
+		end
+		(default) => do
+			(LOG_ERROR "Failed to generate C code. Received error: %d" generation_error)
+			return {DaybreakEmissionResult
+				error <- generation_error
+			}
+		end
 	end
-	let compiler_error: int <- (_daybreak_compile_program output_c_file_path args)
-	(delete output_c_file_path)
-	return {DaybreakEmissionResult
-		error <- compiler_error
-	}
 end
 
 fun daybreak_greeting () void is
@@ -117,13 +128,13 @@ fun daybreak_parse_args (argc: int argv: ptr<ccstring>) DaybreakArgParseResult i
 			is_success <- false
 		}
 	end
+
 	let result: DaybreakArgParseResult <- (_daybreak_parse_arg
 		(add argv 1)
 		(sub argc 1)
 		{DaybreakArgs
 			source_file_path <- NULL
 			output_file_path <- NULL
-			allocated_output_file_path <- NULL
 		}
 	)
 	match
@@ -132,7 +143,6 @@ fun daybreak_parse_args (argc: int argv: ptr<ccstring>) DaybreakArgParseResult i
 			args <- {DaybreakArgs
 				source_file_path <- result.args.source_file_path
 				output_file_path <- result.args.output_file_path
-				allocated_output_file_path <- (get_default_output_file)
 			}
 		}
 		(default) => return result
@@ -158,7 +168,6 @@ fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) Daybre
 						(sub argc 2)
 						{DaybreakArgs
 							source_file_path <- acc.source_file_path
-							allocated_output_file_path <- acc.allocated_output_file_path
 							output_file_path <- (unsafe_index argv 1)
 						}
 					)
@@ -169,7 +178,6 @@ fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) Daybre
 				{DaybreakArgs
 					source_file_path <- (deref argv)
 					output_file_path <- acc.output_file_path
-					allocated_output_file_path <- acc.allocated_output_file_path
 				}
 			)
 		end
@@ -179,10 +187,7 @@ end
 fun _daybreak_tokenify_file (args: DaybreakArgs) DaybreakTokenifyResult is
 	let directory_setup_error: int <- (setup_language_directories)
 	match
-		(not
-			(eq
-				0
-				directory_setup_error)) => return {DaybreakTokenifyResult
+		(truthy directory_setup_error) => return {DaybreakTokenifyResult
 			error <- directory_setup_error
 			tokens <- NULL
 		}
