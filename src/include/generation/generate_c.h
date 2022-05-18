@@ -836,13 +836,13 @@ int generate_c_from_program(
 	return 0;
 }
 
-int generate_c_from_return_statement(FILE* output_file, const struct ReturnStatementNode* return_expression) {
-	if (!return_expression) {
+int generate_c_from_return_statement(FILE* output_file, const struct ReturnStatementNode* return_statement) {
+	if (!return_statement) {
 		LOG_ERROR("Failed to generate C code from ReturnStatementNode. NULL ReturnStatementNode.");
 		return 1;
 	}
 	fputs("return ", output_file);
-	const int error = generate_c_from_expression(output_file, return_expression->expression);
+	const int error = generate_c_from_expression(output_file, return_statement->expression);
 	if (error != 0) {
 		return error;
 	}

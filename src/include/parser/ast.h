@@ -129,7 +129,7 @@ union AstNodeUnion {
   struct ParameterListNode* parameter_list;
   struct ParameterNode* parameter;
   struct ProgramNode* program;
-  struct ReturnStatementNode* return_expression;
+  struct ReturnStatementNode* return_statement;
   struct StatementNode* statement;
   struct StatementListNode* statement_list;
   struct StringExpressionNode* string_expression;
@@ -587,6 +587,12 @@ void ast_free_node(struct AstNode* node) {
     case AstField: {
       ast_free_field_node(node->value.field);
     } break;
+    case AstFieldBinding: {
+      ast_free_field_binding_node(node->value.field_binding);
+    } break;
+    case AstFieldBindingList: {
+      ast_free_field_binding_list_node(node->value.field_binding_list);
+    } break;
     case AstFieldList: {
       ast_free_field_list_node(node->value.field_list);
     } break;
@@ -602,6 +608,9 @@ void ast_free_node(struct AstNode* node) {
     case AstImportStatement: {
       ast_free_import_statement_node(node->value.import_statement);
     } break;
+    case AstIntegerExpression: {
+      ast_free_integer_expression_node(node->value.integer_expression);
+    } break;
     case AstLetBinding: {
       ast_free_let_binding_node(node->value.let_binding);
     } break;
@@ -611,17 +620,17 @@ void ast_free_node(struct AstNode* node) {
     case AstMatchCase: {
       ast_free_match_case_node(node->value.match_case);
     } break;
-    case AstMatchStatement: {
-      ast_free_match_statement_node(node->value.match_expression);
-    } break;
     case AstMatchCaseList: {
       ast_free_match_case_list_node(node->value.match_case_list);
     } break;
-    case AstModuleStatementList: {
-      ast_free_module_statement_list_node(node->value.module_statement_list);
+    case AstMatchStatement: {
+      ast_free_match_statement_node(node->value.match_expression);
     } break;
     case AstModuleStatement: {
       ast_free_module_statement_node(node->value.module_statement);
+    } break;
+    case AstModuleStatementList: {
+      ast_free_module_statement_list_node(node->value.module_statement_list);
     } break;
     case AstMutBinding: {
       ast_free_mut_binding_node(node->value.mut_binding);
@@ -629,23 +638,26 @@ void ast_free_node(struct AstNode* node) {
     case AstNumericExpression: {
       ast_free_numeric_expression_node(node->value.numeric_expression);
     } break;
-    case AstParameterList: {
-      ast_free_parameter_list_node(node->value.parameter_list);
-    } break;
     case AstParameter: {
       ast_free_parameter_node(node->value.parameter);
+    } break;
+    case AstParameterList: {
+      ast_free_parameter_list_node(node->value.parameter_list);
     } break;
     case AstProgram: {
       ast_free_program_node(node->value.program);
     } break;
-    case AstStringExpression: {
-      ast_free_string_expression_node(node->value.string_expression);
+    case AstReturnStatement: {
+      ast_free_return_statement_node(node->value.return_statement);
     } break;
     case AstStatement: {
       ast_free_statement_node(node->value.statement);
     } break;
     case AstStatementList: {
       ast_free_statement_list_node(node->value.statement_list);
+    } break;
+    case AstStringExpression: {
+      ast_free_string_expression_node(node->value.string_expression);
     } break;
     case AstTypeDeclaration: {
       ast_free_type_declaration_node(node->value.type_declaration);
