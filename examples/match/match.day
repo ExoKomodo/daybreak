@@ -3,7 +3,10 @@ fun main () int is
 	match
 		(equals x 10) => (puts "x was 10")
 		(equals x 20) => (puts "x was 20")
-		(default) => (puts "x was something else")
+		(default) => do
+			(puts "x was something else")
+			return 1
+		end
 	end
 	return 0
 end

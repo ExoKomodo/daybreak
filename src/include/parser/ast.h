@@ -22,6 +22,7 @@ typedef enum {
   AstBlank,
   AstBindingStatement,
   AstCallExpression,
+  AstDoStatement,
   AstDoubleExpression,
   AstExpression,
   AstExpressionList,
@@ -64,6 +65,7 @@ struct AstNode;
 
 struct BindingStatementNode;
 struct CallExpressionNode;
+struct DoStatementNode;
 struct ExpressionListNode;
 struct ExpressionNode;
 struct FieldNode;
@@ -102,6 +104,7 @@ union ModuleStatementNodeUnion;
 union AstNodeUnion {
   struct BindingStatementNode* binding_statement;
   struct CallExpressionNode* call_expression;
+  struct DoStatementNode* do_statement;
   struct DoubleExpressionNode* double_expression;
   struct ExpressionListNode* expression_list;
   struct ExpressionNode* expression;
@@ -162,6 +165,7 @@ union NumericExpressionNodeUnion {
 
 union StatementNodeUnion {
   struct BindingStatementNode* binding_statement;
+  struct DoStatementNode* do_statement;
   struct ExpressionNode* expression;
   struct MatchStatementNode* match_statement;
   struct ReturnStatementNode* return_statement;
@@ -179,6 +183,11 @@ struct CallExpressionNode* ast_new_call_expression_node(struct IdentifierNode*, 
 void ast_free_call_expression_node(struct CallExpressionNode*);
 struct CallExpressionNode* ast_parse_call_expression(struct Token**);
 bool ast_call_expression_token_matches_first_set(struct Token);
+
+struct DoStatementNode* ast_new_do_statement_node(struct StatementListNode*);
+void ast_free_do_statement_node(struct DoStatementNode*);
+struct DoStatementNode* ast_parse_do_statement(struct Token**);
+bool ast_do_statement_token_matches_first_set(struct Token);
 
 struct DoubleExpressionNode* ast_new_double_expression_node(double);
 void ast_free_double_expression_node(struct DoubleExpressionNode*);
@@ -356,6 +365,11 @@ struct CallExpressionNode {
   AstNodeKind kind;
   struct IdentifierNode* function;
   struct ExpressionListNode* arguments;
+};
+
+struct DoStatementNode {
+  AstNodeKind kind;
+  struct StatementListNode* statements;
 };
 
 struct DoubleExpressionNode {
@@ -558,11 +572,17 @@ void ast_free_node(struct AstNode* node) {
     case AstCallExpression: {
       ast_free_call_expression_node(node->value.call_expression);
     } break;
-    case AstExpressionList: {
-      ast_free_expression_list_node(node->value.expression_list);
+    case AstDoStatement: {
+      ast_free_do_statement_node(node->value.do_statement);
+    } break;
+    case AstDoubleExpression: {
+      ast_free_double_expression_node(node->value.double_expression);
     } break;
     case AstExpression: {
       ast_free_expression_node(node->value.expression);
+    } break;
+    case AstExpressionList: {
+      ast_free_expression_list_node(node->value.expression_list);
     } break;
     case AstField: {
       ast_free_field_node(node->value.field);
@@ -750,6 +770,47 @@ struct CallExpressionNode* ast_parse_call_expression(struct Token** tokens) {
 
 inline bool ast_call_expression_token_matches_first_set(struct Token token) {
   return token_is_open_paren(token);
+}
+
+/*******************/
+/* DoStatementNode */
+/*******************/
+struct DoStatementNode* ast_new_do_statement_node(struct StatementListNode* statements) {
+  struct DoStatementNode* node = malloc(sizeof(struct DoStatementNode));
+  node->kind = AstFunctionDeclaration;
+  node->statements = statements;
+  return node;
+}
+
+void ast_free_do_statement_node(struct DoStatementNode* node) {
+  ast_free_statement_list_node(node->statements);
+  node->statements = NULL;
+
+  free(node);
+}
+
+struct DoStatementNode* ast_parse_do_statement(struct Token** tokens) {
+  _CHECK_TOKENS();
+  LOG_DEBUG("Parsing Do Statement: %s", (*tokens)->name);
+
+  if (!ast_do_statement_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_DO), (*tokens)->name);
+    exit(1);
+  }
+
+  _ADVANCE_TOKEN(tokens);
+  
+  struct StatementListNode* statements = ast_parse_statement_list(tokens);
+  if (!token_is_end(**tokens)) {
+    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_END), (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  return ast_new_do_statement_node(statements);
+}
+
+inline bool ast_do_statement_token_matches_first_set(struct Token token) {
+  return token_is_do(token);
 }
 
 /************************/
@@ -2074,6 +2135,9 @@ void ast_free_statement_node(struct StatementNode* node) {
     case AstBindingStatement: {
       ast_free_binding_statement_node(node->value.binding_statement);
     } break;
+    case AstDoStatement: {
+      ast_free_do_statement_node(node->value.do_statement);
+    } break;
     case AstMatchStatement: {
       ast_free_match_statement_node(node->value.match_statement);
     } break;
@@ -2123,6 +2187,14 @@ struct StatementNode* ast_parse_statement(struct Token** tokens) {
       AstBindingStatement,
       (union StatementNodeUnion) {
         .binding_statement = statement
+      }
+    );
+  } else if (ast_do_statement_token_matches_first_set(**tokens)) {
+    struct DoStatementNode* statement = ast_parse_do_statement(tokens);
+    return ast_new_statement_node(
+      AstDoStatement,
+      (union StatementNodeUnion) {
+        .do_statement = statement
       }
     );
   } else {

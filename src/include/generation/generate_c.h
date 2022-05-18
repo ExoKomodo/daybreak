@@ -11,6 +11,7 @@
 int generate_c_code(const struct ProgramNode*, const char*);
 int generate_c_from_binding_statement(FILE*, const struct BindingStatementNode*);
 int generate_c_from_call_expression(FILE*, const struct CallExpressionNode*);
+int generate_c_from_do_statement(FILE*, const struct DoStatementNode*);
 int generate_c_from_double_expression(FILE*, const struct DoubleExpressionNode*);
 int generate_c_from_expression(FILE*, const struct ExpressionNode*);
 int generate_c_from_expression_list(FILE*, const struct ExpressionListNode*);
@@ -149,6 +150,27 @@ int generate_c_from_call_expression(FILE* output_file, const struct CallExpressi
 	error = generate_c_from_expression_list(output_file, call_expression->arguments);
 	fputc(')', output_file);
 	return error;
+}
+
+int generate_c_from_do_statement(
+	FILE* output_file,
+	const struct DoStatementNode* do_statement
+) {
+	if (!do_statement) {
+		LOG_ERROR("Failed to generate C do statement from DoStatementNode. NULL DoStatementNode.");
+		return 1;
+	}
+
+	fputs("{\n", output_file);
+	struct StatementListNode* statements = do_statement->statements;
+	const int error = generate_c_from_statement_list(output_file, statements);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C do statement statements from Statement List: %d", error);
+		return error;
+	}
+	fputs("}\n", output_file);
+
+	return 0;
 }
 
 int generate_c_from_double_expression(FILE* output_file, const struct DoubleExpressionNode* double_expression) {
@@ -837,6 +859,9 @@ int generate_c_from_statement(FILE* output_file, const struct StatementNode* sta
 	switch (statement->kind) {
 		case AstBindingStatement: {
 			return generate_c_from_binding_statement(output_file, statement->value.binding_statement);
+		} break;
+    case AstDoStatement: {
+			return generate_c_from_do_statement(output_file, statement->value.do_statement);
 		} break;
 		case AstMatchStatement: {
 			return generate_c_from_match_statement(output_file, statement->value.match_statement);
