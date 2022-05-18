@@ -492,10 +492,10 @@ struct ParameterNode {
   struct TypeIdentifierNode* type_identifier;
 };
 
-struct ProgramNode {
+typedef struct ProgramNode {
   AstNodeKind kind;
   struct ModuleStatementListNode* module_statements;
-};
+} ProgramNode;
 
 struct ReturnStatementNode {
   AstNodeKind kind;

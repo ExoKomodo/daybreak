@@ -667,7 +667,7 @@ int generate_c_from_module_statement_list(
 	}
 	int error = _generate_c_from_module_statement_list_by_kind(output_file, module_statement_list, AstImportStatement);
 	if (error != 0) {
-		LOG_ERROR("Failed to generate C code for import statements.");
+		LOG_ERROR("Failed to generate C code for import statements");
 		return error;
 	}
 	error = _generate_c_from_module_statement_list_by_kind(output_file, module_statement_list, AstTypeDeclaration);

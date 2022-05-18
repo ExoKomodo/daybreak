@@ -6,14 +6,14 @@
 
 #include <log/prelude.h>
 
-struct Token {
+typedef struct Token {
 	const char* filename;
 	char* name;
 	size_t length;
 	struct Token* next;
 	size_t line_number;
 	size_t column;
-};
+} Token;
 
 struct Token* token_new(
 	const char* filename,
