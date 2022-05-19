@@ -5,7 +5,7 @@ fun problem001 () int do
 	(welcome 1)
 	
 	let solution: int <- (_problem001 1000)
-	(check_solution solution 233168)
+	(assert (check_solution solution 233168))
 	return solution
 end
 

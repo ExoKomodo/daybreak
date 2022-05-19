@@ -1,0 +1,15 @@
+fun do_work (x: int) int do
+	match
+		(gt x 0) => (do_work (sub x 1))
+		(default) => do
+			let processed: int <- (mul x 0)
+			processed
+		end
+	end
+end
+
+fun main () int do
+	let x: int <- (do_work 10)
+	(printf "x: %d\n" x)
+	x
+end

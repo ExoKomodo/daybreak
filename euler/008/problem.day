@@ -15,7 +15,7 @@ end
 fun problem008 () int do
 	(welcome 8)
 	let solution: int64_t <- (_problem008 13)
-	(check_solution solution 23514624000)
+	(assert (check_solution solution 23514624000))
 	return 0
 end
 
