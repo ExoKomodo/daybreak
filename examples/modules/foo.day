@@ -1,6 +1,6 @@
 importc "string.h"
 
-fun foo_do_work (a: int) int is
+fun foo_do_work (a: int) int do
 	( printf
 		"a: %d, 'Hello world' length: %zu\n"
 		a

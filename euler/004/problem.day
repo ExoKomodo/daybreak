@@ -2,15 +2,15 @@ importc "string.h"
 import "euler/helpers.day"
 
 
-fun find_palindromic_pair (upper_bound: int) int is
+fun find_palindromic_pair (upper_bound: int) int do
 	return (_find_palindromic_pair upper_bound upper_bound 0)
 end
 
-fun is_palindrome (str: cstring len: size_t) bool is
+fun is_palindrome (str: cstring len: size_t) bool do
 	return (_is_palindrome str len 0)
 end
 
-fun is_palindromic_number (number: int) bool is
+fun is_palindromic_number (number: int) bool do
 	let len: size_t <- 20
 	let buffer: cstring <- (malloc (mul len (sizeof char)))
 	(sprintf
@@ -24,14 +24,14 @@ fun is_palindromic_number (number: int) bool is
 	return result
 end
 
-fun problem004 () int is
+fun problem004 () int do
 	(welcome 4)
 	let solution: int <- (_problem004 3)
 	(check_solution solution 906609)
 	return 0
 end
 
-fun _find_palindromic_pair (upper_bound: int test_number: int current_max_palindrome: int) int is
+fun _find_palindromic_pair (upper_bound: int test_number: int current_max_palindrome: int) int do
 	let product: int <- (mul upper_bound test_number)
 	match
 		(and
@@ -56,7 +56,7 @@ fun _find_palindromic_pair (upper_bound: int test_number: int current_max_palind
 	end
 end
 
-fun _is_palindrome (str: cstring len: size_t left_index: size_t) bool is
+fun _is_palindrome (str: cstring len: size_t left_index: size_t) bool do
 	let right_index: size_t <- (sub
 		len
 		(add
@@ -74,7 +74,7 @@ fun _is_palindrome (str: cstring len: size_t left_index: size_t) bool is
 	end
 end
 
-fun _problem004 (digits: int) int is
+fun _problem004 (digits: int) int do
 	return (find_palindromic_pair
 		(sub
 			(cast

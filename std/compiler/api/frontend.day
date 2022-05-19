@@ -25,7 +25,7 @@ type DaybreakEmissionResult struct is
 	error: int
 end
 
-fun daybreak_compile (args: DaybreakArgs) int is
+fun daybreak_compile (args: DaybreakArgs) int do
 	mut tokenify_result: DaybreakTokenifyResult <- (_daybreak_tokenify_file args)
 	match
 		(not tokenify_result.error) => do
@@ -48,12 +48,7 @@ fun daybreak_compile (args: DaybreakArgs) int is
 	end
 end
 
-fun _daybreak_fail_generation (error: int) int is
-	(LOG_ERROR "Failed to generate C code. Received error: %d" error)
-	return error
-end
-
-fun _daybreak_compile_program (output_c_file_path: cstring args: DaybreakArgs) int is
+fun _daybreak_compile_program (output_c_file_path: cstring args: DaybreakArgs) int do
 	match
 		(truthy args.output_file_path) => do
 			let output_file_path: cstring <- args.output_file_path
@@ -70,7 +65,7 @@ fun _daybreak_compile_program (output_c_file_path: cstring args: DaybreakArgs) i
 	end
 end
 
-fun _daybreak_emit_program (args: DaybreakArgs program: ptr<ProgramNode>) DaybreakEmissionResult is
+fun _daybreak_emit_program (args: DaybreakArgs program: ptr<ProgramNode>) DaybreakEmissionResult do
 	let standard_library_directory: cstring <- (get_standard_library_directory)
 	let output_c_file_length: size_t <- (add
 		1
@@ -107,7 +102,7 @@ fun _daybreak_emit_program (args: DaybreakArgs program: ptr<ProgramNode>) Daybre
 	end
 end
 
-fun daybreak_greeting () void is
+fun daybreak_greeting () void do
 	(printf
 		"%s#####################################%s\n"
 		ANSI_FOREGROUND_YELLOW
@@ -122,7 +117,7 @@ fun daybreak_greeting () void is
 		ANSI_RESET)
 end
 
-fun daybreak_parse_args (argc: int argv: ptr<ccstring>) DaybreakArgParseResult is
+fun daybreak_parse_args (argc: int argv: ptr<ccstring>) DaybreakArgParseResult do
 	match
 		(lt argc 2) => return {DaybreakArgParseResult
 			is_success <- false
@@ -149,7 +144,7 @@ fun daybreak_parse_args (argc: int argv: ptr<ccstring>) DaybreakArgParseResult i
 	end
 end
 
-fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) DaybreakArgParseResult is
+fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) DaybreakArgParseResult do
 	match
 		(lte argc 0) => return {DaybreakArgParseResult
 			is_success <- true
@@ -184,7 +179,7 @@ fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) Daybre
 	end
 end
 
-fun _daybreak_tokenify_file (args: DaybreakArgs) DaybreakTokenifyResult is
+fun _daybreak_tokenify_file (args: DaybreakArgs) DaybreakTokenifyResult do
 	let directory_setup_error: int <- (setup_language_directories)
 	match
 		(truthy directory_setup_error) => return {DaybreakTokenifyResult

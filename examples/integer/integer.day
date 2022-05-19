@@ -1,4 +1,4 @@
-fun main () int is
+fun main () int do
 	(printf
 		"Integer: %d\n"
 		420)

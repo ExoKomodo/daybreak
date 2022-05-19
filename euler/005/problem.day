@@ -1,13 +1,13 @@
 import "euler/helpers.day"
 
 
-fun construct_polynomial_term (upper_bound: int prime: int) int is
+fun construct_polynomial_term (upper_bound: int prime: int) int do
 	return (pow
 		prime
 		(get_prime_factor_polynomial_degree upper_bound prime))
 end
 
-fun get_prime_factor_polynomial_degree (upper_bound: int prime: int) int is
+fun get_prime_factor_polynomial_degree (upper_bound: int prime: int) int do
 	return (cast
 		int
 		(floor
@@ -16,18 +16,18 @@ fun get_prime_factor_polynomial_degree (upper_bound: int prime: int) int is
 				(log prime))))
 end
 
-fun problem005 () int is
+fun problem005 () int do
 	(welcome 5)
 	let solution: int <- (_problem005)
 	(check_solution solution 232792560)
 	return 0
 end
 
-fun recursive_multiply (upper_bound: int arr: array<int> len: size_t) int is
+fun recursive_multiply (upper_bound: int arr: array<int> len: size_t) int do
 	return (_recursive_multiply upper_bound arr len 0 1)
 end
 
-fun _recursive_multiply (upper_bound: int arr: array<int> len: size_t index: size_t acc: int) int is
+fun _recursive_multiply (upper_bound: int arr: array<int> len: size_t index: size_t acc: int) int do
 	match
 		(gte
 			index
@@ -45,7 +45,7 @@ fun _recursive_multiply (upper_bound: int arr: array<int> len: size_t index: siz
 	end
 end
 
-fun _problem005 () int is
+fun _problem005 () int do
 	mut primes: array<int> <- [
 		2
 		3

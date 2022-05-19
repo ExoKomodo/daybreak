@@ -1,7 +1,7 @@
 import "examples/multiple_imports/foo.day"
 import "examples/multiple_imports/foo.day"
 
-fun main() int is
+fun main() int do
 	(printf "Multiple imports: %d\n"
 		(do_work 1) )
 end

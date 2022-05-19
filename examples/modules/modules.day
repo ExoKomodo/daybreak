@@ -1,5 +1,5 @@
 import "examples/modules/foo.day"
 
-fun main() int is
+fun main() int do
 	(foo/do_work 1)
 end
