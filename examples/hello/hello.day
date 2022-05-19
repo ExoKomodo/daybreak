@@ -1,5 +1,5 @@
 ? Prints hello world
-fun main () int is
+fun main () int do
   (puts "Hello world")
 	return 0
 end

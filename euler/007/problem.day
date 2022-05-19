@@ -1,18 +1,18 @@
 import "euler/helpers.day"
 
 
-fun find_prime_by_index (prime_index: size_t) int64_t is
+fun find_prime_by_index (prime_index: size_t) int64_t do
 	return (_find_prime_by_index prime_index 1 2 3)
 end
 
-fun problem007 () int is
+fun problem007 () int do
 	(welcome 7)
 	let solution: int <- (_problem007 10001)
 	(check_solution solution 104743)
 	return 0
 end
 
-fun _find_prime_by_index (prime_index: size_t current_index: size_t current_prime: int64_t num: int64_t) int64_t is
+fun _find_prime_by_index (prime_index: size_t current_index: size_t current_prime: int64_t num: int64_t) int64_t do
 	match
 		(gte current_index prime_index) => return current_prime
 		(is_prime num) => return (_find_prime_by_index
@@ -28,6 +28,6 @@ fun _find_prime_by_index (prime_index: size_t current_index: size_t current_prim
 	end
 end
 
-fun _problem007 (prime_index: size_t) int64_t is
+fun _problem007 (prime_index: size_t) int64_t do
 	return (find_prime_by_index prime_index)
 end

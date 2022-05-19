@@ -1,22 +1,22 @@
 import "euler/helpers.day"
 
 
-fun problem010 () int is
+fun problem010 () int do
 	(welcome 10)
 	let solution: int64_t <- (_problem010 2000000)
 	(check_solution solution 142913828922)
 	return 0
 end
 
-fun sum_primes (limit: int64_t) int64_t is
+fun sum_primes (limit: int64_t) int64_t do
 	return (_sum_primes (sub limit 1) 0)
 end
 
-fun _problem010 (limit: int64_t) int64_t is
+fun _problem010 (limit: int64_t) int64_t do
   return (sum_primes limit)
 end
 
-fun _sum_primes (number: int64_t acc: int64_t) int64_t is
+fun _sum_primes (number: int64_t acc: int64_t) int64_t do
 	let next: int64_t <- (sub number 1)
 	match
 		(lt number 2) => return acc

@@ -14,13 +14,13 @@ type EuclidPairResult struct is
 	pair: EuclidPair
 end
 
-fun find_euclid_pair (target_sum: int64_t) EuclidPairResult is
+fun find_euclid_pair (target_sum: int64_t) EuclidPairResult do
 	let euclid_target: int64_t <- (div target_sum 2)
 	let root: int64_t <- (cast int64_t (sqrt euclid_target))
 	return (_find_euclid_pair euclid_target root root)
 end
 
-fun find_pythagorean_triplet_product (target_sum: int64_t) int64_t is
+fun find_pythagorean_triplet_product (target_sum: int64_t) int64_t do
 	let result: EuclidPairResult <- (find_euclid_pair target_sum)
 	(assert result.is_success)
 	let pair: EuclidPair <- result.pair
@@ -30,14 +30,14 @@ fun find_pythagorean_triplet_product (target_sum: int64_t) int64_t is
 		     pair.c))
 end
 
-fun problem009 () int is
+fun problem009 () int do
 	(welcome 9)
 	let solution: int64_t <- (_problem009 1000)
 	(check_solution solution 31875000)
 	return 0
 end
 
-fun _find_euclid_pair (target: int64_t square_root: int64_t m: int64_t) EuclidPairResult is
+fun _find_euclid_pair (target: int64_t square_root: int64_t m: int64_t) EuclidPairResult do
 	match
 		(lt m 1) => return {EuclidPairResult
 			is_success <- false
@@ -80,6 +80,6 @@ fun _find_euclid_pair (target: int64_t square_root: int64_t m: int64_t) EuclidPa
 	end
 end
 
-fun _problem009 (target_sum: int64_t) int64_t is
+fun _problem009 (target_sum: int64_t) int64_t do
   return (find_pythagorean_triplet_product target_sum)
 end

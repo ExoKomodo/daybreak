@@ -1,11 +1,11 @@
-fun foo(a: ptr<ccstring>) void is
+fun foo(a: ptr<ccstring>) void do
 	(printf
 		"%s"
 		(deref a)
 	)
 end
 
-fun main (_: int argv: ptr<ccstring>) int is
+fun main (_: int argv: ptr<ccstring>) int do
 	(unused _)
 	(foo argv)
 	return 0

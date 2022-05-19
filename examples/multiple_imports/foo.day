@@ -1,4 +1,4 @@
-fun do_work (a: int) int is
+fun do_work (a: int) int do
 	return (add
 		( mul a 2)
 		3

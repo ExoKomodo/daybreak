@@ -12,19 +12,19 @@ type Baz union is
   bar: Bar
 end
 
-fun from_foo (f: Foo) Baz is
+fun from_foo (f: Foo) Baz do
   return {Baz
     foo <- f
   }
 end
 
-fun from_bar (b: Bar) Baz is
+fun from_bar (b: Bar) Baz do
   return {Baz
     bar <- b
   }
 end
 
-fun main () int is
+fun main () int do
   let f: Foo <- {Foo
     a <- 1
     b <- 2

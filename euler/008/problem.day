@@ -1,25 +1,25 @@
 import "euler/helpers.day"
 
 
-fun find_largest_contiguous_product (series: cstring digits: size_t) int64_t is
+fun find_largest_contiguous_product (series: cstring digits: size_t) int64_t do
 	return (_find_largest_contiguous_product
 		series
 		digits
 		0)
 end
 
-fun multiply_range_from_cstring (str: cstring len: size_t) int64_t is
+fun multiply_range_from_cstring (str: cstring len: size_t) int64_t do
 	return (_multiply_range_from_cstring str len 1)
 end
 
-fun problem008 () int is
+fun problem008 () int do
 	(welcome 8)
 	let solution: int64_t <- (_problem008 13)
 	(check_solution solution 23514624000)
 	return 0
 end
 
-fun _find_largest_contiguous_product (series: cstring digits: size_t largest: int64_t) int64_t is
+fun _find_largest_contiguous_product (series: cstring digits: size_t largest: int64_t) int64_t do
 	match
 		(lt
 			(strlen series)
@@ -33,7 +33,7 @@ fun _find_largest_contiguous_product (series: cstring digits: size_t largest: in
 	end
 end
 
-fun _multiply_range_from_cstring (str: cstring len: size_t acc: int64_t) int64_t is
+fun _multiply_range_from_cstring (str: cstring len: size_t acc: int64_t) int64_t do
 	match
 		(or
 			(lt
@@ -52,7 +52,7 @@ fun _multiply_range_from_cstring (str: cstring len: size_t acc: int64_t) int64_t
 	end
 end
 
-fun _problem008 (digits: size_t) int64_t is
+fun _problem008 (digits: size_t) int64_t do
   let series: cstring <- 
 		(interpolate_cstring "73167176531330624919225119674426574742355349194934"
 		(interpolate_cstring "96983520312774506326239578318016984801869478851843"

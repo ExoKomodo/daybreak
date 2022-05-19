@@ -13,7 +13,7 @@ importc "test_variables.h"
 
 importc "log/prelude.h"
 
-fun main () int is
+fun main () int do
 	match
 		(not (test_double)) =>
 			return 1

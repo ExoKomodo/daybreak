@@ -379,10 +379,10 @@ int _generate_c_function_definition(
 		return error;
 	}
 	fputs(" {\n", output_file);
-	struct StatementListNode* statements = function_declaration->statements;
-	error = generate_c_from_statement_list(output_file, statements);
+	struct DoStatementNode* body = function_declaration->body;
+	error = generate_c_from_do_statement(output_file, body);
 	if (error != 0) {
-		LOG_ERROR("Failed to generate C function statements from Statement List: %d", error);
+		LOG_ERROR("Failed to generate C function body from Do Statement: %d", error);
 		return error;
 	}
 	fputs("}\n", output_file);

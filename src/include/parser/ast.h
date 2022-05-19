@@ -227,7 +227,7 @@ void ast_free_field_node(struct FieldNode*);
 struct FieldNode* ast_parse_field(struct Token** tokens);
 bool ast_field_token_matches_first_set(struct Token);
 
-struct FunctionDeclarationNode* ast_new_function_declaration_node(struct IdentifierNode*, struct TypeIdentifierNode*, struct ParameterListNode*, struct StatementListNode*);
+struct FunctionDeclarationNode* ast_new_function_declaration_node(struct IdentifierNode*, struct TypeIdentifierNode*, struct ParameterListNode*, struct DoStatementNode*);
 void ast_free_function_declaration_node(struct FunctionDeclarationNode*);
 struct FunctionDeclarationNode* ast_parse_function_declaration(struct Token**);
 bool ast_function_declaration_token_matches_first_set(struct Token);
@@ -417,7 +417,7 @@ struct FunctionDeclarationNode {
   struct IdentifierNode* identifier;
   struct TypeIdentifierNode* return_type;
   struct ParameterListNode* parameters;
-  struct StatementListNode* statements;
+  struct DoStatementNode* body;
 };
 
 struct IdentifierNode {
@@ -1238,14 +1238,14 @@ struct FunctionDeclarationNode* ast_new_function_declaration_node(
   struct IdentifierNode* identifier,
   struct TypeIdentifierNode* return_type,
   struct ParameterListNode* parameters,
-  struct StatementListNode* statements
+  struct DoStatementNode* body
 ) {
   struct FunctionDeclarationNode* node = malloc(sizeof(struct FunctionDeclarationNode));
   node->kind = AstFunctionDeclaration;
   node->identifier = identifier;
   node->return_type = return_type;
   node->parameters = parameters;
-  node->statements = statements;
+  node->body = body;
   return node;
 }
 
@@ -1256,8 +1256,8 @@ void ast_free_function_declaration_node(struct FunctionDeclarationNode* node) {
   node->return_type = NULL;
   ast_free_parameter_list_node(node->parameters);
   node->parameters = NULL;
-  ast_free_statement_list_node(node->statements);
-  node->statements = NULL;
+  ast_free_do_statement_node  (node->body);
+  node->body = NULL;
 
   free(node);
 }
@@ -1275,23 +1275,17 @@ struct FunctionDeclarationNode* ast_parse_function_declaration(struct Token** to
   struct IdentifierNode* identifier = ast_parse_identifier(tokens);
   struct ParameterListNode* parameters = ast_parse_parameter_list(tokens);
   struct TypeIdentifierNode* return_type = ast_parse_type_identifier(tokens);
-  if (!token_is_is(**tokens)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_IS), (*tokens)->name);
+  if (!token_is_do(**tokens)) {
+    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_DO), (*tokens)->name);
     exit(1);
   }
-  _ADVANCE_TOKEN(tokens);
   
-  struct StatementListNode* statements = ast_parse_statement_list(tokens);
-  if (!token_is_end(**tokens)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_END), (*tokens)->name);
-    exit(1);
-  }
-  _ADVANCE_TOKEN(tokens);
+  struct DoStatementNode* body = ast_parse_do_statement(tokens);
   return ast_new_function_declaration_node(
     identifier,
     return_type,
     parameters,
-    statements
+    body
   );
 }
 

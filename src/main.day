@@ -1,6 +1,6 @@
 import "std/compiler/api.day"
 
-fun main (argc: int argv: ptr<ccstring>) int is
+fun main (argc: int argv: ptr<ccstring>) int do
 	(daybreak_greeting)
 	
 	let parsed: DaybreakArgParseResult <- (daybreak_parse_args argc argv)

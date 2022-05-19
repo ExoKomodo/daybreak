@@ -1,6 +1,6 @@
 importc "math.h"
 
-fun distance_squared (x1: double y1: double x2: double y2: double) double is
+fun distance_squared (x1: double y1: double x2: double y2: double) double do
 	return (add
 		(pow
 			(sub x2 x1)
@@ -10,7 +10,7 @@ fun distance_squared (x1: double y1: double x2: double y2: double) double is
 			2 ))
 end
 
-fun main () int is
+fun main () int do
 	let x1: double <- 0.
 	let y1: double <- 1.2
 	let x2: double <- 3.4
