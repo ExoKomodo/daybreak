@@ -6,7 +6,7 @@ type FilterResult struct is
 end
 
 fun filter_factor (n: int64_t factor: int64_t) FilterResult do
-	return (_filter_factor n n factor)
+	(_filter_factor n n factor)
 end
 
 fun get_largest_prime_factor (n: int64_t) int64_t do
@@ -15,11 +15,11 @@ fun get_largest_prime_factor (n: int64_t) int64_t do
 	let de_three_result: FilterResult <- (filter_factor de_even_result.n 3)
 	
 	match
-		(truthy de_three_result.did_reduce) => return (_get_largest_prime_factor de_three_result.n loop_factor 3)
+		(truthy de_three_result.did_reduce) => (_get_largest_prime_factor de_three_result.n loop_factor 3)
 		(and
 			(truthy de_even_result.did_reduce)
-			(falsey de_three_result.did_reduce)) => return (_get_largest_prime_factor de_even_result.n loop_factor 2)
-		(default) => return (_get_largest_prime_factor n loop_factor 0)
+			(falsey de_three_result.did_reduce)) => (_get_largest_prime_factor de_even_result.n loop_factor 2)
+		(default) => (_get_largest_prime_factor n loop_factor 0)
 	end
 end
 
@@ -27,7 +27,7 @@ fun problem003 () int do
 	(welcome 3)
 	let solution: int64_t <- (_problem003 600851475143)
 	(assert (check_solution solution 6857))
-	return 0
+	0
 end
 
 fun _filter_factor (original_n: int64_t n: int64_t factor: int64_t) FilterResult do
@@ -36,8 +36,8 @@ fun _filter_factor (original_n: int64_t n: int64_t factor: int64_t) FilterResult
 			0
 			(mod
 				n
-				factor)) => return (_filter_factor original_n (div n factor) factor)
-		(default) => return {FilterResult
+				factor)) => (_filter_factor original_n (div n factor) factor)
+		(default) => {FilterResult
 			n <- n
 			did_reduce <- (lt n original_n)
 		}
@@ -58,25 +58,28 @@ fun _get_largest_prime_factor (n: int64_t factor: int64_t max_prime: int64_t) in
 	match
 		(and
 			is_done
-			(gt n 4)) => return n
+			(gt n 4)) => n
 		(truthy
-		  is_done) => return max_prime
+		  is_done) => max_prime
+		(default) => (_continue_largest_prime_factor n factor max_prime)
 	end
-	
+end
+
+fun _continue_largest_prime_factor (n: int64_t factor: int64_t max_prime: int64_t) int64_t do
 	let next_factor: int64_t <- (add factor 2)
 	let loop_factor: int64_t <- (add factor 6)
 	let de_factor_result: FilterResult <- (filter_factor n factor)
 	let de_factor_next_result: FilterResult <- (filter_factor de_factor_result.n next_factor)
 	
 	match
-		(truthy de_factor_next_result.did_reduce) => return (_get_largest_prime_factor de_factor_next_result.n loop_factor next_factor)
+		(truthy de_factor_next_result.did_reduce) => (_get_largest_prime_factor de_factor_next_result.n loop_factor next_factor)
 		(and
 			(truthy de_factor_result.did_reduce)
-			(falsey de_factor_next_result.did_reduce)) => return (_get_largest_prime_factor de_factor_result.n loop_factor factor)
-		(default) => return (_get_largest_prime_factor n loop_factor max_prime)
+			(falsey de_factor_next_result.did_reduce)) => (_get_largest_prime_factor de_factor_result.n loop_factor factor)
+		(default) => (_get_largest_prime_factor n loop_factor max_prime)
 	end
 end
 
 fun _problem003 (n: int64_t) int64_t do
-	return (get_largest_prime_factor n)
+	(get_largest_prime_factor n)
 end
