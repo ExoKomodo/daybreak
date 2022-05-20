@@ -27,7 +27,7 @@ end
 fun problem004 () int do
 	(welcome 4)
 	let solution: int <- (_problem004 3)
-	(check_solution solution 906609)
+	(assert (check_solution solution 906609))
 	return 0
 end
 

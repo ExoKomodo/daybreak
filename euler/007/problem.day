@@ -8,7 +8,7 @@ end
 fun problem007 () int do
 	(welcome 7)
 	let solution: int <- (_problem007 10001)
-	(check_solution solution 104743)
+	(assert (check_solution solution 104743))
 	return 0
 end
 

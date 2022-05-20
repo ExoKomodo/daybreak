@@ -24,7 +24,7 @@ fun problem002 () int do
 	(welcome 2)
 	
 	let solution: int <- (_problem002 4000000)
-	(check_solution solution 4613732)
+	(assert (check_solution solution 4613732))
 	return solution
 end
 

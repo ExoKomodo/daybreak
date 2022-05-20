@@ -102,7 +102,7 @@ fun _daybreak_emit_program (args: DaybreakArgs program: ptr<ProgramNode>) Daybre
 	end
 end
 
-fun daybreak_greeting () void do
+fun daybreak_greeting () bool do
 	(printf
 		"%s#####################################%s\n"
 		ANSI_FOREGROUND_YELLOW
@@ -115,6 +115,7 @@ fun daybreak_greeting () void do
 		"%s#####################################%s\n"
 		ANSI_FOREGROUND_YELLOW
 		ANSI_RESET)
+	true
 end
 
 fun daybreak_parse_args (argc: int argv: ptr<ccstring>) DaybreakArgParseResult do

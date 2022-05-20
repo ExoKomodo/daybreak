@@ -37,7 +37,7 @@ int generate_c_from_parameter(FILE*, const struct ParameterNode*);
 int generate_c_from_parameter_list(FILE*, const struct ParameterListNode*);
 int generate_c_from_program(FILE*, const struct ProgramNode*);
 int generate_c_from_return_statement(FILE*, const struct ReturnStatementNode*);
-int generate_c_from_statement(FILE*, const struct StatementNode*);
+int generate_c_from_statement(FILE*, const struct StatementNode*, const bool);
 int generate_c_from_statement_list(FILE*, const struct StatementListNode*);
 int generate_c_from_string_expression(FILE*, const struct StringExpressionNode*);
 int generate_c_from_type_declaration(FILE*, const struct TypeDeclarationNode*);
@@ -326,6 +326,10 @@ int _generate_c_function_signature(FILE* output_file, const struct FunctionDecla
 		);
 	}
 
+	if (strcmp("void", function_declaration->return_type->identifier->name) == 0) {
+		LOG_ERROR("Unsupported return type: void");
+		return 1;
+	}
 	int error = generate_c_from_type_identifier(output_file, function_declaration->return_type);
 	if (error != 0) {
 		return error;
@@ -604,7 +608,7 @@ int generate_c_from_match_case_list(FILE* output_file, const struct MatchCaseLis
 			}
 			fputs("\n{\n", output_file);
 		}
-		const int error = generate_c_from_statement(output_file, match_case->statement);
+		const int error = generate_c_from_statement(output_file, match_case->statement, true);
 		if (error != 0) {
 			return error;
 		}
@@ -850,7 +854,7 @@ int generate_c_from_return_statement(FILE* output_file, const struct ReturnState
 	return 0;
 }
 
-int generate_c_from_statement(FILE* output_file, const struct StatementNode* statement) {
+int generate_c_from_statement(FILE* output_file, const struct StatementNode* statement, const bool will_return) {
 	if (!statement) {
 		LOG_ERROR("Failed to generate C code from StatementNode. NULL StatementNode.");
 		return 1;
@@ -858,6 +862,10 @@ int generate_c_from_statement(FILE* output_file, const struct StatementNode* sta
 
 	switch (statement->kind) {
 		case AstBindingStatement: {
+			if (will_return) {
+				LOG_ERROR("A binding statement cannot be the final statement in a block");
+				return 2;
+			}
 			return generate_c_from_binding_statement(output_file, statement->value.binding_statement);
 		} break;
     case AstDoStatement: {
@@ -870,6 +878,9 @@ int generate_c_from_statement(FILE* output_file, const struct StatementNode* sta
 			return generate_c_from_return_statement(output_file, statement->value.return_statement);
 		} break;
 		case AstExpression: {
+			if (will_return) {
+				fputs("return ", output_file);
+			}
 			return generate_c_from_expression(output_file, statement->value.expression);
 		} break;
 		default: {
@@ -893,7 +904,7 @@ int generate_c_from_statement_list(
 
 	for (size_t i = 0; i < statement_list->length; i++) {
 		struct StatementNode* statement = statement_list->statements[i];
-		const int error = generate_c_from_statement(output_file, statement);
+		const int error = generate_c_from_statement(output_file, statement, (i == statement_list->length - 1));
 		if (error != 0) {
 			return error;
 		}

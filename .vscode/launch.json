@@ -266,6 +266,35 @@
       "preLaunchTask": "build [daybreak]",
     },
     {
+      "name": "Return",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/daybreak",
+      "args": [
+        "${workspaceFolder}/return/return.day"
+      ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build [daybreak]",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      },
+    },
+    {
       "name": "Types",
       "type": "cppdbg",
       "request": "launch",

@@ -2,7 +2,7 @@ importc "inttypes.h"
 importc "math.h"
 
 
-fun check_solution (solution: int64_t correct_answer: int64_t) void do
+fun check_solution (solution: int64_t correct_answer: int64_t) bool do
 	let padding: int <- 20
 	(printf
 		(interpolate_cstring
@@ -18,14 +18,17 @@ fun check_solution (solution: int64_t correct_answer: int64_t) void do
 		solution
 		padding
 		correct_answer)
-	(assert (eq solution correct_answer))
+	(eq solution correct_answer)
 end
 
 fun is_prime (num: int64_t) bool do
 	return (_is_prime num 2)
 end
 
-fun not_implemented () void do (exit 1) end
+fun not_implemented () int do
+	(exit 1)
+	1
+end
 
 fun partial_sum (n: int scale: int) int do
 	let limit: int <- (div (sub n 1) scale)
@@ -38,8 +41,9 @@ fun partial_sum (n: int scale: int) int do
 			2)
 end
 
-fun welcome (problem_number: int) void do
+fun welcome (problem_number: int) int do
 	(printf "Solving Euler problem #%03d\n" problem_number)
+	problem_number
 end
 
 fun _is_prime (num: int64_t factor: int64_t) bool do

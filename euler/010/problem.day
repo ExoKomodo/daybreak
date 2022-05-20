@@ -4,7 +4,7 @@ import "euler/helpers.day"
 fun problem010 () int do
 	(welcome 10)
 	let solution: int64_t <- (_problem010 2000000)
-	(check_solution solution 142913828922)
+	(assert (check_solution solution 142913828922))
 	return 0
 end
 

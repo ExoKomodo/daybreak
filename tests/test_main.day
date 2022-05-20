@@ -8,6 +8,7 @@ importc "test_match.h"
 importc "test_modules.h"
 importc "test_multiple_imports.h"
 importc "test_pointers.h"
+importc "test_return.h"
 importc "test_types.h"
 importc "test_variables.h"
 
@@ -31,10 +32,12 @@ fun main () int do
 			return 7
 		(not (test_pointers)) =>
 			return 8
-		(not (test_types)) =>
+		(not (test_return)) =>
 			return 9
-		(not (test_variables)) =>
+		(not (test_types)) =>
 			return 10
+		(not (test_variables)) =>
+			return 11
 	end
   
 	(LOG_INFO "Successfully passed all tests!")
