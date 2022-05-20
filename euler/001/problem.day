@@ -6,7 +6,7 @@ fun problem001 () int do
 	
 	let solution: int <- (_problem001 1000)
 	(assert (check_solution solution 233168))
-	return solution
+	solution
 end
 
 fun _problem001 (limit: int) int do
@@ -18,7 +18,7 @@ fun _problem001 (limit: int) int do
 	let fives: int <- (partial_sum limit m)
 	let combined: int <- (partial_sum limit nm)
 	
-	return (sub 
+	(sub 
 		(add
 			threes
 			fives
