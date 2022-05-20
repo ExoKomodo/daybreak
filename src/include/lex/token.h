@@ -92,7 +92,10 @@ static inline void token_chomp(struct Token** tokens) {
 	  return strcmp(token.name, "" override "") == 0; \
 	}
 
-// NOTE: Lexing keywords
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION
+(
+	do
+)
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	end
 )
@@ -100,7 +103,20 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	fun
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
+	import
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
+	importc
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION
+(
+	is
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	let
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
+	match
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	mut
@@ -115,13 +131,7 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	type
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
-	import
-)
-_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
-	importc
-)
-_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
-	match
+	union
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 	binding_arrow,
@@ -170,14 +180,6 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 	right_angle,
 	">"
-)
-_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION
-(
-	is
-)
-_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION
-(
-	do
 )
 
 static inline bool token_is_string_literal(struct Token token) {
@@ -235,9 +237,22 @@ static inline bool token_is_integer(struct Token token) {
 
 static inline bool token_is_keyword(struct Token token) {
 	return (
+		token_is_do(token) ||
 		token_is_end(token) ||
+		token_is_fun(token) ||
+		token_is_import(token) ||
+		token_is_importc(token) ||
+		token_is_is(token) ||
+		token_is_let(token) ||
+		token_is_match(token) ||
+		token_is_mut(token) ||
 		token_is_return(token) ||
-		token_is_match(token)
+		/* Not included as keywords due to the use of an IdentifierNode
+		  to determine the kind of TypeDeclarationNode
+		token_is_struct(token) ||
+		token_is_union(token)
+		*/
+		token_is_type(token)
 	);
 }
 
