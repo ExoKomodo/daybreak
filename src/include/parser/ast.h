@@ -1359,7 +1359,7 @@ struct IdentifierExpressionNode* ast_parse_identifier_expression(struct Token** 
   LOG_DEBUG("Parsing Identifier Expression: %s", (*tokens)->name);
 
   if (!ast_identifier_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected identifier got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected identifier expression got '%s'", (*tokens)->name);
     exit(1);
   }
   struct IdentifierNode* identifier = ast_parse_identifier(tokens);
@@ -1579,14 +1579,6 @@ struct MatchCaseListNode* ast_parse_match_case_list(struct Token** tokens) {
   struct MatchCaseListNode* case_list = ast_new_match_case_list_node(NULL);
   while (ast_match_case_list_token_matches_first_set(**tokens)) {
     ast_add_match_case_node(case_list, ast_parse_match_case(tokens));
-    // TODO: Add follow set function
-    if (
-      !tokens ||
-      !*tokens ||
-      token_is_end(**tokens)
-    ) {
-      break;
-    }
   }
   return case_list;
 }
@@ -1678,6 +1670,10 @@ struct MatchStatementNode* ast_parse_match_statement(struct Token** tokens) {
   _ADVANCE_TOKEN(tokens);
 
   struct MatchCaseListNode* match_case_list = ast_parse_match_case_list(tokens);
+  if (!token_is_end(**tokens)) {
+    LOG_ERROR("Expected '" HELPERS_STRINGIFY(TOKEN_END) "' got '%s'", (*tokens)->name);
+    exit(1);
+  }
   _ADVANCE_TOKEN(tokens);
   return ast_new_match_statement_node(match_case_list);
 }
@@ -2271,7 +2267,7 @@ struct StatementListNode* ast_parse_statement_list(struct Token** tokens) {
     exit(1);
   }
 
-  while (!token_is_end(**tokens)) {
+  while (ast_statement_list_token_matches_first_set(**tokens)) {
     ast_add_statement_node(statement_list, ast_parse_statement(tokens));
   }
   return statement_list;
