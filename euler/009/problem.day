@@ -24,8 +24,7 @@ fun find_pythagorean_triplet_product (target_sum: int64_t) int64_t do
 	let result: EuclidPairResult <- (find_euclid_pair target_sum)
 	(assert result.is_success)
 	let pair: EuclidPair <- result.pair
-	return
-		(mul pair.a
+	(mul pair.a
 		(mul pair.b
 		     pair.c))
 end
