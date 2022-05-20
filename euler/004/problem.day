@@ -7,7 +7,7 @@ fun find_palindromic_pair (upper_bound: int) int do
 end
 
 fun is_palindrome (str: cstring len: size_t) bool do
-	 (_is_palindrome str len 0)
+	(_is_palindrome str len 0)
 end
 
 fun is_palindromic_number (number: int) bool do
