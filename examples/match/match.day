@@ -5,8 +5,8 @@ fun main () int do
 		(equals x 20) => (puts "x was 20")
 		(default) => do
 			(puts "x was something else")
-			return 1
+			1
 		end
 	end
-	return 0
+	0
 end

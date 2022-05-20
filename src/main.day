@@ -5,10 +5,10 @@ fun main (argc: int argv: ptr<ccstring>) int do
 	
 	let parsed: DaybreakArgParseResult <- (daybreak_parse_args argc argv)
 	match
-		(truthy parsed.is_success) => return (daybreak_compile parsed.args)
+		(truthy parsed.is_success) => (daybreak_compile parsed.args)
 		(default) => do
 			(LOG_ERROR "Failed to parse CLI args")
-			return 1
+			1
 		end
 	end
 end

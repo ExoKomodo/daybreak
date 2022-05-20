@@ -13,13 +13,13 @@ type Baz union is
 end
 
 fun from_foo (f: Foo) Baz do
-  return {Baz
+  {Baz
     foo <- f
   }
 end
 
 fun from_bar (b: Bar) Baz do
-  return {Baz
+  {Baz
     bar <- b
   }
 end

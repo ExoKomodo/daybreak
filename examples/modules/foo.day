@@ -7,7 +7,7 @@ fun foo_do_work (a: int) int do
 		(strlen "Hello world") )
 	
 	match
-	  (equals a 0) => return 0
-		(default) => return (foo/do_work (sub a 1))
+	  (equals a 0) => 0
+		(default) => (foo/do_work (sub a 1))
 	end
 end

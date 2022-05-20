@@ -1,16 +1,16 @@
 fun foo (s: cstring) int do
 	(printf "Foo: %s\n" s)
-	return 0
+	0
 end
 
 fun bar (a: int b: cstring) int do
 	(printf "Bar: %d %s\n" a b)
-	return 0
+	0
 end
 
 ? Prints hello world
 fun main () int do
   (foo "Hello!")
 	(bar 2 "Hello again!!")
-	return 0
+	0
 end

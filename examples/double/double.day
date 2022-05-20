@@ -1,7 +1,7 @@
 importc "math.h"
 
 fun distance_squared (x1: double y1: double x2: double y2: double) double do
-	return (add
+	(add
 		(pow
 			(sub x2 x1)
 			2 )
@@ -28,5 +28,5 @@ fun main () int do
 		x2
 		y2
 		answer)
-	return 0
+	0
 end
