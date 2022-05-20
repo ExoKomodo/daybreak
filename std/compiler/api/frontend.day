@@ -34,17 +34,17 @@ fun daybreak_compile (args: DaybreakArgs) int do
 				(truthy program) => do
 					let emit_result: DaybreakEmissionResult <- (_daybreak_emit_program args program)
 					match
-						(not emit_result.error) => return 0
-						(default) => return emit_result.error
+						(not emit_result.error) => 0
+						(default) => emit_result.error
 					end
 				end
 				(default) => do
 					(LOG_ERROR "Failed to parse program")
-					return 2
+					2
 				end
 			end
 		end
-		(default) => return tokenify_result.error
+		(default) => tokenify_result.error
 	end
 end
 
@@ -53,14 +53,14 @@ fun _daybreak_compile_program (output_c_file_path: cstring args: DaybreakArgs) i
 		(truthy args.output_file_path) => do
 			let output_file_path: cstring <- args.output_file_path
 			(LOG_INFO "Output file: %s" output_file_path)
-			return (compile_c_code output_c_file_path output_file_path)
+			(compile_c_code output_c_file_path output_file_path)
 		end
 		(default) => do
 			mut output_file_path: cstring <- (get_default_output_file)
 			(LOG_INFO "Output file: %s" output_file_path)
 			let result: int <- (compile_c_code output_c_file_path output_file_path)
 			(delete output_file_path)
-			return result
+			result
 		end
 	end
 end
@@ -89,13 +89,13 @@ fun _daybreak_emit_program (args: DaybreakArgs program: ptr<ProgramNode>) Daybre
 		(not generation_error) => do
 			let compiler_error: int <- (_daybreak_compile_program output_c_file_path args)
 			(delete output_c_file_path)
-			return {DaybreakEmissionResult
+			{DaybreakEmissionResult
 				error <- compiler_error
 			}
 		end
 		(default) => do
 			(LOG_ERROR "Failed to generate C code. Received error: %d" generation_error)
-			return {DaybreakEmissionResult
+			{DaybreakEmissionResult
 				error <- generation_error
 			}
 		end
@@ -120,7 +120,7 @@ end
 
 fun daybreak_parse_args (argc: int argv: ptr<ccstring>) DaybreakArgParseResult do
 	match
-		(lt argc 2) => return {DaybreakArgParseResult
+		(lt argc 2) => {DaybreakArgParseResult
 			is_success <- false
 		}
 	end
@@ -134,20 +134,20 @@ fun daybreak_parse_args (argc: int argv: ptr<ccstring>) DaybreakArgParseResult d
 		}
 	)
 	match
-		(falsey result.args.output_file_path) => return {DaybreakArgParseResult
+		(falsey result.args.output_file_path) => {DaybreakArgParseResult
 			is_success <- result.is_success
 			args <- {DaybreakArgs
 				source_file_path <- result.args.source_file_path
 				output_file_path <- result.args.output_file_path
 			}
 		}
-		(default) => return result
+		(default) => result
 	end
 end
 
 fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) DaybreakArgParseResult do
 	match
-		(lte argc 0) => return {DaybreakArgParseResult
+		(lte argc 0) => {DaybreakArgParseResult
 			is_success <- true
 			args <- acc
 		}
@@ -155,11 +155,11 @@ fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) Daybre
 			(eq
 				0
 				(strcmp (deref argv) "-o")) => match
-					(lt argc 2) => return {DaybreakArgParseResult
+					(lt argc 2) => {DaybreakArgParseResult
 						is_success <- false
 						args <- acc
 					}
-					(default) => return (_daybreak_parse_arg
+					(default) => (_daybreak_parse_arg
 						(add argv 2)
 						(sub argc 2)
 						{DaybreakArgs
@@ -168,7 +168,7 @@ fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) Daybre
 						}
 					)
 				end
-			(default) => return (_daybreak_parse_arg
+			(default) => (_daybreak_parse_arg
 				(add argv 1)
 				(sub argc 1)
 				{DaybreakArgs
@@ -183,7 +183,7 @@ end
 fun _daybreak_tokenify_file (args: DaybreakArgs) DaybreakTokenifyResult do
 	let directory_setup_error: int <- (setup_language_directories)
 	match
-		(truthy directory_setup_error) => return {DaybreakTokenifyResult
+		(truthy directory_setup_error) => {DaybreakTokenifyResult
 			error <- directory_setup_error
 			tokens <- NULL
 		}
@@ -192,7 +192,7 @@ fun _daybreak_tokenify_file (args: DaybreakArgs) DaybreakTokenifyResult do
 		args.source_file_path
 		DAYBREAK_NEXT_IMPORT_POINTER)
 	match
-		(falsey source_file) => return {DaybreakTokenifyResult
+		(falsey source_file) => {DaybreakTokenifyResult
 			error <- 1
 			tokens <- NULL
 		}
@@ -202,7 +202,7 @@ fun _daybreak_tokenify_file (args: DaybreakArgs) DaybreakTokenifyResult do
 		source_file
 	)
 	(fclose source_file)
-	return {DaybreakTokenifyResult
+	{DaybreakTokenifyResult
 		error <- 0
 		tokens <- tokens
 	}

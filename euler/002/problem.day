@@ -3,15 +3,15 @@ import "euler/helpers.day"
 fun fib_add_evens(limit: int a: int b: int acc: int) int do
 	let total: int <- (add a b)
 	match
-		(gt b limit) => return acc
-		(equals 0 (mod b 2)) => return
+		(gt b limit) => acc
+		(equals 0 (mod b 2)) =>
 			(fib_add_evens
 				limit
 				b
 				total
 				(add acc b)
 			)
-		(default) => return
+		(default) =>
 			(fib_add_evens
 				limit
 				b
@@ -25,9 +25,9 @@ fun problem002 () int do
 	
 	let solution: int <- (_problem002 4000000)
 	(assert (check_solution solution 4613732))
-	return solution
+	solution
 end
 
 fun _problem002 (limit: int) int do
-	return (fib_add_evens limit 0 1 0)
+	(fib_add_evens limit 0 1 0)
 end

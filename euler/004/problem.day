@@ -3,11 +3,11 @@ import "euler/helpers.day"
 
 
 fun find_palindromic_pair (upper_bound: int) int do
-	return (_find_palindromic_pair upper_bound upper_bound 0)
+	(_find_palindromic_pair upper_bound upper_bound 0)
 end
 
 fun is_palindrome (str: cstring len: size_t) bool do
-	return (_is_palindrome str len 0)
+	(_is_palindrome str len 0)
 end
 
 fun is_palindromic_number (number: int) bool do
@@ -21,14 +21,14 @@ fun is_palindromic_number (number: int) bool do
 		number)
 	let result: bool <- (is_palindrome buffer (strlen buffer))
 	(delete buffer)
-	return result
+	result
 end
 
 fun problem004 () int do
 	(welcome 4)
 	let solution: int <- (_problem004 3)
 	(assert (check_solution solution 906609))
-	return 0
+	0
 end
 
 fun _find_palindromic_pair (upper_bound: int test_number: int current_max_palindrome: int) int do
@@ -36,20 +36,20 @@ fun _find_palindromic_pair (upper_bound: int test_number: int current_max_palind
 	match
 		(and
 			(is_palindromic_number product)
-			(gt product current_max_palindrome)) => return (_find_palindromic_pair
+			(gt product current_max_palindrome)) => (_find_palindromic_pair
 				upper_bound
 				(sub test_number 1)
 				product)
 		(lte
 			upper_bound
-			1) => return current_max_palindrome
+			1) => current_max_palindrome
 		(lte
 			test_number
-			1) => return (_find_palindromic_pair
+			1) => (_find_palindromic_pair
 				(sub upper_bound 1)
 				(sub upper_bound 1)
 				current_max_palindrome)
-		(default) => return (_find_palindromic_pair
+		(default) => (_find_palindromic_pair
 			upper_bound
 			(sub test_number 1)
 			current_max_palindrome)
@@ -65,17 +65,17 @@ fun _is_palindrome (str: cstring len: size_t left_index: size_t) bool do
 	match
 		(gte
 			left_index
-			right_index) => return true
+			right_index) => true
 		(not
 			(eq
 				(unsafe_index str left_index)
-				(unsafe_index str right_index))) => return false
-		(default) => return (_is_palindrome str len (add left_index 1))
+				(unsafe_index str right_index))) => false
+		(default) => (_is_palindrome str len (add left_index 1))
 	end
 end
 
 fun _problem004 (digits: int) int do
-	return (find_palindromic_pair
+	(find_palindromic_pair
 		(sub
 			(cast
 				int

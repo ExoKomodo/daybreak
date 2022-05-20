@@ -22,7 +22,7 @@ fun check_solution (solution: int64_t correct_answer: int64_t) bool do
 end
 
 fun is_prime (num: int64_t) bool do
-	return (_is_prime num 2)
+	(_is_prime num 2)
 end
 
 fun not_implemented () int do
@@ -32,7 +32,7 @@ end
 
 fun partial_sum (n: int scale: int) int do
 	let limit: int <- (div (sub n 1) scale)
-	return (div
+	(div
 		(mul scale
 			(mul limit
 				(add limit 1)
@@ -49,11 +49,11 @@ end
 fun _is_prime (num: int64_t factor: int64_t) bool do
 	let square_root: int64_t <- (sqrt num)
 	match
-		(gt factor square_root) => return true
+		(gt factor square_root) => true
 		(eq
 			0
-			(mod num factor)) => return false
-		(default) => return (_is_prime
+			(mod num factor)) => false
+		(default) => (_is_prime
 			num
 			(add factor 1))
 	end

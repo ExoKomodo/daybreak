@@ -2,9 +2,9 @@
 fun do_work (x: int) int do
 	let y:int <- (add x (mul 5 2))
 	(printf "x = %d, y = %d\n" x y)
-	return 0
+	0
 end
 
 fun main () int do
-	return (do_work 10)
+	(do_work 10)
 end

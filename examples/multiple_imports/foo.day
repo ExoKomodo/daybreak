@@ -1,5 +1,5 @@
 fun do_work (a: int) int do
-	return (add
+	(add
 		( mul a 2)
 		3
 	)

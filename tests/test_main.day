@@ -17,29 +17,30 @@ importc "log/prelude.h"
 fun main () int do
 	match
 		(not (test_double)) =>
-			return 1
+			1
 		(not (test_foobar)) =>
-			return 2
+			2
 		(not (test_hello_world)) =>
-			return 3
+			3
 		(not (test_integer)) =>
-			return 4
+			4
 		(not (test_match)) =>
-			return 5
+			5
 		(not (test_modules)) =>
-			return 6
+			6
 		(not (test_multiple_imports)) =>
-			return 7
+			7
 		(not (test_pointers)) =>
-			return 8
+			8
 		(not (test_return)) =>
-			return 9
+			9
 		(not (test_types)) =>
-			return 10
+			10
 		(not (test_variables)) =>
-			return 11
+			11
+		(default) => do
+			(LOG_INFO "Successfully passed all tests!")
+			0
+		end
 	end
-  
-	(LOG_INFO "Successfully passed all tests!")
-  return 0
 end
