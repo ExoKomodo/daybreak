@@ -1,7 +1,10 @@
-FROM gcc:11
+FROM debian:11-slim
 
 RUN apt update -y
-RUN apt install clang-11 valgrind -y
+RUN apt install -y --no-install-recommends apt-utils
+RUN apt install -y build-essential
+RUN apt install -y clang-11
+RUN apt install -y valgrind
 
 COPY . /app
 
