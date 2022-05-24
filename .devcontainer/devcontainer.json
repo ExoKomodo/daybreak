@@ -2,17 +2,10 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.209.6/containers/docker-existing-dockerfile
 {
 	"name": "Dev Container",
-
-	// Sets the run context to one level up instead of the .devcontainer folder.
 	"context": "..",
-
-	// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
 	"dockerFile": "../Dockerfile",
-
 	// Set *default* container specific settings.json values on container create.
 	"settings": {},
-	
-	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"jeff-hykin.better-cpp-syntax",
 		"ms-vscode.cpptools-extension-pack",
@@ -22,20 +15,34 @@
 		"spmeesseman.vscode-taskexplorer",
 		"gruntfuggly.triggertaskonsave",
 		"visualstudioexptteam.vscodeintellicode"
-	]
-
+	],
+	"containerEnv": {
+		"C_INCLUDE_PATH": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+		"CC_COMPILER": "gcc", // Uncomment for gcc development in docker-compose
+		// "CC_COMPILER": "clang", // Uncomment for clang development in docker-compose
+		"DAYBREAK_BOOTSTRAP": "${workspaceFolder}/bootstrap/linux/daybreak",
+		"DAYBREAK_OUT": "${workspaceFolder}/out"
+	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-
 	// Uncomment the next line to run commands after the container is created - for example installing curl.
-	// "postCreateCommand": "apt-get update && apt-get install -y curl",
+	"postCreateCommand": [
+		"bash",
+		".devcontainer/tools/install.sh"
+	],
 
 	// Uncomment when using a ptrace-based debugger like C++, Go, and Rust
 	// "runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
-
+	"runArgs": [
+		"--init"
+	],
 	// Uncomment to use the Docker CLI from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
-	// "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
-
+	"mounts": [
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+	],
 	// Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode"
+	"features": {
+		"github-cli": "latest"
+	}
 }
