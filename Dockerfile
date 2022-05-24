@@ -5,6 +5,7 @@ RUN apt install -y --no-install-recommends apt-utils
 RUN apt install -y build-essential
 RUN apt install -y clang-11
 RUN apt install -y valgrind
+RUN apt install -y git
 
 COPY . /app
 
