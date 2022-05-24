@@ -1,6 +1,8 @@
+let workload: int <- (mul 5 2)
+
 ? x + (5 * 2)
 fun do_work (x: int) int do
-	let y:int <- (add x (mul 5 2))
+	let y: int <- (add x workload)
 	(printf "x = %d, y = %d\n" x y)
 	0
 end

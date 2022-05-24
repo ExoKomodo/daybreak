@@ -553,6 +553,7 @@ int generate_c_from_let_binding(
 	if (error != 0) {
 		return error;
 	}
+	fputs(";\n", output_file);
 	
 	return 0;
 }
@@ -642,6 +643,12 @@ int generate_c_from_module_statement(
 				declaration->value.import_statement
 			);
 		} break;
+		case AstLetBinding: {
+			return generate_c_from_let_binding(
+				output_file,
+				declaration->value.let_binding
+			);
+		} break;
 		case AstTypeDeclaration: {
 			return generate_c_from_type_declaration(
 				output_file,
@@ -714,6 +721,13 @@ int generate_c_from_module_statement_list(
 			return error;
 		}
 	}
+
+	error = _generate_c_from_module_statement_list_by_kind(output_file, module_statement_list, AstLetBinding);
+	if (error != 0) {
+		LOG_ERROR("Failed to generate C code for let bindings.");
+		return error;
+	}
+
 	for (size_t i = 0; i < module_statement_list->length; i++) {
 		const struct ModuleStatementNode* module_statement = module_statements[i];
 		if (module_statement->kind != AstFunctionDeclaration) {
@@ -743,6 +757,10 @@ int generate_c_from_mut_binding(
 		mut_binding->binding,
 		mut_binding->expression
 	);
+	if (error != 0) {
+		return error;
+	}
+	fputs(";\n", output_file);
 
 	return 0;
 }
