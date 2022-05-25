@@ -5,41 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Euler",
+      "name": "Bindings",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/out/daybreak",
       "args": [
-        "${workspaceFolder}/euler/euler.day"
-      ],
-      "environment": [
-        {
-          "name": "C_INCLUDE_PATH",
-          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
-        }
-      ],
-      "windows": {
-        "environment": [
-          {
-            "name": "C_INCLUDE_PATH",
-            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
-          }
-        ],
-      },
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build [daybreak]",
-      "miDebuggerPath": "gdb",
-      "osx": {
-        "miDebuggerPath": "lldb-mi",
-      },
-    },
-    {
-      "name": "Hello world",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/out/daybreak",
-      "args": [
-        "${workspaceFolder}/examples/hello/hello.day"
+        "${workspaceFolder}/examples/bindings/bindings.day"
       ],
       "environment": [
         {
@@ -92,12 +63,70 @@
       "preLaunchTask": "build [daybreak]",
     },
     {
+      "name": "Euler",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/daybreak",
+      "args": [
+        "${workspaceFolder}/euler/euler.day"
+      ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build [daybreak]",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "miDebuggerPath": "lldb-mi",
+      },
+    },
+    {
       "name": "FooBar",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/out/daybreak",
       "args": [
         "${workspaceFolder}/examples/foobar/foobar.day"
+      ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
+      "cwd": "${workspaceFolder}",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "MIMode": "lldb",
+      },
+      "preLaunchTask": "build [daybreak]",
+    },
+    {
+      "name": "Hello world",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/hello/hello.day"
       ],
       "environment": [
         {
@@ -301,35 +330,6 @@
       "program": "${workspaceFolder}/out/daybreak",
       "args": [
         "${workspaceFolder}/examples/types/types.day"
-      ],
-      "environment": [
-        {
-          "name": "C_INCLUDE_PATH",
-          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
-        }
-      ],
-      "windows": {
-        "environment": [
-          {
-            "name": "C_INCLUDE_PATH",
-            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
-          }
-        ],
-      },
-      "cwd": "${workspaceFolder}",
-      "miDebuggerPath": "gdb",
-      "osx": {
-        "MIMode": "lldb",
-      },
-      "preLaunchTask": "build [daybreak]",
-    },
-    {
-      "name": "Variables",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/out/daybreak",
-      "args": [
-        "${workspaceFolder}/examples/variables/variables.day"
       ],
       "environment": [
         {

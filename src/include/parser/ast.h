@@ -155,6 +155,7 @@ union ExpressionNodeUnion {
 union ModuleStatementNodeUnion {
   struct FunctionDeclarationNode* function_declaration;
   struct ImportStatementNode* import_statement;
+  struct LetBindingNode* let_binding;
   struct TypeDeclarationNode* type_declaration;
 };
 
@@ -1754,6 +1755,8 @@ struct ModuleStatementNode* ast_new_module_statement_node(AstNodeKind kind, unio
     } break;
     case AstImportStatement: {
     } break;
+    case AstLetBinding: {
+    } break;
     case AstTypeDeclaration: {
     } break;
     default:
@@ -1773,6 +1776,9 @@ void ast_free_module_statement_node(struct ModuleStatementNode* node) {
     case AstImportStatement: {
       ast_free_import_statement_node(node->value.import_statement);
     } break;
+    case AstLetBinding: {
+      ast_free_let_binding_node(node->value.let_binding);
+    } break;
     case AstTypeDeclaration: {
       ast_free_type_declaration_node(node->value.type_declaration);
     } break;
@@ -1789,18 +1795,25 @@ struct ModuleStatementNode* ast_parse_module_statement(struct Token** tokens) {
   _CHECK_TOKENS();
   LOG_DEBUG("Parsing Declaration: %s", (*tokens)->name);
 
-  if (token_is_fun(**tokens)) {
+  if (ast_function_declaration_token_matches_first_set(**tokens)) {
     return ast_new_module_statement_node(
       AstFunctionDeclaration,
       (union ModuleStatementNodeUnion) {
         .function_declaration = ast_parse_function_declaration(tokens)
       }
     );
-  } else if (token_is_type(**tokens)) {
+  } else if (ast_type_declaration_token_matches_first_set(**tokens)) {
     return ast_new_module_statement_node(
       AstTypeDeclaration,
       (union ModuleStatementNodeUnion) {
         .type_declaration = ast_parse_type_declaration(tokens)
+      }
+    );
+  } else if (ast_let_binding_token_matches_first_set(**tokens)) {
+    return ast_new_module_statement_node(
+      AstLetBinding,
+      (union ModuleStatementNodeUnion) {
+        .let_binding = ast_parse_let_binding(tokens)
       }
     );
   } else if (ast_import_statement_token_matches_first_set(**tokens)) {
@@ -1819,6 +1832,7 @@ struct ModuleStatementNode* ast_parse_module_statement(struct Token** tokens) {
 inline bool ast_module_statement_token_matches_first_set(struct Token token) {
   return (
     ast_function_declaration_token_matches_first_set(token) ||
+    ast_let_binding_token_matches_first_set(token) ||
     ast_type_declaration_token_matches_first_set(token) ||
     ast_import_statement_token_matches_first_set(token)
   );

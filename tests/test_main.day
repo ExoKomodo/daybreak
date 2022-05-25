@@ -1,5 +1,6 @@
 import "std/compiler/api.day"
 
+importc "test_bindings.h"
 importc "test_double.h"
 importc "test_foobar.h"
 importc "test_hello_world.h"
@@ -10,7 +11,6 @@ importc "test_multiple_imports.h"
 importc "test_pointers.h"
 importc "test_return.h"
 importc "test_types.h"
-importc "test_variables.h"
 
 importc "log/prelude.h"
 
@@ -36,7 +36,7 @@ fun main () int do
 			9
 		(not (test_types)) =>
 			10
-		(not (test_variables)) =>
+		(not (test_bindings)) =>
 			11
 		(default) => do
 			(LOG_INFO "Successfully passed all tests!")
