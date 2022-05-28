@@ -13,20 +13,19 @@ chsh -s /bin/zsh
 
 echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ~/.zshrc
 
-# Suggested ZPrezto modules:
-
-# zstyle ':prezto:load' pmodule \
-#     'environment' \
-#     'terminal' \
-#     'editor' \
-#     'history' \
-#     'directory' \
-#     'spectrum' \
-#     'utility' \
-#     'completion' \
-#     'git' \
-#     'history-substring-search' \
-#     'python' \
-#     'ssh' \
-#     'syntax-highlighting' \
-#     'prompt'
+# Enable ZPrezto modules:
+echo "zstyle ':prezto:load' pmodule \\" >> ~/.zpreztorc
+echo "    'environment' \\" >> ~/.zpreztorc
+echo "    'terminal' \\" >> ~/.zpreztorc
+echo "    'editor' \\" >> ~/.zpreztorc
+echo "    'history' \\" >> ~/.zpreztorc
+echo "    'directory' \\" >> ~/.zpreztorc
+echo "    'spectrum' \\" >> ~/.zpreztorc
+echo "    'utility' \\" >> ~/.zpreztorc
+echo "    'completion' \\" >> ~/.zpreztorc
+echo "    'git' \\" >> ~/.zpreztorc
+echo "    'history-substring-search' \\" >> ~/.zpreztorc
+echo "    'python' \\" >> ~/.zpreztorc
+echo "    'ssh' \\" >> ~/.zpreztorc
+echo "    'syntax-highlighting' \\" >> ~/.zpreztorc
+echo "    'prompt'" >> ~/.zpreztorc
