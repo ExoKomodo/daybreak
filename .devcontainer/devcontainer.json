@@ -17,11 +17,11 @@
 		"visualstudioexptteam.vscodeintellicode"
 	],
 	"containerEnv": {
-		"C_INCLUDE_PATH": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+		"C_INCLUDE_PATH": "./src/include:./tests/include",
 		"CC_COMPILER": "gcc", // Uncomment for gcc development in docker-compose
 		// "CC_COMPILER": "clang", // Uncomment for clang development in docker-compose
-		"DAYBREAK_BOOTSTRAP": "${workspaceFolder}/bootstrap/linux/daybreak",
-		"DAYBREAK_OUT": "${workspaceFolder}/out"
+		"DAYBREAK_BOOTSTRAP": "./bootstrap/linux/daybreak",
+		"DAYBREAK_OUT": "./out"
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
