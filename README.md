@@ -5,6 +5,7 @@ Programming language that compiles to C
 - [Repository](https://github.com/ExoKomodo/Daybreak)
 - [Jenkins](https://jenkins.exokomodo.com/job/Daybreak)
 - [Language Cheat Sheet](https://docs.google.com/document/d/1VsP0L_J_NGatTqUZniUga4odmSZfCDRTvfQCVJQn9ac/edit?usp=sharing)
+- [Emscripten - Install Docs](https://emscripten.org/docs/getting_started/downloads.html)
 
 ## Suggested VSCode Extensions
 Reference [`devcontainer.json`](./.devcontainer/devcontainer.json)'s `extensions` array to see what VSCode extensions are recommended.
@@ -51,6 +52,21 @@ CC_COMPILER=clang
 sudo update-alternatives --set cc $(which $CC_COMPILER)
 ```
 
+#### Emscripten (Ubuntu)
+```bash
+git clone https://github.com/emscripten-core/emsdk.git
+
+cd emsdk
+
+git pull
+
+./emsdk install latest
+
+./emsdk activate latest
+
+source ./emsdk_env.sh
+```
+
 ### Windows
 Install [MSYS2](https://www.msys2.org/)
 
@@ -69,6 +85,21 @@ Add `C:\msys64\mingw64\bin` to your `PATH` environment variable.
 echo "???"
 ```
 
+#### Emscripten (Windows)
+```powershell
+git clone https://github.com/emscripten-core/emsdk.git
+
+cd emsdk
+
+git pull
+
+emsdk install latest
+
+emsdk activate latest
+
+# emsdk_env.bat # Activate automatically does this
+```
+
 ### Mac
 Give permissions to `/opt` 
 ```bash
@@ -82,6 +113,21 @@ echo "unsupported"
 #### Clang (Mac)
 ```zsh
 echo "done"
+```
+
+#### Emscripten (Mac)
+```zsh
+git clone https://github.com/emscripten-core/emsdk.git
+
+cd emsdk
+
+git pull
+
+./emsdk install latest
+
+./emsdk activate latest
+
+source ./emsdk_env.sh
 ```
 
 ## Build

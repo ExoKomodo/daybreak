@@ -9,6 +9,7 @@ importc "macros/helpers.h"
 type DaybreakArgs struct is
 	source_file_path: ccstring
 	output_file_path: ccstring
+	target_language: ccstring
 end
 
 type DaybreakArgParseResult struct is
@@ -131,16 +132,17 @@ fun daybreak_parse_args (argc: int argv: ptr<ccstring>) DaybreakArgParseResult d
 		{DaybreakArgs
 			source_file_path <- NULL
 			output_file_path <- NULL
+			target_language <- "c"
 		}
 	)
 	match
-		(falsey result.args.output_file_path) => {DaybreakArgParseResult
-			is_success <- result.is_success
-			args <- {DaybreakArgs
-				source_file_path <- result.args.source_file_path
-				output_file_path <- result.args.output_file_path
+		(not
+			(or
+				(eq 0 (strcmp result.args.target_language "c"))
+				(eq 0 (strcmp result.args.target_language "wasm")))) => {DaybreakArgParseResult
+					is_success <- false
+					args <- result.args
 			}
-		}
 		(default) => result
 	end
 end
@@ -165,6 +167,24 @@ fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) Daybre
 						{DaybreakArgs
 							source_file_path <- acc.source_file_path
 							output_file_path <- (unsafe_index argv 1)
+							target_language <- acc.target_language
+						}
+					)
+				end
+			(eq
+				0
+				(strcmp (deref argv) "--target")) => match
+					(lt argc 2) => {DaybreakArgParseResult
+						is_success <- false
+						args <- acc
+					}
+					(default) => (_daybreak_parse_arg
+						(add argv 2)
+						(sub argc 2)
+						{DaybreakArgs
+							source_file_path <- acc.source_file_path
+							output_file_path <- acc.output_file_path
+							target_language <- (unsafe_index argv 1)
 						}
 					)
 				end
@@ -174,6 +194,7 @@ fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) Daybre
 				{DaybreakArgs
 					source_file_path <- (deref argv)
 					output_file_path <- acc.output_file_path
+					target_language <- acc.target_language
 				}
 			)
 		end
