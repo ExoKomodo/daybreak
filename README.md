@@ -141,6 +141,11 @@ echo "done"
 ./bootstrap/osx/daybreak ./src/main.day -o ./out/daybreak
 ```
 
+#### Mac arm64 (e.g. M1, M2)
+```zsh
+./bootstrap/osx/daybreak_arm64 ./src/main.day -o ./out/daybreak_arm64
+```
+
 ### Test
 
 #### Ubuntu
@@ -156,4 +161,9 @@ echo "done"
 #### Mac
 ```zsh
 ./bootstrap/osx/daybreak ./tests/test_main.day -o ./out/daybreak_test && ./out/daybreak_test
+```
+
+#### Mac arm64
+```zsh
+./bootstrap/osx/daybreak_arm64 ./tests/test_main.day -o ./out/daybreak_test && ./out/daybreak_test
 ```
