@@ -45,6 +45,7 @@ struct Token* lex_file(const char* filename, FILE* file) {
 	bool is_number = false;
 	bool is_double = false;
 	bool is_period = false;
+	bool is_hash = false;
 	while ((character = (char)fgetc(file)) != EOF) {
 		column++;
 		const size_t current_lex_column = column;
@@ -61,6 +62,20 @@ struct Token* lex_file(const char* filename, FILE* file) {
 			if (character == '>') {
 				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
 				_lex_build_token(filename, token_buffer, &token_length, current_lex_line, current_lex_column, &current);
+				continue;
+			}
+			_lex_build_token(filename, token_buffer, &token_length, current_lex_line, current_lex_column, &current);
+		}
+		if (is_hash) {
+			is_hash = false;
+			if (character == '!') {
+				if (current_lex_line != 1) {
+					LOG_ERROR("Lexer error: Unexpected shebang '#!' at %zu:%zu. Shebang directives must be on the first line of the program", line, column - 1);
+					exit(1);
+				}
+				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
+				_lex_build_token(filename, token_buffer, &token_length, current_lex_line, current_lex_column, &current);
+				is_comment = true;
 				continue;
 			}
 			_lex_build_token(filename, token_buffer, &token_length, current_lex_line, current_lex_column, &current);
@@ -205,6 +220,21 @@ struct Token* lex_file(const char* filename, FILE* file) {
 					current_lex_column,
 					&current
 				);
+				continue;
+			} break;
+			case '#': {
+				if (token_length > 0) {
+					_lex_build_token(
+						filename,
+						token_buffer,
+						&token_length,
+						current_lex_line,
+						current_lex_column,
+						&current
+					);
+				}
+				is_hash = true;
+				_LEX_APPEND_TOKEN_CHARACTER(token_buffer, token_length, character);
 				continue;
 			} break;
 			case '.':

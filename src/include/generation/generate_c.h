@@ -37,6 +37,7 @@ int generate_c_from_parameter(FILE*, const struct ParameterNode*);
 int generate_c_from_parameter_list(FILE*, const struct ParameterListNode*);
 int generate_c_from_program(FILE*, const struct ProgramNode*);
 int generate_c_from_return_statement(FILE*, const struct ReturnStatementNode*);
+int generate_c_from_shebang(FILE*, const struct ShebangNode*);
 int generate_c_from_statement(FILE*, const struct StatementNode*, const bool);
 int generate_c_from_statement_list(FILE*, const struct StatementListNode*);
 int generate_c_from_string_expression(FILE*, const struct StringExpressionNode*);
@@ -847,7 +848,14 @@ int generate_c_from_program(
 		LOG_ERROR("Failed to generate C code. No module statements found. At minimum, a main function must be provided as an entrypoint.");
 		return 3;
 	}
-	const int error = generate_c_from_module_statement_list(
+	int error = generate_c_from_shebang(
+		output_file,
+		program->shebang
+	);
+	if (error != 0) {
+		return error;
+	}
+	error = generate_c_from_module_statement_list(
 		output_file,
 		program->module_statements
 	);
@@ -867,6 +875,14 @@ int generate_c_from_return_statement(FILE* output_file, const struct ReturnState
 	const int error = generate_c_from_expression(output_file, return_statement->expression);
 	if (error != 0) {
 		return error;
+	}
+
+	return 0;
+}
+
+int generate_c_from_shebang(FILE* output_file, const struct ShebangNode* shebang) {
+	if (!shebang) {
+		LOG_DEBUG("NULL ShebangNode");
 	}
 
 	return 0;

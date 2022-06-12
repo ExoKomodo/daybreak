@@ -48,6 +48,7 @@ typedef enum {
   AstParameterList,
   AstProgram,
   AstReturnStatement,
+  AstShebang,
   AstStatement,
   AstStatementList,
   AstStringExpression,
@@ -87,6 +88,7 @@ struct ParameterListNode;
 struct ParameterNode;
 struct ProgramNode;
 struct ReturnStatementNode;
+struct ShebangNode;
 struct StatementNode;
 struct StatementListNode;
 struct StringExpressionNode;
@@ -130,6 +132,7 @@ union AstNodeUnion {
   struct ParameterNode* parameter;
   struct ProgramNode* program;
   struct ReturnStatementNode* return_statement;
+  struct ShebangNode* shebang;
   struct StatementNode* statement;
   struct StatementListNode* statement_list;
   struct StringExpressionNode* string_expression;
@@ -311,7 +314,7 @@ void ast_free_parameter_node(struct ParameterNode*);
 struct ParameterNode* ast_parse_parameter(struct Token** tokens);
 bool ast_parameter_token_matches_first_set(struct Token);
 
-struct ProgramNode* ast_new_program_node(struct ModuleStatementListNode*);
+struct ProgramNode* ast_new_program_node(struct ShebangNode*, struct ModuleStatementListNode*);
 void ast_free_program_node(struct ProgramNode*);
 struct ProgramNode* ast_parse_program(struct Token**);
 bool ast_program_token_matches_first_set(struct Token);
@@ -320,6 +323,11 @@ struct ReturnStatementNode* ast_new_return_statement_node(struct ExpressionNode*
 void ast_free_return_statement_node(struct ReturnStatementNode*);
 struct ReturnStatementNode* ast_parse_return_statement(struct Token**);
 bool ast_return_statement_token_matches_first_set(struct Token);
+
+struct ShebangNode* ast_new_shebang_node();
+void ast_free_shebang_node(struct ShebangNode*);
+struct ShebangNode* ast_parse_shebang(struct Token**);
+bool ast_shebang_token_matches_first_set(struct Token);
 
 struct StatementNode* ast_new_statement_node(AstNodeKind, union StatementNodeUnion);
 void ast_free_statement_node(struct StatementNode*);
@@ -509,6 +517,7 @@ struct ParameterNode {
 
 typedef struct ProgramNode {
   AstNodeKind kind;
+  struct ShebangNode* shebang;
   struct ModuleStatementListNode* module_statements;
 } ProgramNode;
 
@@ -516,6 +525,10 @@ struct ReturnStatementNode {
   AstNodeKind kind;
   struct ExpressionNode* expression;
 };
+
+typedef struct ShebangNode {
+  AstNodeKind kind;
+} ShebangNode;
 
 struct StatementNode {
   AstNodeKind kind;
@@ -650,6 +663,9 @@ void ast_free_node(struct AstNode* node) {
     } break;
     case AstReturnStatement: {
       ast_free_return_statement_node(node->value.return_statement);
+    } break;
+    case AstShebang: {
+      ast_free_shebang_node(node->value.shebang);
     } break;
     case AstStatement: {
       ast_free_statement_node(node->value.statement);
@@ -1727,7 +1743,7 @@ struct ModuleStatementListNode* ast_parse_module_statement_list(struct Token** t
   LOG_DEBUG("Parsing Module Statement List: %s", (*tokens)->name);
 
   if (!ast_module_statement_list_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected module statement got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected module statement for list, got '%s'", (*tokens)->name);
     exit(1);
   }
 
@@ -1793,7 +1809,7 @@ void ast_free_module_statement_node(struct ModuleStatementNode* node) {
 
 struct ModuleStatementNode* ast_parse_module_statement(struct Token** tokens) {
   _CHECK_TOKENS();
-  LOG_DEBUG("Parsing Declaration: %s", (*tokens)->name);
+  LOG_DEBUG("Parsing Module Statement: %s", (*tokens)->name);
 
   if (ast_function_declaration_token_matches_first_set(**tokens)) {
     return ast_new_module_statement_node(
@@ -1824,7 +1840,7 @@ struct ModuleStatementNode* ast_parse_module_statement(struct Token** tokens) {
       }
     );
   } else {
-    LOG_ERROR("Expected module statement got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected Module Statement got '%s'", (*tokens)->name);
     exit(1);
   }
 }
@@ -2068,15 +2084,19 @@ inline bool ast_parameter_token_matches_first_set(struct Token token) {
 /* ProgramNode */
 /***************/
 struct ProgramNode* ast_new_program_node(
+  struct ShebangNode* shebang,
   struct ModuleStatementListNode* module_statements
 ) {
   struct ProgramNode* node = malloc(sizeof(struct ProgramNode));
   node->kind = AstProgram;
+  node->shebang = shebang;
   node->module_statements = module_statements;
   return node;
 }
 
 void ast_free_program_node(struct ProgramNode* node) {
+  ast_free_shebang_node(node->shebang);
+  node->shebang = NULL;
   ast_free_module_statement_list_node(node->module_statements);
   node->module_statements = NULL;
 
@@ -2088,15 +2108,22 @@ struct ProgramNode* ast_parse_program(struct Token** tokens) {
   LOG_DEBUG("Parsing Program: %s", (*tokens)->name);
 
   if (!ast_program_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected module statement got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '#!' or module statement got '%s'", (*tokens)->name);
     exit(1);
   }
+  struct ShebangNode* shebang = NULL;
+  if (ast_shebang_token_matches_first_set(**tokens)) {
+    shebang = ast_parse_shebang(tokens);
+  }
   struct ModuleStatementListNode* module_statement_list = ast_parse_module_statement_list(tokens);
-  return ast_new_program_node(module_statement_list);
+  return ast_new_program_node(shebang, module_statement_list);
 }
 
 inline bool ast_program_token_matches_first_set(struct Token token) {
-  return ast_module_statement_list_token_matches_first_set(token);
+  return (
+    ast_shebang_token_matches_first_set(token) ||
+    ast_module_statement_list_token_matches_first_set(token)
+  );
 }
 
 /************************/
@@ -2131,6 +2158,38 @@ struct ReturnStatementNode* ast_parse_return_statement(struct Token** tokens) {
 
 inline bool ast_return_statement_token_matches_first_set(struct Token token) {
   return token_is_return(token);
+}
+
+/***************/
+/* ShebangNode */
+/***************/
+struct ShebangNode* ast_new_shebang_node() {
+  struct ShebangNode* node = malloc(sizeof(struct ShebangNode));
+  node->kind = AstShebang;
+  return node;
+}
+
+void ast_free_shebang_node(struct ShebangNode* node) {
+  if (!node) {
+    return;
+  }
+  free(node);
+}
+
+struct ShebangNode* ast_parse_shebang(struct Token** tokens) {
+  _CHECK_TOKENS();
+  LOG_DEBUG("Parsing shebang: %s", (*tokens)->name);
+
+  if (!ast_shebang_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected '#!' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  return ast_new_shebang_node();
+}
+
+inline bool ast_shebang_token_matches_first_set(struct Token token) {
+  return token_is_shebang(token);
 }
 
 /*****************/
