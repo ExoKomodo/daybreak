@@ -15,3 +15,5 @@
         autosetuprebase = always
 [core]
         editor = vim
+[pull]
+        rebase = true
