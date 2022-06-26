@@ -23,8 +23,17 @@ RUN rm ${ZIG_TARBALL}
 RUN echo '${ZIG_DIR}/zig cc $@' > /usr/bin/zig
 RUN chmod +x /usr/bin/zig
 
+# Create zig-wasi
+RUN echo '${ZIG_DIR}/zig cc --target=wasm32-wasi --sysroot /app/deps/wasi-sysroot $@' > /usr/bin/zig-wasi
+RUN chmod +x /usr/bin/zig-wasi
+
+# Create clang-wasi
+RUN echo 'clang --target=wasm32-unknown-wasi --sysroot /app/deps/wasi-sysroot $@' > /usr/bin/clang-wasi
+RUN chmod +x /usr/bin/clang-wasi
+
 # Install utilities
 RUN apt-get install -y valgrind
+RUN curl https://wasmtime.dev/install.sh -sSf | bash
 
 COPY . /app
 WORKDIR /app
@@ -34,6 +43,8 @@ RUN update-alternatives --install /usr/bin/clang clang $(which clang-11) 1
 RUN update-alternatives --install /usr/bin/cc cc $(which gcc) 1
 RUN update-alternatives --install /usr/bin/cc cc $(which clang) 2
 RUN update-alternatives --install /usr/bin/cc cc $(which zig) 3
+RUN update-alternatives --install /usr/bin/cc cc $(which zig-wasi) 4
+RUN update-alternatives --install /usr/bin/cc cc $(which clang-wasi) 5
 RUN ln -s /app/bootstrap/linux/daybreak /usr/bin/daybreak
 
 ENV JENKINS_USER=112

@@ -34,5 +34,8 @@ ${WRAPPER} ${DAYBREAK_EULER}
 ${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./tests/test_main.day
 # Run build for actual run
 bash ./compose_scripts/build.sh ./tests/test_main.day -o ${DAYBREAK_TEST}
-# Run tests with the compiler's test executable
-${WRAPPER} ${DAYBREAK_TEST}
+# WASM does not support popen() currently, meaning daybreak is outside of the current WASM standard
+if [ ${CC_COMPILER} != *"wasi"* ]; then
+	# Run tests with the compiler's test executable
+	${WRAPPER} ${DAYBREAK_TEST}
+fi
