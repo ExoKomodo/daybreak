@@ -1,3 +1,0 @@
-[submodule "deps/wasi-libc"]
-	path = deps/wasi-libc
-	url = git@github.com:WebAssembly/wasi-libc.git
