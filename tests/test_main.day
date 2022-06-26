@@ -10,6 +10,7 @@ importc "test_modules.h"
 importc "test_multiple_imports.h"
 importc "test_pointers.h"
 importc "test_return.h"
+importc "test_shebang.h"
 importc "test_types.h"
 
 importc "log/prelude.h"
@@ -34,10 +35,12 @@ fun main () int do
 			8
 		(not (test_return)) =>
 			9
-		(not (test_types)) =>
+		(not (test_shebang)) =>
 			10
-		(not (test_bindings)) =>
+		(not (test_types)) =>
 			11
+		(not (test_bindings)) =>
+			12
 		(default) => do
 			(LOG_INFO "Successfully passed all tests!")
 			0

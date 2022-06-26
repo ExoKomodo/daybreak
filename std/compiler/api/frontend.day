@@ -1,3 +1,4 @@
+importc "stdio.h"
 importc "string.h"
 
 importc "generation/prelude.h"
@@ -9,6 +10,7 @@ importc "macros/helpers.h"
 type DaybreakArgs struct is
 	source_file_path: ccstring
 	output_file_path: ccstring
+	should_run: bool
 end
 
 type DaybreakArgParseResult struct is
@@ -25,6 +27,10 @@ type DaybreakEmissionResult struct is
 	error: int
 end
 
+type DaybreakRunResult struct is
+	error: int
+end
+
 fun daybreak_compile (args: DaybreakArgs) int do
 	mut tokenify_result: DaybreakTokenifyResult <- (_daybreak_tokenify_file args)
 	match
@@ -34,7 +40,16 @@ fun daybreak_compile (args: DaybreakArgs) int do
 				(truthy program) => do
 					let emit_result: DaybreakEmissionResult <- (_daybreak_emit_program args program)
 					match
-						(not emit_result.error) => 0
+						(not emit_result.error) => match
+							(not args.should_run) => 0
+							(default) => do
+								let run_result: DaybreakRunResult <- (_daybreak_run_program args)
+								match
+									(not run_result.error) => 0
+									(default) => run_result.error
+								end
+							end
+						end
 						(default) => emit_result.error
 					end
 				end
@@ -125,24 +140,15 @@ fun daybreak_parse_args (argc: int argv: ptr<ccstring>) DaybreakArgParseResult d
 		}
 	end
 
-	let result: DaybreakArgParseResult <- (_daybreak_parse_arg
+	(_daybreak_parse_arg
 		(add argv 1)
 		(sub argc 1)
 		{DaybreakArgs
 			source_file_path <- NULL
 			output_file_path <- NULL
+			should_run <- false
 		}
 	)
-	match
-		(falsey result.args.output_file_path) => {DaybreakArgParseResult
-			is_success <- result.is_success
-			args <- {DaybreakArgs
-				source_file_path <- result.args.source_file_path
-				output_file_path <- result.args.output_file_path
-			}
-		}
-		(default) => result
-	end
 end
 
 fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) DaybreakArgParseResult do
@@ -152,9 +158,13 @@ fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) Daybre
 			args <- acc
 		}
 		(default) => match
-			(eq
-				0
-				(strcmp (deref argv) "-o")) => match
+			(or
+				(eq
+					0
+					(strcmp (deref argv) "--output"))
+				(eq
+					0
+					(strcmp (deref argv) "-o"))) => match
 					(lt argc 2) => {DaybreakArgParseResult
 						is_success <- false
 						args <- acc
@@ -165,17 +175,50 @@ fun _daybreak_parse_arg (argv: ptr<ccstring> argc: int acc: DaybreakArgs) Daybre
 						{DaybreakArgs
 							source_file_path <- acc.source_file_path
 							output_file_path <- (unsafe_index argv 1)
+							should_run <- acc.should_run
 						}
 					)
 				end
+			(or
+				(eq
+					0
+					(strcmp (deref argv) "--run"))
+				(eq
+					0
+					(strcmp (deref argv) "-r"))) => (_daybreak_parse_arg
+						(add argv 1)
+						(sub argc 1)
+						{DaybreakArgs
+							source_file_path <- acc.source_file_path
+							output_file_path <- acc.output_file_path
+							should_run <- true
+						}
+					)
 			(default) => (_daybreak_parse_arg
 				(add argv 1)
 				(sub argc 1)
 				{DaybreakArgs
 					source_file_path <- (deref argv)
 					output_file_path <- acc.output_file_path
+					should_run <- acc.should_run
 				}
 			)
+		end
+	end
+end
+
+fun _daybreak_run_program (args: DaybreakArgs) DaybreakRunResult do
+	match
+		(truthy args.output_file_path) => {DaybreakRunResult
+			error <- (run_command args.output_file_path stdout)
+		}
+		(default) => do
+			let output_file_path: cstring <- (get_default_output_file)
+			let result: DaybreakRunResult <- {DaybreakRunResult
+				error <- (run_command output_file_path stdout)
+			}
+			(delete output_file_path)
+			result
 		end
 	end
 end

@@ -181,6 +181,10 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 	right_angle,
 	">"
 )
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
+	shebang,
+	"#!"
+)
 
 static inline bool token_is_string_literal(struct Token token) {
 	return (
