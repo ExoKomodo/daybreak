@@ -26,7 +26,7 @@ int _create_subdir(const char*, const char*);
   #define PACKAGE_DIRECTORY "\\packages\\"
   #define DEFAULT_EXECUTABLE "a.exe"
 #else
-  #define STANDARD_PATH_PREFIX getenv("HOME")
+  #define STANDARD_PATH_PREFIX (getenv("HOME"))
   #define STANDARD_DIRECTORY "/daybreak"
   #define OUTPUT_DIRECTORY "/out/"
   #define PACKAGE_DIRECTORY "/packages/"
