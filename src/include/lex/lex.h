@@ -312,9 +312,11 @@ struct Token* lex_file(const char* filename, FILE* file) {
 }
 
 FILE* lex_open_file(const char* filename, char opened_file_name[MAX_PATH]) {
-	const char* standard_library_directory = get_standard_library_directory();
+	char* standard_library_directory = get_standard_library_directory();
 	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(PACKAGE_DIRECTORY) + 2));
 	sprintf(package_directory, "%s" PACKAGE_DIRECTORY, standard_library_directory);
+        free(standard_library_directory);
+        standard_library_directory = NULL;
 	char* full_path = malloc(strlen(package_directory) + strlen(filename) + 2);
 	sprintf(full_path, "%s/%s", package_directory, filename);
 	free(package_directory);
