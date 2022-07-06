@@ -1115,10 +1115,12 @@ int _generate_c_variable_declaration(
 }
 
 bool _is_file_imported(const char* source_file_path) {
-	const char* standard_library_directory = get_standard_library_directory();
+        char* standard_library_directory = get_standard_library_directory();
 	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(PACKAGE_DIRECTORY) + 2));
 	sprintf(package_directory, "%s" PACKAGE_DIRECTORY, standard_library_directory);
-	char* full_package_path = malloc(strlen(package_directory) + strlen(source_file_path) + 2);
+	free(standard_library_directory);
+        standard_library_directory = NULL;
+        char* full_package_path = malloc(strlen(package_directory) + strlen(source_file_path) + 2);
 	sprintf(full_package_path, "%s/%s", package_directory, source_file_path);
 	free(package_directory);
 	package_directory = NULL;
