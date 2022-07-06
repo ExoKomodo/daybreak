@@ -13,7 +13,7 @@
 #endif
 
 char* get_default_output_file();
-const char* get_standard_library_directory();
+char* get_standard_library_directory();
 int run_command(const char*, FILE*);
 int setup_language_directories();
 
@@ -35,7 +35,7 @@ int _create_subdir(const char*, const char*);
 
 #define DEFAULT_SOURCE_OUTPUT "main.day.c"
 
-inline const char* get_standard_library_directory() {
+inline char* get_standard_library_directory() {
   const char* daybreak_home_env = getenv("DAYBREAK_HOME");
   if (daybreak_home_env) {
     char* full_path = malloc(sizeof(char) * (strlen(daybreak_home_env) + 1));
