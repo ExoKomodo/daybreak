@@ -110,10 +110,6 @@ echo "???"
 ```
 
 #### Mac
-Give permissions to `/opt` 
-```bash
-sudo chmod -R 777 /opt
-```
 ##### GCC (Mac)
 ```zsh
 echo "unsupported"
