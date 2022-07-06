@@ -20,8 +20,8 @@ int setup_language_directories();
 int _create_subdir(const char*, const char*);
 
 #if defined(_WIN32) || defined(_WIN64)
-  #define STANDARD_PATH_PREFIX "C:\\"
-  #define STANDARD_DIRECTORY "Program Files\\daybreak"
+  #define STANDARD_PATH_PREFIX "C:"
+  #define STANDARD_DIRECTORY "\\Program Files\\daybreak"
   #define OUTPUT_DIRECTORY "\\out\\"
   #define PACKAGE_DIRECTORY "\\packages\\"
   #define DEFAULT_EXECUTABLE "a.exe"
@@ -43,7 +43,7 @@ inline char* get_standard_library_directory() {
     return full_path;
   }
   char* full_path = malloc(sizeof(char) * (strlen(STANDARD_PATH_PREFIX) + strlen(STANDARD_DIRECTORY) + 2));
-  sprintf(full_path, "%s/%s", STANDARD_PATH_PREFIX, STANDARD_DIRECTORY);
+  sprintf(full_path, "%s%s", STANDARD_PATH_PREFIX, STANDARD_DIRECTORY);
   return full_path;
 }
 
