@@ -81,7 +81,7 @@ fun _daybreak_compile_program (output_c_file_path: cstring args: DaybreakArgs) i
 end
 
 fun _daybreak_emit_program (args: DaybreakArgs program: ptr<ProgramNode>) DaybreakEmissionResult do
-	let standard_library_directory: cstring <- (get_standard_library_directory)
+	mut standard_library_directory: cstring <- (get_standard_library_directory)
 	let output_c_file_length: size_t <- (add
 		1
 		(add
@@ -97,6 +97,7 @@ fun _daybreak_emit_program (args: DaybreakArgs program: ptr<ProgramNode>) Daybre
 		output_c_file_path
 		(interpolate_cstring "%s" (interpolate_cstring OUTPUT_DIRECTORY DEFAULT_SOURCE_OUTPUT))
 		standard_library_directory)
+	(delete standard_library_directory)
 
 	let generation_error: int <- (generate_c_code program output_c_file_path)
 	(ast_free_program_node program)
