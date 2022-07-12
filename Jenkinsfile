@@ -14,65 +14,49 @@ pipeline {
 	}
 
 	stages {
-		stage('Build all') {
+		stage('GCC') {
+			environment {
+				CC_COMPILER = "gcc"
+			}
 			parallel {
 				stage ("[gcc] Build Daybreak") {
-					environment {
-						CC_COMPILER = "gcc"
-					}
 					steps {
 						sh "docker-compose -p gcc-build up ${COMPOSE_ARGS} build_daybreak"
 					}
 				}
-
-				stage('[clang] Build Daybreak') {
-					environment {
-						CC_COMPILER = "clang"
-					}
-					steps { 
-						sh "docker-compose -p clang-build up ${COMPOSE_ARGS} build_daybreak"
-					}
-				}
-			}
-		}
-
-		stage('Test all') {
-			parallel {
+				
 				stage('[gcc] Test') {
-					environment {
-						CC_COMPILER = "gcc"
-					}
 					steps {
 						sh "docker-compose -p gcc-test up ${COMPOSE_ARGS} test"
 					}
 				}
 
-				stage('[clang] Test') {
-					environment {
-						CC_COMPILER = "clang"
-					}
+				stage('[gcc] Memory Check') {
 					steps {
-						sh "docker-compose -p clang-test up ${COMPOSE_ARGS} test"
+						sh "docker-compose -p gcc-memcheck up ${COMPOSE_ARGS} memory_check"
 					}
 				}
 			}
 		}
 
-		stage('Memory Check all') {
+		stage('Clang') {
+			environment {
+				CC_COMPILER = "clang"
+			}
 			parallel {
-				stage('[gcc] Memory Check') {
-					environment {
-						CC_COMPILER = "gcc"
-					}
-					steps {
-						sh "docker-compose -p gcc-memcheck up ${COMPOSE_ARGS} memory_check"
+				stage('[clang] Build Daybreak') {
+					steps { 
+						sh "docker-compose -p clang-build up ${COMPOSE_ARGS} build_daybreak"
 					}
 				}
 
-				stage('[clang] Memory Check') {
-					environment {
-						CC_COMPILER = "clang"
+				stage('[clang] Test') {
+					steps {
+						sh "docker-compose -p clang-test up ${COMPOSE_ARGS} test"
 					}
+				}
+				
+				stage('[clang] Memory Check') {
 					steps {
 						sh "docker-compose -p clang-memcheck up ${COMPOSE_ARGS} memory_check"
 					}
