@@ -21,7 +21,7 @@ pipeline {
 						CC_COMPILER = "gcc"
 					}
 					steps {
-						sh "docker-compose up ${COMPOSE_ARGS} -p gcc-build build_daybreak"
+						sh "docker-compose -p gcc-build up ${COMPOSE_ARGS} build_daybreak"
 					}
 				}
 
@@ -30,7 +30,7 @@ pipeline {
 						CC_COMPILER = "clang"
 					}
 					steps { 
-						sh "docker-compose up ${COMPOSE_ARGS} -p clang-build build_daybreak"
+						sh "docker-compose -p clang-build up ${COMPOSE_ARGS} build_daybreak"
 					}
 				}
 			}
@@ -43,7 +43,7 @@ pipeline {
 						CC_COMPILER = "gcc"
 					}
 					steps {
-						sh "docker-compose up ${COMPOSE_ARGS} -p gcc-test test"
+						sh "docker-compose -p gcc-test up ${COMPOSE_ARGS} test"
 					}
 				}
 
@@ -52,7 +52,7 @@ pipeline {
 						CC_COMPILER = "clang"
 					}
 					steps {
-						sh "docker-compose up ${COMPOSE_ARGS} -p clang-test test"
+						sh "docker-compose -p clang-test up ${COMPOSE_ARGS} test"
 					}
 				}
 			}
@@ -65,7 +65,7 @@ pipeline {
 						CC_COMPILER = "gcc"
 					}
 					steps {
-						sh "docker-compose up ${COMPOSE_ARGS} -p gcc-memcheck memory_check"
+						sh "docker-compose -p gcc-memcheck up ${COMPOSE_ARGS} memory_check"
 					}
 				}
 
@@ -74,7 +74,7 @@ pipeline {
 						CC_COMPILER = "clang"
 					}
 					steps {
-						sh "docker-compose up ${COMPOSE_ARGS} -p clang-memcheck memory_check"
+						sh "docker-compose -p clang-memcheck up ${COMPOSE_ARGS} memory_check"
 					}
 				}
 			}
