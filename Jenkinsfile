@@ -21,7 +21,7 @@ pipeline {
 						CC_COMPILER = "gcc"
 					}
 					steps {
-						sh "docker-compose up ${COMPOSE_ARGS} build_daybreak"
+						sh "docker-compose up ${COMPOSE_ARGS} -p gcc-build build_daybreak"
 					}
 				}
 
@@ -29,8 +29,8 @@ pipeline {
 					environment {
 						CC_COMPILER = "clang"
 					}
-					steps {
-						sh "docker-compose up ${COMPOSE_ARGS} build_daybreak"
+					steps { 
+						sh "docker-compose up ${COMPOSE_ARGS} -p clang-build build_daybreak"
 					}
 				}
 			}
@@ -43,7 +43,7 @@ pipeline {
 						CC_COMPILER = "gcc"
 					}
 					steps {
-						sh "docker-compose up ${COMPOSE_ARGS} test"
+						sh "docker-compose up ${COMPOSE_ARGS} -p gcc-test test"
 					}
 				}
 
@@ -52,7 +52,7 @@ pipeline {
 						CC_COMPILER = "clang"
 					}
 					steps {
-						sh "docker-compose up ${COMPOSE_ARGS} test"
+						sh "docker-compose up ${COMPOSE_ARGS} -p clang-test test"
 					}
 				}
 			}
@@ -65,7 +65,7 @@ pipeline {
 						CC_COMPILER = "gcc"
 					}
 					steps {
-						sh "docker-compose up ${COMPOSE_ARGS} memory_check"
+						sh "docker-compose up ${COMPOSE_ARGS} -p gcc-memcheck memory_check"
 					}
 				}
 
@@ -74,7 +74,7 @@ pipeline {
 						CC_COMPILER = "clang"
 					}
 					steps {
-						sh "docker-compose up ${COMPOSE_ARGS} memory_check"
+						sh "docker-compose up ${COMPOSE_ARGS} -p clang-memcheck memory_check"
 					}
 				}
 			}
@@ -83,7 +83,7 @@ pipeline {
 
 	post {
 		always {
-			sh "docker-compose up ${COMPOSE_ARGS} fix_ownership"
+			sh "docker-compose up ${COMPOSE_ARGS} -p fix_ownership"
 		}
 		cleanup {
 			sh "bash ./admin_scripts/cleanup.sh"
