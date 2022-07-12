@@ -45,14 +45,14 @@ pipeline {
 					steps {
 						sh "docker-compose up ${COMPOSE_ARGS} test"
 					}
+				}
 
-					stage('[clang] Test') {
-						environment {
-							CC_COMPILER = "clang"
-						}
-						steps {
-							sh "docker-compose up ${COMPOSE_ARGS} test"
-						}
+				stage('[clang] Test') {
+					environment {
+						CC_COMPILER = "clang"
+					}
+					steps {
+						sh "docker-compose up ${COMPOSE_ARGS} test"
 					}
 				}
 			}
