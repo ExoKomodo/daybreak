@@ -16,3 +16,5 @@ pushd windows
 unzip ./*.zip
 rm -f *.zip
 popd
+
+chmod +x ./*/*
