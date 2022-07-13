@@ -4,6 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y
 RUN apt-get install -y curl
+RUN apt-get install -y xz-utils
 
 # Install gcc
 RUN apt-get install -y gcc-12
@@ -17,7 +18,6 @@ ENV ZIG_VERSION=0.9.1
 ENV ZIG_DIR=/zig-linux-${ARCH}-${ZIG_VERSION}
 ENV ZIG_TARBALL=${ZIG_DIR}.tar.xz
 RUN curl -O https://ziglang.org/download/${ZIG_VERSION}${ZIG_TARBALL}
-RUN apt-get install -y xz-utils
 RUN tar -xvf ${ZIG_TARBALL}
 RUN rm ${ZIG_TARBALL}
 RUN echo '${ZIG_DIR}/zig cc $@' > /usr/bin/zig
