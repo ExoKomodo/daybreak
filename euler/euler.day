@@ -11,14 +11,15 @@ import "euler/010/problem.day"
 
 
 fun main () int do
-	(problem001)
-	(problem002)
-	(problem003)
-	(problem004)
-	(problem005)
-	(problem006)
-	(problem007)
-	(problem008)
-	(problem009)
-	(problem010)
+	(assert (problem001))
+	(assert (problem002))
+	(assert (problem003))
+	(assert (problem004))
+	(assert (problem005))
+	(assert (problem006))
+	(assert (problem007))
+	(assert (problem008))
+	(assert (problem009))
+	(assert (problem010))
+	0
 end

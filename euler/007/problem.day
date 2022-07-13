@@ -5,11 +5,9 @@ fun find_prime_by_index (prime_index: size_t) int64_t do
 	(_find_prime_by_index prime_index 1 2 3)
 end
 
-fun problem007 () int do
+fun problem007 () bool do
 	(welcome 7)
-	let solution: int <- (_problem007 10001)
-	(assert (check_solution solution 104743))
-	0
+	(check_solution (_problem007 10001) 104743)
 end
 
 fun _find_prime_by_index (prime_index: size_t current_index: size_t current_prime: int64_t num: int64_t) int64_t do

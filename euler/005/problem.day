@@ -16,11 +16,9 @@ fun get_prime_factor_polynomial_degree (upper_bound: int prime: int) int do
 				(log prime))))
 end
 
-fun problem005 () int do
+fun problem005 () bool do
 	(welcome 5)
-	let solution: int <- (_problem005)
-	(assert (check_solution solution 232792560))
-	0
+	(check_solution (_problem005) 232792560)
 end
 
 fun recursive_multiply (upper_bound: int arr: array<int> len: size_t) int do
