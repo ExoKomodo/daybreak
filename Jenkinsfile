@@ -63,6 +63,31 @@ pipeline {
 				}
 			}
 		}
+
+		stage('Zig') {
+			environment {
+				CC_COMPILER = "zig"
+			}
+			parallel {
+				stage('[zig] Build Daybreak') {
+					steps { 
+						sh "docker-compose -p zig-build up ${COMPOSE_ARGS} build_daybreak"
+					}
+				}
+
+				stage('[zig] Test') {
+					steps {
+						sh "docker-compose -p zig-test up ${COMPOSE_ARGS} test"
+					}
+				}
+				
+				stage('[zig] Memory Check') {
+					steps {
+						sh "docker-compose -p zig-memcheck up ${COMPOSE_ARGS} memory_check"
+					}
+				}
+			}
+		}
 	}
 
 	post {
