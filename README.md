@@ -91,6 +91,30 @@ CC_COMPILER=clang
 sudo update-alternatives --set cc $(which $CC_COMPILER)
 ```
 
+##### Zig (Ubuntu)
+If `zig` is not installed:
+```bash
+sudo apt update -y
+sudo apt install -y curl
+
+OS=linux
+ARCH=x86_64
+ZIG_VERSION=0.9.1 # Set version here
+ZIG_DIR=zig-${OS}-${ARCH}-${ZIG_VERSION}
+ZIG_TARBALL=${ZIG_DIR}.tar.xz
+curl -O https://ziglang.org/download/${ZIG_VERSION}/${ZIG_TARBALL}
+tar -xvf ${ZIG_TARBALL}
+rm ${ZIG_TARBALL}
+sudo echo "$(pwd)/${ZIG_DIR}/zig cc \$@" > /usr/bin/zig
+sudo chmod +x /usr/bin/zig
+
+sudo update-alternatives --install /usr/bin/cc cc $(which zig) 1 # Create /usr/bin/cc binary if it does not exist, and links zig to cc
+# If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
+# cc should then be explicitly set to the compiler you want
+CC_COMPILER=zig
+sudo update-alternatives --set cc $(which $CC_COMPILER)
+```
+
 #### Windows
 Install [MSYS2](https://www.msys2.org/)
 
@@ -109,6 +133,11 @@ Add `C:\msys64\mingw64\bin` to your `PATH` environment variable.
 echo "???"
 ```
 
+##### Zig (Windows)
+```bash
+echo "???"
+```
+
 #### Mac
 ##### GCC (Mac)
 ```zsh
@@ -118,6 +147,25 @@ echo "unsupported"
 ##### Clang (Mac)
 ```zsh
 echo "done"
+```
+##### Zig (Mac)
+If `zig` is not installed:
+```bash
+OS=macos
+ARCH=x86_64 # aarch64 for Apple Silicon
+ZIG_VERSION=0.9.1 # Set version here
+ZIG_DIR=zig-${OS}-${ARCH}-${ZIG_VERSION}
+ZIG_TARBALL=${ZIG_DIR}.tar.xz
+curl -O https://ziglang.org/download/${ZIG_VERSION}/${ZIG_TARBALL}
+tar -xvf ${ZIG_TARBALL}
+rm ${ZIG_TARBALL}
+sudo echo "$(pwd)/${ZIG_DIR}/zig cc \$@" > /usr/bin/zig
+sudo chmod +x /usr/bin/zig
+
+sudo update-alternatives --install /usr/bin/cc cc $(which zig) 1 # Create /usr/bin/cc binary if it does not exist, and links zig to cc
+# If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
+# cc should then be explicitly set to the compiler you want
+export CC=zig
 ```
 
 ### Build
