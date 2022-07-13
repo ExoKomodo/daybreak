@@ -1,9 +1,8 @@
 import "euler/helpers.day"
 
 
-fun problem001 () int do
+fun problem001 () bool do
 	(welcome 1)
-	
 	(check_solution (_problem001 1000) 233168)
 end
 
