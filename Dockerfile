@@ -20,8 +20,8 @@ RUN curl -O https://ziglang.org/download/${ZIG_VERSION}${ZIG_TARBALL}
 RUN apt-get install -y xz-utils
 RUN tar -xvf ${ZIG_TARBALL}
 RUN rm ${ZIG_TARBALL}
-RUN ln -s ${ZIG_DIR}/zig /usr/bin/zig
-RUN which zig
+RUN echo "zig cc" > /usr/bin/zig
+RUN chmod +x /usr/bin/zig
 
 # Install utilities
 RUN apt-get install -y valgrind
