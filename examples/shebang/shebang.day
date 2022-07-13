@@ -1,4 +1,4 @@
-#! /usr/local/bin/daybreak -r
+#! /usr/bin/daybreak -r
 
 fun main () int do
   (puts "Running with shebang")
