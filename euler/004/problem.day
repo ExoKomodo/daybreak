@@ -24,11 +24,9 @@ fun is_palindromic_number (number: int) bool do
 	result
 end
 
-fun problem004 () int do
+fun problem004 () bool do
 	(welcome 4)
-	let solution: int <- (_problem004 3)
-	(assert (check_solution solution 906609))
-	0
+	(check_solution (_problem004 3) 906609)
 end
 
 fun _find_palindromic_pair (upper_bound: int test_number: int current_max_palindrome: int) int do

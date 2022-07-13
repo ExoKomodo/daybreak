@@ -20,12 +20,9 @@ fun fib_add_evens(limit: int a: int b: int acc: int) int do
 	end
 end
 
-fun problem002 () int do
+fun problem002 () bool do
 	(welcome 2)
-	
-	let solution: int <- (_problem002 4000000)
-	(assert (check_solution solution 4613732))
-	solution
+	(check_solution (_problem002 4000000) 4613732)
 end
 
 fun _problem002 (limit: int) int do

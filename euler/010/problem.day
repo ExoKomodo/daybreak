@@ -1,11 +1,9 @@
 import "euler/helpers.day"
 
 
-fun problem010 () int do
+fun problem010 () bool do
 	(welcome 10)
-	let solution: int64_t <- (_problem010 2000000)
-	(assert (check_solution solution 142913828922))
-	0
+	(check_solution (_problem010 2000000) 142913828922)
 end
 
 fun sum_primes (limit: int64_t) int64_t do

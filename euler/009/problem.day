@@ -29,11 +29,9 @@ fun find_pythagorean_triplet_product (target_sum: int64_t) int64_t do
 		     pair.c))
 end
 
-fun problem009 () int do
+fun problem009 () bool do
 	(welcome 9)
-	let solution: int64_t <- (_problem009 1000)
-	(assert (check_solution solution 31875000))
-	0
+	(check_solution (_problem009 1000) 31875000)
 end
 
 fun _find_euclid_pair (target: int64_t square_root: int64_t m: int64_t) EuclidPairResult do

@@ -1,11 +1,9 @@
 import "euler/helpers.day"
 
 
-fun problem006 () int do
+fun problem006 () bool do
 	(welcome 6)
-	let solution: int64_t <- (_problem006 100)
-	(assert (check_solution solution 25164150))
-	0
+	(check_solution (_problem006 100) 25164150)
 end
 
 fun sum_of_squares (upper_bound: int64_t) int64_t do

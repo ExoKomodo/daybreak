@@ -23,11 +23,9 @@ fun get_largest_prime_factor (n: int64_t) int64_t do
 	end
 end
 
-fun problem003 () int do
+fun problem003 () bool do
 	(welcome 3)
-	let solution: int64_t <- (_problem003 600851475143)
-	(assert (check_solution solution 6857))
-	0
+	(check_solution (_problem003 600851475143) 6857)
 end
 
 fun _filter_factor (original_n: int64_t n: int64_t factor: int64_t) FilterResult do
