@@ -14,71 +14,60 @@ pipeline {
 	}
 
 	stages {
-		stage('[gcc] Build Daybreak') {
+		stage('GCC') {
 			environment {
 				CC_COMPILER = "gcc"
 			}
+			parallel {
+				stage ("[gcc] Build Daybreak") {
+					steps {
+						sh "docker-compose -p gcc-build up ${COMPOSE_ARGS} build_daybreak"
+					}
+				}
+				
+				stage('[gcc] Test') {
+					steps {
+						sh "docker-compose -p gcc-test up ${COMPOSE_ARGS} test"
+					}
+				}
 
-			steps {
-				sh "docker-compose up ${COMPOSE_ARGS} build_daybreak"
+				stage('[gcc] Memory Check') {
+					steps {
+						sh "docker-compose -p gcc-memcheck up ${COMPOSE_ARGS} memory_check"
+					}
+				}
 			}
 		}
 
-
-		stage('[gcc] Test') {
-			environment {
-				CC_COMPILER = "gcc"
-			}
-
-			steps {
-				sh "docker-compose up ${COMPOSE_ARGS} test"
-			}
-		}
-
-		stage('[gcc] Memory Check') {
-			environment {
-				CC_COMPILER = "gcc"
-			}
-
-			steps {
-				sh "docker-compose up ${COMPOSE_ARGS} memory_check"
-			}
-		}
-		
-		stage('[clang] Build Daybreak') {
+		stage('Clang') {
 			environment {
 				CC_COMPILER = "clang"
 			}
+			parallel {
+				stage('[clang] Build Daybreak') {
+					steps { 
+						sh "docker-compose -p clang-build up ${COMPOSE_ARGS} build_daybreak"
+					}
+				}
 
-			steps {
-				sh "docker-compose up ${COMPOSE_ARGS} build_daybreak"
-			}
-		}
-
-		stage('[clang] Test') {
-			environment {
-				CC_COMPILER = "clang"
-			}
-
-			steps {
-				sh "docker-compose up ${COMPOSE_ARGS} test"
-			}
-		}
-
-		stage('[clang] Memory Check') {
-			environment {
-				CC_COMPILER = "clang"
-			}
-
-			steps {
-				sh "docker-compose up ${COMPOSE_ARGS} memory_check"
+				stage('[clang] Test') {
+					steps {
+						sh "docker-compose -p clang-test up ${COMPOSE_ARGS} test"
+					}
+				}
+				
+				stage('[clang] Memory Check') {
+					steps {
+						sh "docker-compose -p clang-memcheck up ${COMPOSE_ARGS} memory_check"
+					}
+				}
 			}
 		}
 	}
 
 	post {
 		always {
-			sh "docker-compose up ${COMPOSE_ARGS} fix_ownership"
+			sh "docker-compose up ${COMPOSE_ARGS} -p fix_ownership"
 		}
 		cleanup {
 			sh "bash ./admin_scripts/cleanup.sh"
