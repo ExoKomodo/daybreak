@@ -20,7 +20,8 @@ RUN curl -O https://ziglang.org/download/${ZIG_VERSION}${ZIG_TARBALL}
 RUN apt-get install -y xz-utils
 RUN tar -xvf ${ZIG_TARBALL}
 RUN rm ${ZIG_TARBALL}
-RUN echo "${ZIG_DIR}/zig cc $@" > /usr/bin/zig
+RUN echo "${ZIG_DIR}/zig cc \" > /usr/bin/zig
+RUN echo '$@' >> /usr/bin/zig
 RUN chmod +x /usr/bin/zig
 
 # Install utilities
