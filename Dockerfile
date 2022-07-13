@@ -29,7 +29,9 @@ RUN apt-get install -y valgrind
 COPY . /app
 WORKDIR /app
 
+RUN update-alternatives --install /usr/bin/gcc gcc $(which gcc-12) 1
 RUN update-alternatives --install /usr/bin/clang clang $(which clang-11) 1
+RUN update-alternatives --install /usr/bin/cc cc $(which gcc) 1
 RUN update-alternatives --install /usr/bin/cc cc $(which clang) 2
 RUN update-alternatives --install /usr/bin/cc cc $(which zig) 3
 RUN ln -s /app/bootstrap/linux/daybreak /usr/bin/daybreak
