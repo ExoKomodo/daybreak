@@ -92,7 +92,7 @@ pipeline {
 
 	post {
 		always {
-			sh "docker-compose up ${COMPOSE_ARGS} -p fix_ownership"
+			sh "docker-compose -p fix_ownership up ${COMPOSE_ARGS}"
 		}
 		cleanup {
 			sh "bash ./admin_scripts/cleanup.sh"
