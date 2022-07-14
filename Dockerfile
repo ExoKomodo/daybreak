@@ -24,7 +24,7 @@ RUN echo '${ZIG_DIR}/zig cc $@' > /usr/bin/zig
 RUN chmod +x /usr/bin/zig
 
 # Create zig-wasi backend
-RUN echo '${ZIG_DIR}/zig cc --target=wasm32-wasi --sysroot /app/deps/wasi-sysroot $@' > /usr/bin/zig-wasi
+RUN echo '${ZIG_DIR}/zig cc --target=wasm32-wasi --sysroot /app/deps/wasi-sysroot-16.0 $@' > /usr/bin/zig-wasi
 RUN chmod +x /usr/bin/zig-wasi
 
 # Install utilities
@@ -32,7 +32,8 @@ RUN apt-get install -y valgrind
 RUN curl https://wasmtime.dev/install.sh -sSf | bash
 
 COPY . /app
-WORKDIR /app
+WORKDIR /app/deps
+tar -xf wasi-sysroot-16.0.tar.gz
 
 # Register backends
 RUN update-alternatives --install /usr/bin/gcc gcc $(which gcc-12) 1
