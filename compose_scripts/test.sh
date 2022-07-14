@@ -3,9 +3,6 @@
 set -ex
 
 WRAPPER=""
-if [[ ${CC_COMPILER} == *"wasi"* ]]; then
-	WRAPPER=wasmtime
-fi
 DAYBREAK_TEST=${DAYBREAK_OUT}/daybreak_test
 DAYBREAK_EULER=${DAYBREAK_OUT}/euler
 
@@ -31,7 +28,12 @@ ${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./euler/euler.day
 # Run build for actual run
 bash ./compose_scripts/build.sh ./euler/euler.day -o ${DAYBREAK_EULER}
 # Run euler problem solutions
-${WRAPPER} ${DAYBREAK_EULER}
+
+if [[ ${CC_COMPILER} == *"wasi"* ]]; then
+	wasmtime ${DAYBREAK_EULER}
+else
+        ${WRAPPER} ${DAYBREAK_EULER}
+fi
 
 # Directly compile test programs using the compiler executable
 ${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./tests/test_main.day
