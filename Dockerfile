@@ -30,7 +30,7 @@ RUN chmod +x /usr/bin/zig-wasi
 # Install utilities
 RUN apt-get install -y valgrind
 RUN curl https://wasmtime.dev/install.sh -sSf | bash
-RUN source ${HOME}/.bashrc
+ENV PATH=${PATH}:${HOME}/.wasmtime/bin
 
 COPY . /app
 WORKDIR /app
