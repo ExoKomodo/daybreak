@@ -34,6 +34,7 @@ RUN curl https://wasmtime.dev/install.sh -sSf | bash
 COPY . /app
 WORKDIR /app/deps
 RUN tar -xf wasi-sysroot-16.0.tar.gz
+WORKDIR /app
 
 # Register backends
 RUN update-alternatives --install /usr/bin/gcc gcc $(which gcc-12) 1
