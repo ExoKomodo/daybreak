@@ -11,10 +11,6 @@ RUN apt-get install -y gcc-12
 
 # Install clang backend
 RUN apt-get install -y clang-11
-RUN apt-get install -y lld
-RUN curl -O https://github.com/jedisct1/libclang_rt.builtins-wasm32.a/blob/master/precompiled/libclang_rt.builtins-wasm32.a?raw=true
-RUN mkdir -p /usr/lib/llvm-11/lib/clang/11.1.0/lib/wasi
-RUN mv ./libclang_rt.builtins-wasm32.a?raw=true /usr/lib/llvm-11/lib/clang/11.1.0/lib/wasi/libclang_rt.builtins-wasm32.a
 
 # Install zig backend
 ENV ARCH=x86_64
@@ -31,10 +27,6 @@ RUN chmod +x /usr/bin/zig
 RUN echo '${ZIG_DIR}/zig cc --target=wasm32-wasi --sysroot /app/deps/wasi-sysroot $@' > /usr/bin/zig-wasi
 RUN chmod +x /usr/bin/zig-wasi
 
-# Create clang-wasi backend
-RUN echo 'clang --target=wasm32-wasi --sysroot /app/deps/wasi-sysroot $@' > /usr/bin/clang-wasi
-RUN chmod +x /usr/bin/clang-wasi
-
 # Install utilities
 RUN apt-get install -y valgrind
 RUN curl https://wasmtime.dev/install.sh -sSf | bash
@@ -49,7 +41,6 @@ RUN update-alternatives --install /usr/bin/cc cc $(which gcc) 1
 RUN update-alternatives --install /usr/bin/cc cc $(which clang) 2
 RUN update-alternatives --install /usr/bin/cc cc $(which zig) 3
 RUN update-alternatives --install /usr/bin/cc cc $(which zig-wasi) 4
-RUN update-alternatives --install /usr/bin/cc cc $(which clang-wasi) 5
 RUN ln -s /app/bootstrap/linux/daybreak /usr/bin/daybreak
 
 ENV JENKINS_USER=112
