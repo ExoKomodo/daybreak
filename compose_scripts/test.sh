@@ -3,6 +3,9 @@
 set -ex
 
 WRAPPER=""
+if [ ${CC_COMPILER} == *"wasi"* ]; then
+	WRAPPER=wasmtime
+fi
 DAYBREAK_TEST=${DAYBREAK_OUT}/daybreak_test
 DAYBREAK_EULER=${DAYBREAK_OUT}/euler
 
