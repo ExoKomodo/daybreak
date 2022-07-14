@@ -115,6 +115,33 @@ CC_COMPILER=zig
 sudo update-alternatives --set cc $(which $CC_COMPILER)
 ```
 
+##### WASM (Ubuntu)
+`zig` or `clang` can be used to compile WASM files as Daybreak backends with minimal configuration:
+###### WASM via Zig
+By modifying `/usr/bin/zig`, we can configure `zig` to compile WASM via wasi. Let's create an intercept compiler script called `zig-wasi`:
+```bash
+sudo echo "$(pwd)/${ZIG_DIR}/zig cc \$@" > /usr/bin/zig-wasi
+sudo chmod +x /usr/bin/zig-wasi
+
+sudo update-alternatives --install /usr/bin/cc cc $(which zig-wasi) 1 # Create /usr/bin/cc binary if it does not exist, and links zig-wasi to cc
+# If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
+# cc should then be explicitly set to the compiler you want
+CC_COMPILER=zig-wasi
+sudo update-alternatives --set cc $(which $CC_COMPILER)
+```
+###### WASM via Clang
+Similar to configuring `zig`, an  for clang is an easy way to compile WASM via wasi. Let's create an intercept compiler script called `clang-wasi`:
+```bash
+sudo echo "clang --target=wasm32-unknown-wasi --sysroot /absolute/path/to/daybreak/repo/deps/wasi-sysroot \$@" > /usr/bin/clang-wasi
+sudo chmod +x /usr/bin/clang-wasi
+
+sudo update-alternatives --install /usr/bin/cc cc $(which wasm-clang) 1 # Create /usr/bin/cc binary if it does not exist, and links wasm-clang to cc
+# If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
+# cc should then be explicitly set to the compiler you want
+CC_COMPILER=wasm-clang
+sudo update-alternatives --set cc $(which $CC_COMPILER)
+```
+
 #### Windows
 Install [MSYS2](https://www.msys2.org/)
 
