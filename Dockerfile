@@ -32,7 +32,7 @@ RUN echo '${ZIG_DIR}/zig cc --target=wasm32-wasi --sysroot /app/deps/wasi-sysroo
 RUN chmod +x /usr/bin/zig-wasi
 
 # Create clang-wasi backend
-RUN echo 'clang --target=wasm32-unknown-wasi --sysroot /app/deps/wasi-sysroot $@' > /usr/bin/clang-wasi
+RUN echo 'clang --target=wasm32-wasi --sysroot /app/deps/wasi-sysroot $@' > /usr/bin/clang-wasi
 RUN chmod +x /usr/bin/clang-wasi
 
 # Install utilities
