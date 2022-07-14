@@ -2,18 +2,15 @@
 
 set -ex
 
-TEMP=${CC_COMPILER}
+TEMP=${CC}
 # WASM does not support popen() currently, meaning daybreak is outside of the current WASM standard
-if [ ${CC_COMPILER} = "zig-wasi" ]; then
-	CC_COMPILER=zig
-fi
-if [ ${CC_COMPILER} = "clang-wasi" ]; then
-	CC_COMPILER=clang
+if [ ${CC} = "zig-wasi" ]; then
+	CC=zig
 fi
 
 bash ./compose_scripts/check_env.sh
 
 ${DAYBREAK_BOOTSTRAP} ./src/main.day -o ${DAYBREAK_BOOTSTRAP}
 
-CC_COMPILER=${TEMP}
+CC=${TEMP}
 bash ./compose_scripts/check_env.sh

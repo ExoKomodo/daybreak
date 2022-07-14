@@ -16,7 +16,7 @@ pipeline {
 	stages {
 		stage('gcc') {
 			environment {
-				CC_COMPILER = "gcc"
+				CC = "gcc"
 			}
 			parallel {
 				stage ("[gcc] Build Daybreak") {
@@ -41,7 +41,7 @@ pipeline {
 
 		stage('clang') {
 			environment {
-				CC_COMPILER = "clang"
+				CC = "clang"
 			}
 			parallel {
 				stage('[clang] Build Daybreak') {
@@ -66,7 +66,7 @@ pipeline {
 
 		stage('zig') {
 			environment {
-				CC_COMPILER = "zig"
+				CC = "zig"
 			}
 			parallel {
 				stage('[zig] Build Daybreak') {
@@ -91,7 +91,7 @@ pipeline {
 
                 stage('zig-wasi') {
 			environment {
-				CC_COMPILER = "zig-wasi"
+				CC = "zig-wasi"
 			}
 			parallel {
 				stage('[zig-wasi] Build Daybreak') {

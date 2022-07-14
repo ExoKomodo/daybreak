@@ -1,10 +1,16 @@
 # Daybreak
-Programming language that compiles to C
+Programming language that compiles to C.
 
 ## Important Links
 - [Repository](https://github.com/ExoKomodo/Daybreak)
 - [Jenkins](https://jenkins.exokomodo.com/job/Daybreak)
 - [Language Cheat Sheet](https://docs.google.com/document/d/1VsP0L_J_NGatTqUZniUga4odmSZfCDRTvfQCVJQn9ac/edit?usp=sharing)
+
+## Installation
+To install daybreak locally, clone the Daybreak repo to your machine, and run `daybreak_install.sh`.
+```bash
+daybreak_install.sh [optional /path/to/daybreak/repo]
+```
 
 ## Suggested VSCode Extensions
 Reference [`devcontainer.json`](./.devcontainer/devcontainer.json)'s `extensions` array to see what VSCode extensions are recommended.
@@ -36,7 +42,7 @@ The CI/CD pipeline for Daybreak simply calls compose services defined in [`docke
 #### Environment
 In the services, these environment variables are defined by default:
 - `C_INCLUDE_PATH=/app/src/include:/app/tests/include` Defines the include paths for the underlying C compiler
-- `CC_COMPILER=gcc` Defines which c compiler to use for compose services
+- `CC=gcc` Defines which c compiler to use for compose services
 
 These environment variables are defined by default for the VSCode Dev Container, but will need to be defined for local compose usage
 - `DAYBREAK_BOOTSTRAP=/workspaces/Daybreak/bootstrap/linux/daybreak` Bootstrap executable location
@@ -73,8 +79,8 @@ sudo update-alternatives --install /usr/bin/gcc gcc $(which gcc-11) 1 # Create /
 sudo update-alternatives --install /usr/bin/cc cc $(which gcc) 1 # Create /usr/bin/cc binary if it does not exist, and links gcc to cc
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
-CC_COMPILER=gcc
-sudo update-alternatives --set cc $(which $CC_COMPILER)
+CC=gcc
+sudo update-alternatives --set cc $(which ${CC})
 ```
 
 ##### Clang (Ubuntu)
@@ -87,8 +93,8 @@ sudo update-alternatives --install /usr/bin/clang clang $(which clang-11) 1 # Cr
 sudo update-alternatives --install /usr/bin/cc cc $(which clang) 1 # Create /usr/bin/cc binary if it does not exist, and links clang to cc
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
-CC_COMPILER=clang
-sudo update-alternatives --set cc $(which $CC_COMPILER)
+CC=clang
+sudo update-alternatives --set cc $(which ${CC})
 ```
 
 ##### Zig (Ubuntu)
@@ -111,8 +117,8 @@ sudo chmod +x /usr/bin/zig
 sudo update-alternatives --install /usr/bin/cc cc $(which zig) 1 # Create /usr/bin/cc binary if it does not exist, and links zig to cc
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
-CC_COMPILER=zig
-sudo update-alternatives --set cc $(which $CC_COMPILER)
+CC=zig
+sudo update-alternatives --set cc $(which ${CC})
 ```
 
 ##### WASM (Ubuntu)
@@ -126,20 +132,8 @@ sudo chmod +x /usr/bin/zig-wasi
 sudo update-alternatives --install /usr/bin/cc cc $(which zig-wasi) 1 # Create /usr/bin/cc binary if it does not exist, and links zig-wasi to cc
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
-CC_COMPILER=zig-wasi
-sudo update-alternatives --set cc $(which $CC_COMPILER)
-```
-###### WASM via Clang
-Similar to configuring `zig`, an  for clang is an easy way to compile WASM via wasi. Let's create an intercept compiler script called `clang-wasi`:
-```bash
-sudo echo "clang --target=wasm32-unknown-wasi --sysroot /absolute/path/to/daybreak/repo/deps/wasi-sysroot \$@" > /usr/bin/clang-wasi
-sudo chmod +x /usr/bin/clang-wasi
-
-sudo update-alternatives --install /usr/bin/cc cc $(which wasm-clang) 1 # Create /usr/bin/cc binary if it does not exist, and links wasm-clang to cc
-# If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
-# cc should then be explicitly set to the compiler you want
-CC_COMPILER=wasm-clang
-sudo update-alternatives --set cc $(which $CC_COMPILER)
+CC=zig-wasi
+sudo update-alternatives --set cc $(which ${CC})
 ```
 
 #### Windows

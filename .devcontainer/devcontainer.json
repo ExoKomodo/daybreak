@@ -18,9 +18,9 @@
 	],
 	"containerEnv": {
 		"C_INCLUDE_PATH": "./src/include:./tests/include",
-		"CC_COMPILER": "gcc", // Uncomment for gcc development in docker-compose
-		// "CC_COMPILER": "clang", // Uncomment for clang development in docker-compose
-		// "CC_COMPILER": "zig", // Uncomment for zig development in docker-compose
+		"CC": "gcc", // Uncomment for gcc development in docker-compose
+		// "CC": "clang", // Uncomment for clang development in docker-compose
+		// "CC": "zig", // Uncomment for zig development in docker-compose
 		"DAYBREAK_BOOTSTRAP": "./bootstrap/linux/daybreak",
 		"DAYBREAK_OUT": "./out"
 	},
