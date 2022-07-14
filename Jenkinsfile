@@ -14,6 +14,25 @@ pipeline {
 	}
 
 	stages {
+		stage('clang-wasi') {
+			environment {
+				CC_COMPILER = "clang-wasi"
+			}
+			parallel {
+				stage('[clang-wasi] Build Daybreak') {
+					steps { 
+						sh "docker-compose -p clang-wasi-build up ${COMPOSE_ARGS} build_daybreak"
+					}
+				}
+
+				stage('[clang-wasi] Test') {
+					steps {
+						sh "docker-compose -p clang-wasi-test up ${COMPOSE_ARGS} test"
+					}
+				}
+			}
+		}
+		
 		stage('gcc') {
 			environment {
 				CC_COMPILER = "gcc"
@@ -59,25 +78,6 @@ pipeline {
 				stage('[clang] Memory Check') {
 					steps {
 						sh "docker-compose -p clang-memcheck up ${COMPOSE_ARGS} memory_check"
-					}
-				}
-			}
-		}
-
-		stage('clang-wasi') {
-			environment {
-				CC_COMPILER = "clang-wasi"
-			}
-			parallel {
-				stage('[clang-wasi] Build Daybreak') {
-					steps { 
-						sh "docker-compose -p clang-wasi-build up ${COMPOSE_ARGS} build_daybreak"
-					}
-				}
-
-				stage('[clang-wasi] Test') {
-					steps {
-						sh "docker-compose -p clang-wasi-test up ${COMPOSE_ARGS} test"
 					}
 				}
 			}
