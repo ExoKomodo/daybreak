@@ -30,7 +30,7 @@ bash ./compose_scripts/build.sh ./euler/euler.day -o ${DAYBREAK_EULER}
 # Run euler problem solutions
 
 if [[ ${CC_COMPILER} == *"wasi"* ]]; then
-	wasmtime ${DAYBREAK_EULER}
+	${HOME}/.wasmtime/bin/wasmtime ${DAYBREAK_EULER}
 else
         ${WRAPPER} ${DAYBREAK_EULER}
 fi
