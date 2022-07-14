@@ -12,6 +12,8 @@ RUN apt-get install -y gcc-12
 # Install clang backend
 RUN apt-get install -y clang-11
 RUN apt-get install -y lld
+RUN curl -O https://github.com/jedisct1/libclang_rt.builtins-wasm32.a/blob/master/precompiled/libclang_rt.builtins-wasm32.a?raw=true
+RUN mv ./libclang_rt.builtins-wasm32.a /usr/lib/llvm-11/lib/clang/11.1.0/lib/wasi/libclang_rt.builtins-wasm32.a
 
 # Install zig backend
 ENV ARCH=x86_64
