@@ -14,26 +14,6 @@ pipeline {
 	}
 
 	stages {
-
-                stage('zig-wasi') {
-			environment {
-				CC_COMPILER = "zig-wasi"
-			}
-			parallel {
-				stage('[zig-wasi] Build Daybreak') {
-					steps { 
-						sh "docker-compose -p zig-wasi-build up ${COMPOSE_ARGS} build_daybreak"
-					}
-				}
-
-				stage('[zig-wasi] Test') {
-					steps {
-						sh "docker-compose -p zig-wasi-test up ${COMPOSE_ARGS} test"
-					}
-				}
-			}
-		}
-
 		stage('gcc') {
 			environment {
 				CC_COMPILER = "gcc"
@@ -104,6 +84,25 @@ pipeline {
 				stage('[zig] Memory Check') {
 					steps {
 						sh "docker-compose -p zig-memcheck up ${COMPOSE_ARGS} memory_check"
+					}
+				}
+			}
+		}
+
+                stage('zig-wasi') {
+			environment {
+				CC_COMPILER = "zig-wasi"
+			}
+			parallel {
+				stage('[zig-wasi] Build Daybreak') {
+					steps { 
+						sh "docker-compose -p zig-wasi-build up ${COMPOSE_ARGS} build_daybreak"
+					}
+				}
+
+				stage('[zig-wasi] Test') {
+					steps {
+						sh "docker-compose -p zig-wasi-test up ${COMPOSE_ARGS} test"
 					}
 				}
 			}
