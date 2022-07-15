@@ -12,11 +12,11 @@ function _choose_compiler_backend() {
 		exit 1
 	fi
 
-	CC=$1
+	CC_COMPILER=$1
 	shift
-	echo "Checking for compiler backend ${CC}"
-	if ! command -v ${CC} &> /dev/null; then
-		echo "Missing compiler backend ${CC}"
+	echo "Checking for compiler backend ${CC_COMPILER}"
+	if ! command -v ${CC_COMPILER} &> /dev/null; then
+		echo "Missing compiler backend ${CC_COMPILER}"
 		set_compiler $@
 	fi
 }
@@ -34,7 +34,7 @@ function bootstrap_install() {
 
 function print_export_env() {
 	echo "Add the following to your rcfile of choice to preserve the installed configuration:"
-	echo "  export CC=${CC}"
+	echo "  export CC_COMPILER =${CC_COMPILER}"
 	echo "  export DAYBREAK_HOME=${DAYBREAK_HOME}"
 	echo ""
 	echo "Add the following to your rcfile of choice to make daybreak tools available:"
@@ -53,11 +53,11 @@ function set_default_env() {
 			*)          echo "Failed to identify OS"; exit 1;;
 	esac
 
-	if [ -z ${CC} ]; then
+	if [ -z ${CC_COMPILER} ]; then
 		_choose_compiler_backend ${COMPILER_BACKENDS}
-		echo "CC set to default: ${CC} -> $(which ${CC})"
+		echo "CC_COMPILER set to default: ${CC_COMPILER} -> $(which ${CC_COMPILER})"
 	else
-		echo "CC already set to: ${CC} -> $(which ${CC})"
+		echo "CC_COMPILER already set to: ${CC_COMPILER} -> $(which ${CC_COMPILER})"
 	fi
 	
 	if [ -z ${DAYBREAK_HOME} ]; then
@@ -67,9 +67,7 @@ function set_default_env() {
 		echo "DAYBREAK_HOME already set to: ${DAYBREAK_HOME}"
 	fi
 
-	update-alternatives --set cc $(which ${CC})
-
-	# TODO: Check if any env vars are yet to be defined and given appropriate defaults
+	update-alternatives --set cc $(which ${CC_COMPILER})
 }
 
 if [ $# -eq 0 ]; then
