@@ -7,6 +7,9 @@ TEMP=${CC_COMPILER}
 if [ ${CC_COMPILER} = "zig-wasi" ]; then
 	CC_COMPILER=zig
 fi
+if [ ${CC_COMPILER} = "clang-wasi" ]; then
+	CC_COMPILER=clang
+fi
 
 bash ./compose_scripts/check_env.sh
 
