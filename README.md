@@ -1,5 +1,5 @@
 # Daybreak
-Programming language that compiles to C.
+Programming language that compiles to C
 
 ## Important Links
 - [Repository](https://github.com/ExoKomodo/Daybreak)
@@ -42,7 +42,7 @@ The CI/CD pipeline for Daybreak simply calls compose services defined in [`docke
 #### Environment
 In the services, these environment variables are defined by default:
 - `C_INCLUDE_PATH=/app/src/include:/app/tests/include` Defines the include paths for the underlying C compiler
-- `CC=gcc` Defines which c compiler to use for compose services
+- `CC_COMPILER=gcc` Defines which c compiler to use for compose services
 
 These environment variables are defined by default for the VSCode Dev Container, but will need to be defined for local compose usage
 - `DAYBREAK_BOOTSTRAP=/workspaces/Daybreak/bootstrap/linux/daybreak` Bootstrap executable location
@@ -79,8 +79,8 @@ sudo update-alternatives --install /usr/bin/gcc gcc $(which gcc-11) 1 # Create /
 sudo update-alternatives --install /usr/bin/cc cc $(which gcc) 1 # Create /usr/bin/cc binary if it does not exist, and links gcc to cc
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
-CC=gcc
-sudo update-alternatives --set cc $(which ${CC})
+CC_COMPILER=gcc
+sudo update-alternatives --set cc $(which ${CC_COMPILER})
 ```
 
 ##### Clang (Ubuntu)
@@ -93,8 +93,8 @@ sudo update-alternatives --install /usr/bin/clang clang $(which clang-11) 1 # Cr
 sudo update-alternatives --install /usr/bin/cc cc $(which clang) 1 # Create /usr/bin/cc binary if it does not exist, and links clang to cc
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
-CC=clang
-sudo update-alternatives --set cc $(which ${CC})
+CC_COMPILER=clang
+sudo update-alternatives --set cc $(which ${CC_COMPILER})
 ```
 
 ##### Zig (Ubuntu)
@@ -117,8 +117,8 @@ sudo chmod +x /usr/bin/zig
 sudo update-alternatives --install /usr/bin/cc cc $(which zig) 1 # Create /usr/bin/cc binary if it does not exist, and links zig to cc
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
-CC=zig
-sudo update-alternatives --set cc $(which ${CC})
+CC_COMPILER=zig
+sudo update-alternatives --set cc $(which ${CC_COMPILER})
 ```
 
 ##### WASM (Ubuntu)
@@ -132,8 +132,8 @@ sudo chmod +x /usr/bin/zig-wasi
 sudo update-alternatives --install /usr/bin/cc cc $(which zig-wasi) 1 # Create /usr/bin/cc binary if it does not exist, and links zig-wasi to cc
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
-CC=zig-wasi
-sudo update-alternatives --set cc $(which ${CC})
+CC_COMPILER=zig-wasi
+sudo update-alternatives --set cc $(which ${CC_COMPILER})
 ```
 
 #### Windows
@@ -186,7 +186,7 @@ sudo chmod +x /usr/bin/zig
 sudo update-alternatives --install /usr/bin/cc cc $(which zig) 1 # Create /usr/bin/cc binary if it does not exist, and links zig to cc
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
-export CC=zig
+export CC_COMPILER=zig
 ```
 
 ### Build
