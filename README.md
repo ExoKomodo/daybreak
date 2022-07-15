@@ -80,7 +80,7 @@ sudo update-alternatives --install /usr/bin/cc cc $(which gcc) 1 # Create /usr/b
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
 CC_COMPILER=gcc
-sudo update-alternatives --set cc $(which ${CC_COMPILER})
+sudo update-alternatives --set cc $(which $CC_COMPILER)
 ```
 
 ##### Clang (Ubuntu)
@@ -94,7 +94,7 @@ sudo update-alternatives --install /usr/bin/cc cc $(which clang) 1 # Create /usr
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
 CC_COMPILER=clang
-sudo update-alternatives --set cc $(which ${CC_COMPILER})
+sudo update-alternatives --set cc $(which $CC_COMPILER)
 ```
 
 ##### Zig (Ubuntu)
@@ -118,7 +118,7 @@ sudo update-alternatives --install /usr/bin/cc cc $(which zig) 1 # Create /usr/b
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
 CC_COMPILER=zig
-sudo update-alternatives --set cc $(which ${CC_COMPILER})
+sudo update-alternatives --set cc $(which $CC_COMPILER)
 ```
 
 ##### WASM (Ubuntu)
@@ -133,7 +133,7 @@ sudo update-alternatives --install /usr/bin/cc cc $(which zig-wasi) 1 # Create /
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
 CC_COMPILER=zig-wasi
-sudo update-alternatives --set cc $(which ${CC_COMPILER})
+sudo update-alternatives --set cc $(which $CC_COMPILER)
 ```
 
 #### Windows
