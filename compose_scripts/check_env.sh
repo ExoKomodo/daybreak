@@ -28,5 +28,5 @@ fi
 
 if [ -n ${CC_COMPILER} ];
 then
-	update-alternatives --set cc $(which ${CC_COMPILER})
+	update-alternatives --set cc $(which $CC_COMPILER)
 fi
