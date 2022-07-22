@@ -7,9 +7,28 @@ Programming language that compiles to C
 - [Language Cheat Sheet](https://docs.google.com/document/d/1VsP0L_J_NGatTqUZniUga4odmSZfCDRTvfQCVJQn9ac/edit?usp=sharing)
 
 ## Installation
-To install daybreak locally, clone the Daybreak repo to your machine, and run `daybreak_install.sh`.
+To install daybreak locally, clone the Daybreak repo to your machine, and run `daybreak_install.sh`
+
+### (Recommended) Git Clone via SSH:
+Cloning via SSH will allow for you to contribute to Daybreak and push commits
 ```bash
-daybreak_install.sh [optional /path/to/daybreak/repo]
+# Clone repository locally
+git clone git@github.com:ExoKomodo/Daybreak.git
+# Temporarily move into Daybreak repo
+cd ./Daybreak
+# Follow the instructions of the install script
+bash ./daybreak_install.sh
+```
+
+### (Not recommended) Git clone via HTTPS:
+Cloning via HTTPS will only allow for you to clone the repo and install Daybreak. You will not be able to push commits to Github with an HTTPS-cloned repository.
+```bash
+# Clone repository locally
+git clone https://github.com/ExoKomodo/Daybreak.git
+# Temporarily move into Daybreak repo
+cd ./Daybreak
+# Follow the instructions of the install script
+bash ./daybreak_install.sh
 ```
 
 ## Suggested VSCode Extensions
