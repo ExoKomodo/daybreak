@@ -22,6 +22,7 @@ function _choose_compiler_backend() {
 }
 
 function bootstrap_install() {
+	echo "Bootstrapping Daybreak for the local installation..."
 	DAYBREAK_BOOTSTRAP=${DAYBREAK_SOURCE_FOLDER}/bootstrap/${OS}/daybreak
 	DAYBREAK_OUTPUT=${DAYBREAK_HOME}/bin/daybreak
 	if [[ ${OS} = "windows" ]]; then
@@ -29,22 +30,32 @@ function bootstrap_install() {
 		DAYBREAK_OUTPUT=${DAYBREAK_OUTPUT}.exe
 	fi
 	C_INCLUDE_PATH=${DAYBREAK_SOURCE_FOLDER}/src/include
-	${DAYBREAK_BOOTSTRAP} ${DAYBREAK_SOURCE_FOLDER}/src/main.day -o ${DAYBREAK_OUTPUT}
+	${DAYBREAK_BOOTSTRAP} ${DAYBREAK_SOURCE_FOLDER}/src/main.day -o ${DAYBREAK_OUTPUT} >> /dev/null
+	echo "Successfully bootstrapped Daybreak!"
 }
 
 function print_export_env() {
-	echo "Add the following to your rcfile of choice to preserve the installed configuration:"
-	echo "  export CC_COMPILER =${CC_COMPILER}"
-	echo "  export DAYBREAK_HOME=${DAYBREAK_HOME}"
+	RC_FILE=${HOME}/.$(basename $(echo ${SHELL}))rc
+
 	echo ""
-	echo "Add the following to your rcfile of choice to make daybreak tools available:"
-	echo "  export PATH=${DAYBREAK_HOME}/bin:\${PATH}"
+	echo "##############"
+	echo "# Next Steps #"
+	echo "##############"
+	echo "Run all of the following commands in your terminal to finish the Daybreak installation"
+	echo "The first two commands persist the configuration chosen by this install script"
+	echo "The third command adds daybreak tools to your PATH for every login session and not just the current login session"
+	echo ""
+	echo "echo 'export CC_COMPILER=${CC_COMPILER}' >> ${RC_FILE}"
+	echo "echo 'export DAYBREAK_HOME=${DAYBREAK_HOME}' >> ${RC_FILE}"
+	echo 'echo '"'"'export PATH=${DAYBREAK_HOME}/bin:${PATH}'"'"''" >> ${RC_FILE}"
+	echo ""
+	echo "Daybreak should now be fully configured and available!"
 }
 
 function set_default_env() {
 	echo "Checking environment variables and temporarily setting default values for unset env vars"
-
-	echo "Identifying OS"
+	echo ""
+	echo "Identifying OS..."
 	case "$(uname -s)" in
 			Linux*)     OS=linux;;
 			Darwin*)    OS=osx;;
@@ -52,6 +63,8 @@ function set_default_env() {
 			MINGW*)     OS=windows;;
 			*)          echo "Failed to identify OS"; exit 1;;
 	esac
+	echo "Identified OS as ${OS}"
+	echo ""
 
 	if [ -z ${CC_COMPILER} ]; then
 		_choose_compiler_backend ${COMPILER_BACKENDS}
@@ -68,6 +81,7 @@ function set_default_env() {
 	fi
 
 	update-alternatives --set cc $(which ${CC_COMPILER})
+	echo ""
 }
 
 if [ $# -eq 0 ]; then
