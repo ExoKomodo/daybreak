@@ -11,6 +11,31 @@ Programming language that compiles to C
 - [Jenkins](https://jenkins.exokomodo.com/job/Daybreak)
 - [Language Cheat Sheet](https://docs.google.com/document/d/1VsP0L_J_NGatTqUZniUga4odmSZfCDRTvfQCVJQn9ac/edit?usp=sharing)
 
+## Installation
+To install daybreak locally, clone the Daybreak repo to your machine, and run `daybreak_install.sh`
+
+### (Recommended) Git Clone via SSH:
+Cloning via SSH will allow for you to contribute to Daybreak and push commits
+```bash
+# Clone repository locally
+git clone git@github.com:ExoKomodo/Daybreak.git
+# Temporarily move into Daybreak repo
+cd ./Daybreak
+# Follow the instructions of the install script
+bash ./daybreak_install.sh
+```
+
+### (Not recommended) Git clone via HTTPS:
+Cloning via HTTPS will only allow for you to clone the repo and install Daybreak. You will not be able to push commits to Github with an HTTPS-cloned repository.
+```bash
+# Clone repository locally
+git clone https://github.com/ExoKomodo/Daybreak.git
+# Temporarily move into Daybreak repo
+cd ./Daybreak
+# Follow the instructions of the install script
+bash ./daybreak_install.sh
+```
+
 ## Suggested VSCode Extensions
 Reference [`devcontainer.json`](./.devcontainer/devcontainer.json)'s `extensions` array to see what VSCode extensions are recommended.
 
@@ -134,18 +159,6 @@ sudo update-alternatives --install /usr/bin/cc cc $(which zig-wasi) 1 # Create /
 CC_COMPILER=zig-wasi
 sudo update-alternatives --set cc $(which $CC_COMPILER)
 ```
-###### WASM via Clang
-Similar to configuring `zig`, an  for clang is an easy way to compile WASM via wasi. Let's create an intercept compiler script called `clang-wasi`:
-```bash
-sudo echo "clang --target=wasm32-unknown-wasi --sysroot /absolute/path/to/daybreak/repo/deps/wasi-sysroot \$@" > /usr/bin/clang-wasi
-sudo chmod +x /usr/bin/clang-wasi
-
-sudo update-alternatives --install /usr/bin/cc cc $(which wasm-clang) 1 # Create /usr/bin/cc binary if it does not exist, and links wasm-clang to cc
-# If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
-# cc should then be explicitly set to the compiler you want
-CC_COMPILER=wasm-clang
-sudo update-alternatives --set cc $(which $CC_COMPILER)
-```
 
 #### Windows
 Install [MSYS2](https://www.msys2.org/)
@@ -197,7 +210,7 @@ sudo chmod +x /usr/bin/zig
 sudo update-alternatives --install /usr/bin/cc cc $(which zig) 1 # Create /usr/bin/cc binary if it does not exist, and links zig to cc
 # If cc already exists, this may fail and you will need to increment the number at the end of the command to lower the priority.
 # cc should then be explicitly set to the compiler you want
-export CC=zig
+export CC_COMPILER=zig
 ```
 
 ### Build
