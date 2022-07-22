@@ -1,0 +1,7 @@
+? Inspired by:
+? https://github.com/JamesOrson/Computer-Networks-PA1/blob/cdd1dcf855535a41844d243158b752118a4d2792/pa1-client.py
+
+fun http_client_get(url: cstring) cstring do
+	(unused url)
+	"not implemented"
+end

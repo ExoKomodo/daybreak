@@ -1,0 +1,17 @@
+import "std/http/client.day"
+importc "string.h"
+
+let GET_URL: cstring <- "https://reqbin.com/echo/get/json"
+
+fun test_get () bool do
+	(puts "Testing HTTP GET")
+	(eq
+		0
+		(strcmp (http_client_get GET_URL) "not implemented"))
+end
+
+fun main () int do
+	(assert (test_get))
+	(puts "Passed all HTTP tests")
+	0
+end
