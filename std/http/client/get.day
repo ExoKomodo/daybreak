@@ -1,7 +1,28 @@
 ? Inspired by:
 ? https://github.com/JamesOrson/Computer-Networks-PA1/blob/cdd1dcf855535a41844d243158b752118a4d2792/pa1-client.py
 
+importc "errno.h"
+importc "sys/socket.h"
+importc "helpers/http.h"
+
 fun http_client_get(url: cstring) cstring do
 	(unused url)
-	"not implemented"
+	let sock: int <- (socket AF_INET SOCK_STREAM 0)
+	match
+		(eq
+			(neg 1)
+			sock) => do
+				(printf "Failure to open socket with errno: %d\n" errno)
+				"failure"
+			end
+		(default) => do
+			(printf "Opened socket with descriptor: %d\n" sock)
+			? let host_data: ptr<hostent> <- (gethostbyname url)
+			? let data: hostent <- (deref host_data)
+			let address: cstring <- (get_ipv4_from_host url)
+			(unused address)
+			? (printf "%s -> %s\n" url address)
+			"not implemented"
+		end
+	end
 end

@@ -1,7 +1,7 @@
 import "std/http/client.day"
 importc "string.h"
 
-let GET_URL: cstring <- "https://reqbin.com/echo/get/json"
+let GET_URL: cstring <- "reqbin.com/echo/get/json"
 
 fun test_get () bool do
 	(puts "Testing HTTP GET")
