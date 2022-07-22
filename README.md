@@ -1,6 +1,11 @@
 # Daybreak
 Programming language that compiles to C
 
+## Table of Contents
+- [Important Links](#important-links)
+- [Development](#development)
+- [Daybreak Install](#daybreak-install)
+
 ## Important Links
 - [Repository](https://github.com/ExoKomodo/Daybreak)
 - [Jenkins](https://jenkins.exokomodo.com/job/Daybreak)
