@@ -35,7 +35,12 @@ function bootstrap_install() {
 }
 
 function print_export_env() {
+	echo ""
+	echo "Identifying default shell and the associated rcfile..."
 	RC_FILE=${HOME}/.$(basename $(echo ${SHELL}))rc
+	echo "Identified:"
+	echo "  shell  -> ${SHELL}"
+	echo "  rcfile -> ${RC_FILE}"
 
 	echo ""
 	echo "##############"
