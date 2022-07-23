@@ -3,7 +3,7 @@
 
 importc "errno.h"
 importc "sys/socket.h"
-importc "helpers/http.h"
+importc "std/http/http.h"
 
 fun http_client_get(url: cstring) cstring do
 	(unused url)
@@ -17,11 +17,8 @@ fun http_client_get(url: cstring) cstring do
 			end
 		(default) => do
 			(printf "Opened socket with descriptor: %d\n" sock)
-			? let host_data: ptr<hostent> <- (gethostbyname url)
-			? let data: hostent <- (deref host_data)
 			let address: cstring <- (get_ipv4_from_host url)
-			(unused address)
-			? (printf "%s -> %s\n" url address)
+			(printf "%s -> %s\n" url address)
 			"not implemented"
 		end
 	end
