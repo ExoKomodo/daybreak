@@ -23,14 +23,14 @@ function _choose_compiler_backend() {
 
 function bootstrap_install() {
 	echo "Bootstrapping Daybreak for the local installation..."
-	DAYBREAK_BOOTSTRAP=${DAYBREAK_SOURCE_FOLDER}/bootstrap/${OS}/daybreak
+	DAYBREAK_BOOTSTRAP=${DAYBREAK_REPO_FOLDER}/bootstrap/${OS}/daybreak
 	DAYBREAK_OUTPUT=${DAYBREAK_HOME}/bin/daybreak
 	if [[ ${OS} = "windows" ]]; then
 		DAYBREAK_BOOTSTRAP=${DAYBREAK_BOOTSTRAP}.exe
 		DAYBREAK_OUTPUT=${DAYBREAK_OUTPUT}.exe
 	fi
-	C_INCLUDE_PATH=${DAYBREAK_SOURCE_FOLDER}/src/include
-	${DAYBREAK_BOOTSTRAP} ${DAYBREAK_SOURCE_FOLDER}/src/main.day -o ${DAYBREAK_OUTPUT} >> /dev/null
+	export C_INCLUDE_PATH=${DAYBREAK_SOURCE_FOLDER}/include
+	${DAYBREAK_BOOTSTRAP} ${DAYBREAK_SOURCE_FOLDER}/main.day -o ${DAYBREAK_OUTPUT} >> /dev/null
 	echo "Successfully bootstrapped Daybreak!"
 }
 
@@ -62,11 +62,11 @@ function set_default_env() {
 	echo ""
 	echo "Identifying OS..."
 	case "$(uname -s)" in
-			Linux*)     OS=linux;;
-			Darwin*)    OS=osx;;
-			CYGWIN*)    OS=windows;;
-			MINGW*)     OS=windows;;
-			*)          echo "Failed to identify OS"; exit 1;;
+		Linux*)     OS=linux;;
+		Darwin*)    OS=osx;;
+		CYGWIN*)    OS=windows;;
+		MINGW*)     OS=windows;;
+		*)          echo "Failed to identify OS"; exit 1;;
 	esac
 	echo "Identified OS as ${OS}"
 	echo ""
@@ -77,7 +77,7 @@ function set_default_env() {
 	else
 		echo "CC_COMPILER already set to: ${CC_COMPILER} -> $(which ${CC_COMPILER})"
 	fi
-	
+
 	if [ -z ${DAYBREAK_HOME} ]; then
 		DAYBREAK_HOME=${HOME}/.daybreak
 		echo "DAYBREAK_HOME set to default: ${DAYBREAK_HOME}"
@@ -85,15 +85,20 @@ function set_default_env() {
 		echo "DAYBREAK_HOME already set to: ${DAYBREAK_HOME}"
 	fi
 
-	update-alternatives --set cc $(which ${CC_COMPILER})
+	if [[ ${OS} = "linux" ]]; then
+		update-alternatives --set cc $(which ${CC_COMPILER})
+	fi
 	echo ""
 }
 
 if [ $# -eq 0 ]; then
-	DAYBREAK_SOURCE_FOLDER=.
+	DAYBREAK_REPO_FOLDER=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
+	DAYBREAK_SOURCE_FOLDER=${DAYBREAK_REPO_FOLDER}/src
+	echo ${DAYBREAK_SOURCE_FOLDER}
 else
-	DAYBREAK_SOURCE_FOLDER=$1
+	DAYBREAK_REPO_FOLDER=$1
 	shift
+	DAYBREAK_SOURCE_FOLDER=${DAYBREAK_REPO_FOLDER}/src
 fi
 
 set_default_env
