@@ -85,7 +85,7 @@ function set_default_env() {
 		echo "DAYBREAK_HOME already set to: ${DAYBREAK_HOME}"
 	fi
 
-        if [[ ${OS} = "linux" ]]; then
+	if [[ ${OS} = "linux" ]]; then
 		update-alternatives --set cc $(which ${CC_COMPILER})
 	fi
 	echo ""
