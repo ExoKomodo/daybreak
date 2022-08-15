@@ -100,6 +100,9 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	end
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
+	enum
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	fun
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
@@ -140,6 +143,10 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 	fat_arrow,
 	"=>"
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
+	hash,
+	"#"
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION_SYMBOL_OVERRIDE(
 	open_paren,
@@ -254,7 +261,8 @@ static inline bool token_is_keyword(struct Token token) {
 		/* Not included as keywords due to the use of an IdentifierNode
 		  to determine the kind of TypeDeclarationNode
 		token_is_struct(token) ||
-		token_is_union(token)
+		token_is_union(token) ||
+		token_is_enum(token)
 		*/
 		token_is_type(token)
 	);

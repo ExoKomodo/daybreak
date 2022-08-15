@@ -1,0 +1,17 @@
+type Option enum is
+  None <- 0
+  Some <- 1
+end
+
+type Color enum is
+  Red
+	Blue
+	Green
+end
+
+fun main () int do
+  let opt: Option <- #Option.Red ? const Option opt = ((Option) Red)
+  let b: Bar <- {Bar
+    a <- 3
+  }
+end
