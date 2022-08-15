@@ -94,7 +94,6 @@ function set_default_env() {
 if [ $# -eq 0 ]; then
 	DAYBREAK_REPO_FOLDER=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
 	DAYBREAK_SOURCE_FOLDER=${DAYBREAK_REPO_FOLDER}/src
-	echo ${DAYBREAK_SOURCE_FOLDER}
 else
 	DAYBREAK_REPO_FOLDER=$1
 	shift
