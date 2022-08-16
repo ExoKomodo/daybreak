@@ -2,7 +2,7 @@ import "std/compiler/api.day"
 
 importc "test_bindings.h"
 importc "test_double.h"
-importc "test_enum.h"
+? importc "test_enum.h"
 importc "test_foobar.h"
 importc "test_hello_world.h"
 importc "test_integer.h"
@@ -20,8 +20,8 @@ fun main () int do
 	match
 		(not (test_double)) =>
 			1
-		(not (test_enum)) =>
-			2
+		? (not (test_enum)) =>
+		? 	2./
 		(not (test_foobar)) =>
 			3
 		(not (test_hello_world)) =>
