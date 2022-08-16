@@ -1173,6 +1173,50 @@ inline bool ast_enum_type_declaration_token_matches_first_set(struct Token token
   return token_is_enum(token);
 }
 
+/********************************/
+/* StructuredTypeExpressionNode */
+/********************************/
+struct EnumTypeExpressionNode* ast_new_enum_type_expression_node(
+  struct TypeIdentifierNode* type,
+  struct IdentifierNode* value
+) {
+  struct EnumTypeExpressionNode* node = malloc(sizeof(struct EnumTypeExpressionNode));
+  node->kind = AstEnumTypeExpression;
+  node->type = type;
+  node->value = value;
+  return node;
+}
+
+void ast_free_enum_type_expression_node(struct EnumTypeExpressionNode* node) {
+  ast_free_type_identifier_node(node->type);
+  node->type = NULL;
+  ast_free_identifier_node(node->value);
+  node->value = NULL;
+
+  free(node);
+}
+
+struct EnumTypeExpressionNode* ast_parse_enum_type_expression(struct Token** tokens) {
+  _CHECK_TOKENS();
+  LOG_DEBUG("Parsing Enum Type Expression: %s", (*tokens)->name);
+
+  if (!ast_enum_type_expression_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected '#' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct TypeIdentifierNode* type = ast_parse_type_identifier(tokens);
+  if (!token_is_period(**tokens)) {
+    LOG_ERROR("Expected '.' got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  struct IdentifierNode* value = ast_parse_identifier(tokens);
+  return ast_new_enum_type_expression_node(type, value);
+}
+
+inline bool ast_enum_type_expression_token_matches_first_set(struct Token token) {
+  return token_is_hash(token);
+}
 
 /**********************/
 /* ExpressionListNode */
@@ -2736,9 +2780,9 @@ inline bool ast_struct_type_declaration_token_matches_first_set(struct Token tok
   return token_is_struct(token);
 }
 
-/****************************/
+/********************************/
 /* StructuredTypeExpressionNode */
-/****************************/
+/********************************/
 struct StructuredTypeExpressionNode* ast_new_structured_type_expression_node(
   struct TypeIdentifierNode* type,
   struct FieldBindingListNode* field_bindings
@@ -2751,7 +2795,7 @@ struct StructuredTypeExpressionNode* ast_new_structured_type_expression_node(
 }
 
 void ast_free_structured_type_expression_node(struct StructuredTypeExpressionNode* node) {
-  ast_free_struct_type_identifier_node(node->type);
+  ast_free_type_identifier_node(node->type);
   node->type = NULL;
   ast_free_field_binding_list_node(node->field_bindings);
   node->field_bindings = NULL;
@@ -2895,7 +2939,6 @@ struct TypeExpressionNode* ast_parse_type_expression(struct Token** tokens) {
     LOG_ERROR("Expected type expression got '%s'", (*tokens)->name);
     exit(1);
   }
-  _ADVANCE_TOKEN(tokens);
   if (ast_enum_type_expression_token_matches_first_set(**tokens)) {
     struct EnumTypeExpressionNode* expression = ast_parse_enum_type_expression(tokens);
     return ast_new_type_expression_node(
@@ -2904,7 +2947,7 @@ struct TypeExpressionNode* ast_parse_type_expression(struct Token** tokens) {
         .enum_type_expression = expression
       }
     );
-  } else if (ast_enum_structured_type_expression_token_matches_first_set(**tokens)) {
+  } else if (ast_structured_type_expression_token_matches_first_set(**tokens)) {
     struct StructuredTypeExpressionNode* expression = ast_parse_structured_type_expression(tokens);
     return ast_new_type_expression_node(
       AstStructuredTypeExpression,
@@ -2913,7 +2956,7 @@ struct TypeExpressionNode* ast_parse_type_expression(struct Token** tokens) {
       }
     );
   } else {
-    LOG_ERROR("Invalid TypeExpressionNode kind");
+    LOG_ERROR("Invalid TypeExpressionNode kind: %s", (**tokens).name);
     exit(1);
   }
 }
