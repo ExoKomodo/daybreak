@@ -17,6 +17,8 @@
 
 #define BUFFER_SIZE 1024
 
+#define ENUM_OUTPUT "Option: 100 Red: 0 Green: 0 Blue: 0"
+
 bool test_enum();
 
 bool test_enum() {
@@ -42,15 +44,9 @@ bool test_enum() {
   char buffer[BUFFER_SIZE];
   memset(buffer, '\0', sizeof(char) * BUFFER_SIZE);
   fgets(buffer, BUFFER_SIZE, output_file);
-  if (strcmp(buffer, "Foo: Hello!\n") != 0) {
+  if (strcmp(buffer, ENUM_OUTPUT "\n") != 0) {
     fclose(output_file);
-    LOG_ERROR("Failed to output 'Foo: Hello!', got '%s'", buffer);
-    return false;
-  }
-  fgets(buffer, BUFFER_SIZE, output_file);
-  if (strcmp(buffer, "Bar: 2 Hello again!!\n") != 0) {
-    fclose(output_file);
-    LOG_ERROR("Failed to output 'Bar: 2 Hello again!!', got '%s'", buffer);
+    LOG_ERROR("Failed to output '" ENUM_OUTPUT "', got '%s'", buffer);
     return false;
   }
   fclose(output_file);

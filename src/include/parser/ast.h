@@ -1067,7 +1067,7 @@ struct EnumFieldListNode* ast_parse_enum_field_list(struct Token** tokens) {
   }
 
   while (!token_is_end(**tokens)) {
-    ast_add_enum_field_node(field_list, ast_parse_field(tokens));
+    ast_add_enum_field_node(field_list, ast_parse_enum_field(tokens));
   }
   return field_list;
 }
@@ -1106,15 +1106,15 @@ struct EnumFieldNode* ast_parse_enum_field(struct Token** tokens) {
   LOG_DEBUG("Parsing Enum Field: %s", (*tokens)->name);
 
   if (!ast_enum_field_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected an identifier");
+    LOG_ERROR("Expected Identifier, got %s", (*tokens)->name);
     exit(1);
   }
 
   struct IdentifierNode* identifier = ast_parse_identifier(tokens);
   struct IntegerExpressionNode* integer_expression = NULL;
-  if (token_is_binding_arrow) {
+  if (token_is_binding_arrow(**tokens)) {
     _ADVANCE_TOKEN(tokens);
-    integer_expression = ast_parse_integer_expression;
+    integer_expression = ast_parse_integer_expression(tokens);
   }
   return ast_new_enum_field_node(identifier, integer_expression);
 }
@@ -1160,7 +1160,7 @@ struct EnumTypeDeclarationNode* ast_parse_enum_type_declaration(
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
-  struct EnumFieldListNode* fields = ast_parse_field_list(tokens);
+  struct EnumFieldListNode* fields = ast_parse_enum_field_list(tokens);
   if (!token_is_end(**tokens)) {
     LOG_ERROR("Expected 'end' got '%s'", (*tokens)->name);
     exit(1);
@@ -1210,6 +1210,7 @@ struct EnumTypeExpressionNode* ast_parse_enum_type_expression(struct Token** tok
     LOG_ERROR("Expected '.' got '%s'", (*tokens)->name);
     exit(1);
   }
+  _ADVANCE_TOKEN(tokens);
   struct IdentifierNode* value = ast_parse_identifier(tokens);
   return ast_new_enum_type_expression_node(type, value);
 }
