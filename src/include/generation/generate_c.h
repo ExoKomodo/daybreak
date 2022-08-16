@@ -13,7 +13,6 @@ int generate_c_from_binding_statement(FILE*, const struct BindingStatementNode*)
 int generate_c_from_call_expression(FILE*, const struct CallExpressionNode*);
 int generate_c_from_do_statement(FILE*, const struct DoStatementNode*);
 int generate_c_from_double_expression(FILE*, const struct DoubleExpressionNode*);
-int generate_c_from_(FILE*, const struct ExpressionNode*);
 int generate_c_from_enum_declaration(FILE*, const struct EnumTypeDeclarationNode*);
 int generate_c_from_enum_field(FILE*, const struct EnumFieldNode*);
 int generate_c_from_enum_field_list(FILE*, const struct EnumFieldListNode*);
