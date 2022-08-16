@@ -1142,25 +1142,6 @@ int generate_c_from_type_expression(FILE* output_file, const struct TypeExpressi
 			return 2;
 		} break;
 	}
-
-	// fputc('(', output_file);
-	// int error = generate_c_from_type_identifier(output_file, type_expression->type);
-	// fputc(')', output_file);
-	// if (error != 0) {
-	// 	return error;
-	// }
-	
-	// fputc('{', output_file);
-	// error = generate_c_from_field_binding_list(
-	// 	output_file,
-	// 	type_expression->field_bindings
-	// );
-	// if (error != 0) {
-	// 	return error;
-	// }
-	// fputc('}', output_file);
-
-	// return 0;	
 }
 
 int generate_c_from_type_identifier(FILE* output_file, const struct TypeIdentifierNode* type_identifier) {
