@@ -4,7 +4,7 @@
 #include <log/colors.h>
 
 #ifndef DEBUG
-  #define DEBUG true
+  #define DEBUG false
 #endif
 
 #if DEBUG

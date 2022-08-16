@@ -17,7 +17,7 @@
 
 #define BUFFER_SIZE 1024
 
-#define ENUM_OUTPUT "Option: 100 Red: 0 Green: 0 Blue: 0"
+#define ENUM_OUTPUT "Option: 100 Red: 0 Green: 1 Blue: 2"
 
 bool test_enum();
 

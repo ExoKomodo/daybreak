@@ -231,7 +231,7 @@ int generate_c_from_enum_field(FILE* output_file, const struct EnumFieldNode* fi
 			return error;
 		}
 	}
-	fputs(";\n", output_file);
+	fputs(",\n", output_file);
 	return 0;
 }
 

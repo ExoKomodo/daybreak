@@ -1036,7 +1036,7 @@ struct EnumFieldListNode* ast_new_enum_field_list_node(struct EnumFieldNode** fi
 
 void ast_free_enum_field_list_node(struct EnumFieldListNode* node) {
   for (size_t i = 0; i < node->length; i++) {
-    ast_free_field_node(node->fields[i]);
+    ast_free_enum_field_node(node->fields[i]);
   }
   free(node->fields);
   node->fields = NULL;
@@ -1618,7 +1618,7 @@ void ast_free_function_declaration_node(struct FunctionDeclarationNode* node) {
   node->return_type = NULL;
   ast_free_parameter_list_node(node->parameters);
   node->parameters = NULL;
-  ast_free_do_statement_node  (node->body);
+  ast_free_do_statement_node(node->body);
   node->body = NULL;
 
   free(node);
