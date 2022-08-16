@@ -2,6 +2,7 @@ import "std/compiler/api.day"
 
 importc "test_bindings.h"
 importc "test_double.h"
+importc "test_enum.h"
 importc "test_foobar.h"
 importc "test_hello_world.h"
 importc "test_integer.h"
@@ -19,28 +20,30 @@ fun main () int do
 	match
 		(not (test_double)) =>
 			1
-		(not (test_foobar)) =>
+		(not (test_enum)) =>
 			2
-		(not (test_hello_world)) =>
+		(not (test_foobar)) =>
 			3
-		(not (test_integer)) =>
+		(not (test_hello_world)) =>
 			4
-		(not (test_match)) =>
+		(not (test_integer)) =>
 			5
-		(not (test_modules)) =>
+		(not (test_match)) =>
 			6
-		(not (test_multiple_imports)) =>
+		(not (test_modules)) =>
 			7
-		(not (test_pointers)) =>
+		(not (test_multiple_imports)) =>
 			8
-		(not (test_return)) =>
+		(not (test_pointers)) =>
 			9
-		(not (test_shebang)) =>
+		(not (test_return)) =>
 			10
-		(not (test_types)) =>
+		(not (test_shebang)) =>
 			11
-		(not (test_bindings)) =>
+		(not (test_types)) =>
 			12
+		(not (test_bindings)) =>
+			13
 		(default) => do
 			(LOG_INFO "Successfully passed all tests!")
 			0

@@ -32,7 +32,7 @@ bash ./compose_scripts/build.sh ./euler/euler.day -o ${DAYBREAK_EULER}
 if [[ ${CC_COMPILER} == *"wasi"* ]]; then
 	${HOME}/.wasmtime/bin/wasmtime ${DAYBREAK_EULER}
 else
-        ${WRAPPER} ${DAYBREAK_EULER}
+	${WRAPPER} ${DAYBREAK_EULER}
 fi
 
 # Directly compile test programs using the compiler executable

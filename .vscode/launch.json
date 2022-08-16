@@ -63,6 +63,35 @@
       "preLaunchTask": "build [daybreak]",
     },
     {
+      "name": "Enum",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/enum/enum.day"
+      ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
+      "cwd": "${workspaceFolder}",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "MIMode": "lldb",
+      },
+      "preLaunchTask": "build [daybreak]",
+    },
+    {
       "name": "Euler",
       "type": "cppdbg",
       "request": "launch",

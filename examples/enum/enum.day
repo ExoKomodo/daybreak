@@ -1,0 +1,24 @@
+type Option enum is
+  None <- 0
+  Some <- 100
+end
+
+type Color enum is
+  Red
+	Green
+	Blue
+end
+
+fun main () int do
+  let opt: Option <- #Option.Some
+  let red: Color <- #Color.Red
+  let green: Color <- #Color.Green
+  let blue: Color <- #Color.Blue
+  (printf
+    "Option: %d Red: %d Green: %d Blue: %d\n"
+    opt
+    red
+    green
+    blue )
+  0
+end

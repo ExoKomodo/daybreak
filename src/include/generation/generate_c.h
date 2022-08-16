@@ -13,6 +13,10 @@ int generate_c_from_binding_statement(FILE*, const struct BindingStatementNode*)
 int generate_c_from_call_expression(FILE*, const struct CallExpressionNode*);
 int generate_c_from_do_statement(FILE*, const struct DoStatementNode*);
 int generate_c_from_double_expression(FILE*, const struct DoubleExpressionNode*);
+int generate_c_from_enum_declaration(FILE*, const struct EnumTypeDeclarationNode*);
+int generate_c_from_enum_field(FILE*, const struct EnumFieldNode*);
+int generate_c_from_enum_field_list(FILE*, const struct EnumFieldListNode*);
+int generate_c_from_enum_type_expression(FILE*, const struct EnumTypeExpressionNode*);
 int generate_c_from_expression(FILE*, const struct ExpressionNode*);
 int generate_c_from_expression_list(FILE*, const struct ExpressionListNode*);
 int generate_c_from_field(FILE*, const struct FieldNode*);
@@ -41,9 +45,12 @@ int generate_c_from_shebang(FILE*, const struct ShebangNode*);
 int generate_c_from_statement(FILE*, const struct StatementNode*, const bool);
 int generate_c_from_statement_list(FILE*, const struct StatementListNode*);
 int generate_c_from_string_expression(FILE*, const struct StringExpressionNode*);
+int generate_c_from_struct_type_declaration(FILE*, const struct StructTypeDeclarationNode*);
+int generate_c_from_structured_type_expression(FILE*, const struct StructuredTypeExpressionNode*);
 int generate_c_from_type_declaration(FILE*, const struct TypeDeclarationNode*);
 int generate_c_from_type_expression(FILE*, const struct TypeExpressionNode*);
 int generate_c_from_type_identifier(FILE*, const struct TypeIdentifierNode*);
+int generate_c_from_union_type_declaration(FILE*, const struct UnionTypeDeclarationNode*);
 int generate_c_include_prelude(FILE*);
 int generate_c_macros(FILE*);
 int _generate_c_variable_declaration(FILE*, const struct TypeIdentifierNode*, const struct IdentifierNode*, const struct ExpressionNode*);
@@ -185,6 +192,86 @@ int generate_c_from_double_expression(FILE* output_file, const struct DoubleExpr
 	return 0;
 }
 
+int generate_c_from_enum_declaration(FILE* output_file, const struct EnumTypeDeclarationNode* declaration) {
+	if (!declaration) {
+		LOG_ERROR("Failed to generate C code from EnumTypeDeclarationNode. NULL EnumTypeDeclarationNode.");
+		return 1;
+	}
+
+	fputs("typedef enum {\n", output_file);
+	int error = generate_c_from_enum_field_list(output_file, declaration->fields);
+	if (error != 0) {
+		return error;
+	}
+	fputs("} ", output_file);
+	error = generate_c_from_identifier(output_file, declaration->identifier);
+	if (error != 0) {
+		return error;
+	}
+	fputs(";\n", output_file);
+
+	return 0;	
+}
+
+int generate_c_from_enum_field(FILE* output_file, const struct EnumFieldNode* field) {
+	if (!field) {
+		LOG_ERROR("Failed to generate C code from EnumFieldNode. NULL EnumFieldNode.");
+		return 1;
+	}
+
+	int error = generate_c_from_identifier(output_file, field->identifier);
+	if (error != 0) {
+		return error;
+	}
+	if (field->integer_expression) {
+		fputc('=', output_file);
+		error = generate_c_from_integer_expression(output_file, field->integer_expression);
+		if (error != 0) {
+			return error;
+		}
+	}
+	fputs(",\n", output_file);
+	return 0;
+}
+
+int generate_c_from_enum_field_list(FILE* output_file, const struct EnumFieldListNode* field_list) {
+	if (!field_list) {
+		LOG_ERROR("Failed to generate C code from EnumFieldListNode. NULL EnumFieldListNode.");
+		return 1;
+	}
+
+	struct EnumFieldNode** fields = field_list->fields;
+	for (size_t i = 0; i < field_list->length; i++) {
+		const int error = generate_c_from_enum_field(output_file, fields[i]);
+		if (error != 0) {
+			return error;
+		}
+	}
+	return 0;
+}
+
+int generate_c_from_enum_type_expression(FILE* output_file, const struct EnumTypeExpressionNode* expression) {
+	if (!expression) {
+		LOG_ERROR("Failed to generate C code from EnumTypeExpressionNode. NULL EnumTypeExpressionNode.");
+		return 1;
+	}
+
+	fputs("((", output_file);
+	int error = generate_c_from_type_identifier(output_file, expression->type);
+	fputc(')', output_file);
+	if (error != 0) {
+		return error;
+	}
+
+	error = generate_c_from_identifier(output_file, expression->value);
+	if (error != 0) {
+		return error;
+	}
+	fputc(')', output_file);
+
+	return 0;	
+}
+
 int generate_c_from_expression(FILE* output_file, const struct ExpressionNode* expression) {
 	if (!expression) {
 		LOG_ERROR("Failed to generate C code from ExpressionNode. NULL ExpressionNode.");
@@ -267,7 +354,7 @@ int generate_c_from_field_binding(FILE* output_file, const struct FieldBindingNo
 		return 1;
 	}
 	fputc('.', output_file);
-	int error = generate_c_from_identifier(output_file, field_binding->field_identifier);
+	int error = generate_c_from_identifier(output_file, field_binding->identifier);
 	if (error != 0) {
 		return error;
 	}
@@ -961,24 +1048,19 @@ int generate_c_from_string_expression(FILE* output_file, const struct StringExpr
 	return 0;
 }
 
-int generate_c_from_type_declaration(FILE* output_file, const struct TypeDeclarationNode* type_declaration) {
-	if (!type_declaration) {
-		LOG_ERROR("Failed to generate C code from TypeDeclarationNode. NULL TypeDeclarationNode.");
+int generate_c_from_struct_type_declaration(FILE* output_file, const struct StructTypeDeclarationNode* struct_type_declaration) {
+	if (!struct_type_declaration) {
+		LOG_ERROR("Failed to generate C code from StructTypeDeclarationNode. NULL StructTypeDeclarationNode.");
 		return 1;
 	}
 
-	fputs("typedef ", output_file);
-	int error = generate_c_from_identifier(output_file, type_declaration->type_kind);
-	if (error != 0) {
-		return error;
-	}
-	fputs(" {\n", output_file);
-	error = generate_c_from_field_list(output_file, type_declaration->fields);
+	fputs("typedef struct {\n", output_file);
+	int error = generate_c_from_field_list(output_file, struct_type_declaration->fields);
 	if (error != 0) {
 		return error;
 	}
 	fputs("} ", output_file);
-	error = generate_c_from_identifier(output_file, type_declaration->identifier);
+	error = generate_c_from_identifier(output_file, struct_type_declaration->identifier);
 	if (error != 0) {
 		return error;
 	}
@@ -987,14 +1069,14 @@ int generate_c_from_type_declaration(FILE* output_file, const struct TypeDeclara
 	return 0;	
 }
 
-int generate_c_from_type_expression(FILE* output_file, const struct TypeExpressionNode* type_expression) {
-	if (!type_expression) {
-		LOG_ERROR("Failed to generate C code from TypeExpressionNode. NULL TypeExpressionNode.");
+int generate_c_from_structured_type_expression(FILE* output_file, const struct StructuredTypeExpressionNode* expression) {
+	if (!expression) {
+		LOG_ERROR("Failed to generate C code from StructuredTypeExpressionNode. NULL StructuredTypeExpressionNode.");
 		return 1;
 	}
 
 	fputc('(', output_file);
-	int error = generate_c_from_type_identifier(output_file, type_expression->type);
+	int error = generate_c_from_type_identifier(output_file, expression->type);
 	fputc(')', output_file);
 	if (error != 0) {
 		return error;
@@ -1003,7 +1085,7 @@ int generate_c_from_type_expression(FILE* output_file, const struct TypeExpressi
 	fputc('{', output_file);
 	error = generate_c_from_field_binding_list(
 		output_file,
-		type_expression->field_bindings
+		expression->field_bindings
 	);
 	if (error != 0) {
 		return error;
@@ -1011,6 +1093,55 @@ int generate_c_from_type_expression(FILE* output_file, const struct TypeExpressi
 	fputc('}', output_file);
 
 	return 0;	
+}
+
+int generate_c_from_type_declaration(FILE* output_file, const struct TypeDeclarationNode* type_declaration) {
+	if (!type_declaration) {
+		LOG_ERROR("Failed to generate C code from TypeDeclarationNode. NULL TypeDeclarationNode.");
+		return 1;
+	}
+
+	switch (type_declaration->kind) {
+		case AstEnumTypeDeclaration: {
+			return generate_c_from_enum_declaration(output_file, type_declaration->value.enum_type_declaration);
+		} break;
+		case AstStructTypeDeclaration: {
+			return generate_c_from_struct_type_declaration(output_file, type_declaration->value.struct_type_declaration);
+		} break;
+		case AstUnionTypeDeclaration: {
+			return generate_c_from_union_type_declaration(output_file, type_declaration->value.union_type_declaration);
+		} break;
+		default: {
+			LOG_ERROR(
+				"Failed to generate C code from TypeDeclarationNode. Unknown TypeDeclarationNode kind %d.",
+				type_declaration->kind
+			);
+			return 2;
+		} break;
+	}
+}
+
+int generate_c_from_type_expression(FILE* output_file, const struct TypeExpressionNode* type_expression) {
+	if (!type_expression) {
+		LOG_ERROR("Failed to generate C code from TypeExpressionNode. NULL TypeExpressionNode.");
+		return 1;
+	}
+
+	switch (type_expression->kind) {
+		case AstEnumTypeExpression: {
+			return generate_c_from_enum_type_expression(output_file, type_expression->value.enum_type_expression);
+		} break;
+		case AstStructuredTypeExpression: {
+			return generate_c_from_structured_type_expression(output_file, type_expression->value.structured_type_expression);
+		} break;
+		default: {
+			LOG_ERROR(
+				"Failed to generate C code from TypeExpressionNode. Unknown TypeExpressionNode kind %d.",
+				type_expression->kind
+			);
+			return 2;
+		} break;
+	}
 }
 
 int generate_c_from_type_identifier(FILE* output_file, const struct TypeIdentifierNode* type_identifier) {
@@ -1042,6 +1173,27 @@ int generate_c_from_type_identifier(FILE* output_file, const struct TypeIdentifi
 		return error;
 	}
 	return 0;
+}
+
+int generate_c_from_union_type_declaration(FILE* output_file, const struct UnionTypeDeclarationNode* union_type_declaration) {
+	if (!union_type_declaration) {
+		LOG_ERROR("Failed to generate C code from UnionTypeDeclarationNode. NULL UnionTypeDeclarationNode.");
+		return 1;
+	}
+
+	fputs("typedef union {\n", output_file);
+	int error = generate_c_from_field_list(output_file, union_type_declaration->fields);
+	if (error != 0) {
+		return error;
+	}
+	fputs("} ", output_file);
+	error = generate_c_from_identifier(output_file, union_type_declaration->identifier);
+	if (error != 0) {
+		return error;
+	}
+	fputs(";\n", output_file);
+
+	return 0;	
 }
 
 int generate_c_macros(FILE* output_file) {
