@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <helpers/system.h>
+#include <std/compiler/system/helpers.h>
 
 #if defined(_WIN32) || defined(_WIN64)
   #define MULTIPLE_IMPORTS "examples\\multiple_imports\\multiple_imports.day"
@@ -35,7 +35,7 @@ bool test_multiple_imports() {
   }
 
   FILE* output_file = fopen(MULTIPLE_IMPORTS_OUTPUT_FILE, "w+");
-  error = run_command(MULTIPLE_IMPORTS_EXECUTABLE, output_file);
+  error = system_run_command(MULTIPLE_IMPORTS_EXECUTABLE, output_file);
   fclose(output_file);
 
   output_file = fopen(MULTIPLE_IMPORTS_OUTPUT_FILE, "r");

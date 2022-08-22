@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <stdbool.h>
 
-#include <helpers/system.h>
+#include <std/compiler/system/helpers.h>
 #include <lex/prelude.h>
 #include <parser/prelude.h>
 #include <macros/helpers.h>
@@ -66,7 +66,7 @@ bool _should_inline(const struct FunctionDeclarationNode*);
 
 #define IMPORTED_FILE_MAX 1024
 
-char imported_file_paths[IMPORTED_FILE_MAX][MAX_PATH] = {{'\0'}};
+char imported_file_paths[IMPORTED_FILE_MAX][SYSTEM_MAX_PATH] = {{'\0'}};
 int imported_file_count = 0;
 
 int generate_c_code(
@@ -1354,9 +1354,9 @@ int _generate_c_variable_declaration(
 }
 
 bool _is_file_imported(const char* source_file_path) {
-        char* standard_library_directory = get_standard_library_directory();
-	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(PACKAGE_DIRECTORY) + 2));
-	sprintf(package_directory, "%s" PACKAGE_DIRECTORY, standard_library_directory);
+        char* standard_library_directory = system_get_standard_library_directory();
+	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(SYSTEM_PACKAGE_DIRECTORY) + 2));
+	sprintf(package_directory, "%s" SYSTEM_PACKAGE_DIRECTORY, standard_library_directory);
 	free(standard_library_directory);
         standard_library_directory = NULL;
         char* full_package_path = malloc(strlen(package_directory) + strlen(source_file_path) + 2);

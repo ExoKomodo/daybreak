@@ -4,7 +4,7 @@ importc "stdio.h"
 importc "string.h"
 
 importc "generation/prelude.h"
-importc "helpers/system.h"
+importc "std/compiler/system/helpers.h"
 importc "lex/prelude.h"
 importc "macros/helpers.h"
 
@@ -73,7 +73,7 @@ fun _daybreak_compile_program (output_c_file_path: cstring args: DaybreakArgs) i
 			(compile_c_code output_c_file_path output_file_path)
 		end
 		(default) => do
-			mut output_file_path: cstring <- (get_default_output_file)
+			mut output_file_path: cstring <- (system_get_default_output_file)
 			(LOG_INFO "Output file: %s" output_file_path)
 			let result: int <- (compile_c_code output_c_file_path output_file_path)
 			(delete output_file_path)
@@ -83,21 +83,21 @@ fun _daybreak_compile_program (output_c_file_path: cstring args: DaybreakArgs) i
 end
 
 fun _daybreak_emit_program (args: DaybreakArgs program: ptr<ProgramNode>) DaybreakEmissionResult do
-	mut standard_library_directory: cstring <- (get_standard_library_directory)
+	mut standard_library_directory: cstring <- (system_get_standard_library_directory)
 	let output_c_file_length: size_t <- (add
 		1
 		(add
 			(strlen standard_library_directory)
 			(add
-				(strlen OUTPUT_DIRECTORY)
-				(strlen DEFAULT_SOURCE_OUTPUT))))
+				(strlen SYSTEM_OUTPUT_DIRECTORY)
+				(strlen SYSTEM_DEFAULT_SOURCE_OUTPUT))))
 	mut output_c_file_path: cstring <- (malloc
 		(mul
 			(sizeof char)
 			output_c_file_length))
 	(sprintf
 		output_c_file_path
-		(interpolate_cstring "%s" (interpolate_cstring OUTPUT_DIRECTORY DEFAULT_SOURCE_OUTPUT))
+		(interpolate_cstring "%s" (interpolate_cstring SYSTEM_OUTPUT_DIRECTORY SYSTEM_DEFAULT_SOURCE_OUTPUT))
 		standard_library_directory)
 	(delete standard_library_directory)
 
@@ -213,12 +213,12 @@ end
 fun _daybreak_run_program (args: DaybreakArgs) DaybreakRunResult do
 	match
 		(truthy args.output_file_path) => {DaybreakRunResult
-			error <- (run_command args.output_file_path stdout)
+			error <- (system_run_command args.output_file_path stdout)
 		}
 		(default) => do
-			let output_file_path: cstring <- (get_default_output_file)
+			let output_file_path: cstring <- (system_get_default_output_file)
 			let result: DaybreakRunResult <- {DaybreakRunResult
-				error <- (run_command output_file_path stdout)
+				error <- (system_run_command output_file_path stdout)
 			}
 			(delete output_file_path)
 			result
@@ -227,7 +227,7 @@ fun _daybreak_run_program (args: DaybreakArgs) DaybreakRunResult do
 end
 
 fun _daybreak_tokenify_file (args: DaybreakArgs) DaybreakTokenifyResult do
-	let directory_setup_error: int <- (setup_language_directories)
+	let directory_setup_error: int <- (system_setup_language_directories)
 	match
 		(truthy directory_setup_error) => {DaybreakTokenifyResult
 			error <- directory_setup_error

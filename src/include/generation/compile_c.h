@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <helpers/system.h>
+#include <std/compiler/system/helpers.h>
 #include <macros/helpers.h>
 
 #define CC_ARGS "" \
@@ -35,7 +35,7 @@ int compile_c_code(
 
   LOG_DEBUG("Running compiler command: %s", command);
 
-  const int error = run_command(command, stdout);
+  const int error = system_run_command(command, stdout);
   free(command);
   command = NULL;
   if (error != 0) {

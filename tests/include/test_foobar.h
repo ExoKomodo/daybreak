@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <helpers/system.h>
+#include <std/compiler/system/helpers.h>
 
 #if defined(_WIN32) || defined(_WIN64)
   #define FOOBAR "examples\\foobar\\foobar.day"
@@ -33,7 +33,7 @@ bool test_foobar() {
   }
 
   FILE* output_file = fopen(FOOBAR_OUTPUT_FILE, "w+");
-  error = run_command(FOOBAR_EXECUTABLE, output_file);
+  error = system_run_command(FOOBAR_EXECUTABLE, output_file);
   fclose(output_file);
 
   output_file = fopen(FOOBAR_OUTPUT_FILE, "r");

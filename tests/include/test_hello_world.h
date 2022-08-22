@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <helpers/system.h>
+#include <std/compiler/system/helpers.h>
 
 #if defined(_WIN32) || defined(_WIN64)
   #define HELLO_WORLD "examples\\hello\\hello.day"
@@ -35,7 +35,7 @@ bool test_hello_world() {
   }
 
   FILE* output_file = fopen(HELLO_WORLD_OUTPUT_FILE, "w+");
-  error = run_command(HELLO_WORLD_EXECUTABLE, output_file);
+  error = system_run_command(HELLO_WORLD_EXECUTABLE, output_file);
   fclose(output_file);
 
   output_file = fopen(HELLO_WORLD_OUTPUT_FILE, "r");
