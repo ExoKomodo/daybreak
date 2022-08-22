@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 #include <lex/token.h>
-#include <log/prelude.h>
 #include <macros/helpers.h>
 
 #define _CHECK_TOKENS() do { \

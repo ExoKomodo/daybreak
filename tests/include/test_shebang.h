@@ -3,7 +3,6 @@
 #include <stdio.h>
 
 #include <helpers/system.h>
-#include <log/prelude.h>
 
 #if defined(_WIN32) || defined(_WIN64)
   #define SHEBANG "examples\\shebang\\shebang.day"

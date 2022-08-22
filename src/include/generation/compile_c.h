@@ -5,7 +5,6 @@
 #include <string.h>
 
 #include <helpers/system.h>
-#include <log/prelude.h>
 #include <macros/helpers.h>
 
 #define CC_ARGS "" \

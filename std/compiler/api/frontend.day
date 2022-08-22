@@ -1,3 +1,5 @@
+import "std/log/prelude.day"
+
 importc "stdio.h"
 importc "string.h"
 

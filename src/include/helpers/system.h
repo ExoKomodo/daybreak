@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#include <log/prelude.h>
-
 #define COMMAND_BUFFER_SIZE 1024
 #ifndef MAX_PATH
   #define MAX_PATH 260

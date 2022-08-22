@@ -1,4 +1,5 @@
 import "std/compiler/api.day"
+import "std/log/prelude.day"
 
 fun main (argc: int argv: ptr<ccstring>) int do
 	(daybreak_greeting)
