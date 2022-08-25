@@ -1,3 +1,4 @@
+import "std/compiler/system.day"
 import "std/log/prelude.day"
 
 importc "stdio.h"
