@@ -17,7 +17,7 @@ function _choose_compiler_backend() {
 	echo "Checking for compiler backend ${CC_COMPILER}"
 	if ! command -v ${CC_COMPILER} &> /dev/null; then
 		echo "Missing compiler backend ${CC_COMPILER}"
-		set_compiler $@
+		_choose_compiler_backend $@
 	fi
 }
 
@@ -50,11 +50,19 @@ function print_export_env() {
 	echo "The first two commands persist the configuration chosen by this install script"
 	echo "The third command adds daybreak tools to your PATH for every login session and not just the current login session"
 	echo ""
+	echo "echo '############' >> ${RC_FILE}"
+	echo "echo '# Daybreak #' >> ${RC_FILE}"
+	echo "echo '############' >> ${RC_FILE}"
+	echo "echo '' >> ${RC_FILE}"
 	echo "echo 'export CC_COMPILER=${CC_COMPILER}' >> ${RC_FILE}"
 	echo "echo 'export DAYBREAK_HOME=${DAYBREAK_HOME}' >> ${RC_FILE}"
 	echo 'echo '"'"'export PATH=${DAYBREAK_HOME}/bin:${PATH}'"'"''" >> ${RC_FILE}"
+	echo "# If you want to develop for Daybreak, run the following line as well"
+	echo "echo 'export C_INCLUDE_PATH=${DAYBREAK_SOURCE_FOLDER}/include' >> ${RC_FILE}"
+	echo "# Run the next command to activate daybreak tools for the current terminal session"
+	echo "source ${RC_FILE}"
 	echo ""
-	echo "Daybreak should now be fully configured and available!"
+	echo "Daybreak should now be fully configured and tools available on your path!"
 }
 
 function set_default_env() {
