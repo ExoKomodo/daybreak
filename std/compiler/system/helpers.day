@@ -1,9 +1,10 @@
+import "std/log/prelude.day"
 importc "std/compiler/system/helpers.h"
 importc "string.h"
 
 fun system_get_default_output_file() cstring do
 	let standard_library_directory: cstring <- (system_get_standard_library_directory)
-	let output_file_path: cstring <-
+	mut output_file_path: cstring <-
 		(malloc
 			(mul
 				(sizeof char)
@@ -14,16 +15,18 @@ fun system_get_default_output_file() cstring do
 						(add
 							(strlen SYSTEM_DEFAULT_EXECUTABLE)
 							1)))))
-							
-end
+	(sprintf
+		output_file_path
+		(interpolate_cstring
+			"%s"
+			(interpolate_cstring
+				SYSTEM_OUTPUT_DIRECTORY
+				SYSTEM_DEFAULT_EXECUTABLE))
+		standard_library_directory)
+	(delete standard_library_directory)
 
-char* system_get_default_output_file() {
-  char* standard_library_directory = system_get_standard_library_directory();
-  char* output_file_path = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(SYSTEM_OUTPUT_DIRECTORY) + strlen(SYSTEM_DEFAULT_EXECUTABLE) + 1));
-  sprintf(output_file_path, "%s" SYSTEM_OUTPUT_DIRECTORY SYSTEM_DEFAULT_EXECUTABLE, standard_library_directory);
-  free(standard_library_directory);
-  return output_file_path;
-}
+	output_file_path
+end
 
 fun system_get_standard_library_directory () cstring do
 	let daybreak_home_env: cstring <- (getenv "DAYBREAK_HOME")
@@ -59,33 +62,47 @@ fun system_get_standard_library_directory () cstring do
 	end
 end
 
-int system_setup_language_directories() {
-  char* standard_library_directory = system_get_standard_library_directory();
-  
-  int error = _system_make_dir(standard_library_directory);
-  if (error != 0) {
-    free(standard_library_directory);
-    return errno;
-  }
+fun system_setup_language_directories () int do
+	mut standard_library_directory: cstring <- (system_get_standard_library_directory)
 
-  error = _system_make_subdir(standard_library_directory, "bin");
-  if (error != 0) {
-    free(standard_library_directory);
-    return error;
-  }
+	let make_dir_error: int <- (_system_make_dir standard_library_directory)
+	match
+		(truthy make_dir_error) => do
+			(delete standard_library_directory)
+			make_dir_error
+		end
+	end
 
-  error = _system_make_subdir(standard_library_directory, "packages");
-  if (error != 0) {
-    free(standard_library_directory);
-    return error;
-  }
+	let make_bin_subdir_error: int <- (_system_make_subdir
+		standard_library_directory
+		"bin")
+	match
+		(truthy make_bin_subdir_error) => do
+			(delete standard_library_directory)
+			make_bin_subdir_error
+		end
+	end
 
-  error = _system_make_subdir(standard_library_directory, "out");
-  if (error != 0) {
-    free(standard_library_directory);
-    return error;
-  }
+	let make_packages_subdir_error: int <- (_system_make_subdir
+		standard_library_directory
+		"packages")
+	match
+		(truthy make_packages_subdir_error) => do
+			(delete standard_library_directory)
+			make_packages_subdir_error
+		end
+	end
 
-  free(standard_library_directory);
-  return 0;
-}
+	let make_out_subdir_error: int <- (_system_make_subdir
+		standard_library_directory
+		"out")
+	match
+		(truthy make_out_subdir_error) => do
+			(delete standard_library_directory)
+			make_out_subdir_error
+		end
+	end
+	(delete standard_library_directory)
+
+	0
+end

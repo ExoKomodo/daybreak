@@ -74,7 +74,7 @@ fun _daybreak_compile_program (output_c_file_path: cstring args: DaybreakArgs) i
 			(compile_c_code output_c_file_path output_file_path)
 		end
 		(default) => do
-			mut output_file_path: cstring <- (system_get_default_output_file)
+			let output_file_path: cstring <- (system_get_default_output_file)
 			(LOG_INFO "Output file: %s" output_file_path)
 			let result: int <- (compile_c_code output_c_file_path output_file_path)
 			(delete output_file_path)
