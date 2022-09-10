@@ -1,11 +1,10 @@
 import "std/compiler/system.day"
+import "std/compiler/generation/prelude.day"
 import "std/log/prelude.day"
 
 importc "stdio.h"
 importc "string.h"
 
-importc "generation/prelude.h"
-importc "std/compiler/system/helpers.h"
 importc "lex/prelude.h"
 importc "macros/helpers.h"
 
