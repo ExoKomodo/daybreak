@@ -52,7 +52,7 @@ int generate_c_from_type_expression(FILE*, const struct TypeExpressionNode*);
 int generate_c_from_type_identifier(FILE*, const struct TypeIdentifierNode*);
 int generate_c_from_union_type_declaration(FILE*, const struct UnionTypeDeclarationNode*);
 int generate_c_include_prelude(FILE*);
-int generate_c_macros(FILE*);
+// int generate_c_macros(FILE*);
 int _generate_c_variable_declaration(FILE*, const struct TypeIdentifierNode*, const struct IdentifierNode*, const struct ExpressionNode*);
 int _generate_c_function_definition(FILE*, const struct FunctionDeclarationNode*);
 int _generate_c_function_declaration(FILE*, const struct FunctionDeclarationNode*);
