@@ -1,0 +1,4 @@
+fun ast_new_node (kind: AstNodeKind value: AstNodeUnion) ptr<AstNode> do
+	mut node: ptr<AstNode> <- (malloc
+		(mul (sizeof AstNode)))
+end
