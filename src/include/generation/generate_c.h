@@ -164,7 +164,6 @@ int generate_c_from_do_statement(
 	FILE* output_file,
 	const struct DoStatementNode* do_statement
 ) {
-	LOG_WARNING("here 2");
 	if (!do_statement) {
 		LOG_ERROR("Failed to generate C do statement from DoStatementNode. NULL DoStatementNode.");
 		return 1;
@@ -278,7 +277,6 @@ int generate_c_from_expression(FILE* output_file, const struct ExpressionNode* e
 		LOG_ERROR("Failed to generate C code from ExpressionNode. NULL ExpressionNode.");
 		return 1;
 	}
-	LOG_WARNING("here 9: %d", expression->kind);
 
 	switch (expression->kind) {
 		case AstCallExpression: {
@@ -462,7 +460,6 @@ int _generate_c_function_definition(
 	FILE* output_file,
 	const struct FunctionDeclarationNode* function_declaration
 ) {
-	LOG_WARNING("here 1");
 	if (!function_declaration) {
 		LOG_ERROR("Failed to generate C function definition from FunctionDeclarationNode. NULL FunctionDeclarationNode.");
 		return 1;
@@ -535,12 +532,10 @@ int generate_c_from_identifier_expression(FILE* output_file, const struct Identi
 		LOG_ERROR("Failed to generate C code from IdentifierExpressionNode. NULL IdentifierExpressionNode.");
 		return 1;
 	}
-	LOG_WARNING("here 10: %s", identifier_expression->identifier->name);
 	int error = generate_c_from_identifier(output_file, identifier_expression->identifier);
 	if (error != 0) {
 		return error;
 	}
-	LOG_WARNING("here 11: %p", identifier_expression->next);
 	if (identifier_expression->next) {
 		fputc('.', output_file);
 		error = generate_c_from_identifier_expression(output_file, identifier_expression->next);
@@ -548,7 +543,6 @@ int generate_c_from_identifier_expression(FILE* output_file, const struct Identi
 			return error;
 		}
 	}
-	LOG_WARNING("here 12");
 
 	return 0;
 }
@@ -840,7 +834,6 @@ int generate_c_from_mut_binding(
 	FILE* output_file,
 	const struct MutBindingNode* mut_binding
 ) {
-	LOG_WARNING("here 3");
 	if (!mut_binding) {
 		LOG_ERROR("Failed to generate C code from MutBindingNode. NULL MutBindingNode.");
 		return 1;
@@ -1316,9 +1309,7 @@ int _generate_c_variable_declaration(
 		current_type = current_type->contained_type;
 	}
 	fputc('=', output_file);
-	LOG_WARNING("here 8");
 	error = generate_c_from_expression(output_file, expression);
-	LOG_WARNING("here 13");
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C variable declaration. Failed to generate expression.");
 		return error;
