@@ -842,9 +842,9 @@ int generate_c_from_mut_binding(
 	const struct MutExpressionNode* mut_expression = mut_binding->mut_expression;
 	switch (mut_expression->kind) {
 		case AstNewAlloc: {
-			const struct NewAllocNode* new_alloc = mut_binding->mut_expression->value.new_alloc;
+			const struct NewAllocNode* new_alloc = mut_expression->value.new_alloc;
 			const char* type_name_temp = new_alloc->structured_type_expression->type->identifier->name;
-			char* type_name = malloc(sizeof(char) * (strlen(type_name_temp) + 1));
+			char* type_name = malloc(sizeof(char) * ((strlen(type_name_temp) + 1)));
 			strcpy(type_name, type_name_temp);
 
 			struct ExpressionNode** sizeof_call_expressions = malloc(sizeof(struct ExpressionNode) * 2);
