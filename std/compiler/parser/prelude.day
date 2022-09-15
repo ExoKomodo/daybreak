@@ -1,4 +1,3 @@
 import "std/compiler/parser/ast.day"
-import "std/compiler/parser/types.day"
 
-importc "compiler/parser/prelude.h"
+importc "parser/prelude.h"

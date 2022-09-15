@@ -1,1 +1,1 @@
-import "compiler/parser/ast/ast_node.day"
+import "std/compiler/parser/ast/ast_node.day"

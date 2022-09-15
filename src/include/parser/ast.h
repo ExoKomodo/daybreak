@@ -231,10 +231,10 @@ union TypeExpressionNodeUnion {
 /* Type Definitions */
 /********************/
 
-struct AstNode {
+typedef struct AstNode {
   AstNodeKind kind;
   union AstNodeUnion value;
-};
+} AstNode;
 
 struct BindingStatementNode {
   AstNodeKind kind;
@@ -490,7 +490,6 @@ struct UnionTypeDeclarationNode {
 /* Function Declarations */
 /*************************/
 
-struct AstNode* ast_new_node(AstNodeKind, union AstNodeUnion);
 void ast_free_node(struct AstNode*);
 
 struct BindingStatementNode* ast_new_binding_statement_node(AstNodeKind, union BindingStatementNodeUnion);
@@ -724,16 +723,6 @@ bool ast_union_type_declaration_token_matches_first_set(struct Token);
 /***********/
 /* AstNode */
 /***********/
-struct AstNode* ast_new_node(
-  AstNodeKind kind,
-  union AstNodeUnion value
-) {
-  struct AstNode* node = malloc(sizeof(struct AstNode));
-  node->kind = kind;
-  node->value = value;
-  return node;
-}
-
 void ast_free_node(struct AstNode* node) {
   switch (node->kind) {
     case AstBindingStatement: {

@@ -1,2 +1,1 @@
-import "std/compiler/parser/types.day"
 import "std/compiler/parser/ast/prelude.day"
