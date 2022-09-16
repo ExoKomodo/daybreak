@@ -1,10 +1,11 @@
 #! /bin/bash
 
 function build_tag_values() {
-	local TAGS="${NAME}-${BUILD_ID}"
+	local REPO=exokomodo/daybreak
+	local TAGS="${REPO}:${NAME}-${BUILD_ID}"
 
 	if [[ ${BRANCH_NAME} = ${PROD_BRANCH} ]]; then
-		TAGS="${TAGS} ${NAME}-latest"
+		TAGS="${TAGS} ${REPO}:${NAME}-latest"
 	fi
 
 	echo "${TAGS}"
