@@ -1,4 +1,4 @@
-FROM exokomodo/daybreak:latest
+FROM exokomodo/daybreak:base-latest
 
 RUN apt-get update -y
 
