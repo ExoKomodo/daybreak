@@ -7,9 +7,13 @@ Programming language that compiles to C
 - [Daybreak Install](#daybreak-install)
 
 ## Important Links
-- [Repository](https://github.com/ExoKomodo/Daybreak)
-- [Jenkins](https://jenkins.exokomodo.com/job/Daybreak)
 - [Language Cheat Sheet](https://docs.google.com/document/d/1VsP0L_J_NGatTqUZniUga4odmSZfCDRTvfQCVJQn9ac/edit?usp=sharing)
+- [Github Repository](https://github.com/ExoKomodo/Daybreak)
+- [Jenkins](https://jenkins.exokomodo.com/job/Daybreak)
+- [Jenkins - Base Image](https://jenkins.exokomodo.com/job/daybreak-base)
+- [Jenkins - Devcontainer Image](https://jenkins.exokomodo.com/job/daybreak-devcontainer)
+- [Docker Hub - Daybreak](https://hub.docker.com/repository/docker/exokomodo/daybreak)
+- [Docker Hub - Development](https://hub.docker.com/repository/docker/exokomodo/development)
 
 ## Installation
 To install daybreak locally, clone the Daybreak repo to your machine, and run `daybreak_install.sh`
