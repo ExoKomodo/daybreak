@@ -13,7 +13,7 @@ pipeline {
 		DAYBREAK_OUT="./out"
 		REGISTRY_PASSWORD=credentials("docker-password")
 		REGISTRY_USERNAME=credentials("docker-username")
-		NAME=base
+		NAME="base"
 	}
 
 	stages {
