@@ -4,7 +4,7 @@ source ./admin_scripts/functions.sh
 
 set -ex
 
-TAGS=$(build_tags)
+TAG_VALUES=$(build_tags)
 
 for tag in ${TAGS}; do
 	docker push exokomodo/daybreak:${tag}
