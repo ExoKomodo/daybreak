@@ -35,6 +35,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfiles/base/Dockerfile
+      image: exokomodo/daybreak:latest
     command: bash /app/compose_scripts/build.sh /app/src/main.day
   build_daybreak_test:
     environment:
