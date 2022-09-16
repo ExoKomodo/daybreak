@@ -4,7 +4,7 @@ source ./admin_scripts/functions.sh
 
 set -ex
 
-TAG_VALUES=$(build_tags)
+TAG_VALUES=$(build_tag_values)
 
 TAGS=""
 for tag in ${TAG_VALUES}; do
