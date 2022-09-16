@@ -32,10 +32,10 @@ services:
       - CC_COMPILER=${CC_COMPILER}
       - DAYBREAK_BOOTSTRAP=${DAYBREAK_BOOTSTRAP}
       - DAYBREAK_OUT=${DAYBREAK_OUT}
+    image: exokomodo/daybreak:latest
     build:
       context: .
       dockerfile: Dockerfiles/base/Dockerfile
-      image: exokomodo/daybreak:latest
     command: bash /app/compose_scripts/build.sh /app/src/main.day
   build_daybreak_test:
     environment:
