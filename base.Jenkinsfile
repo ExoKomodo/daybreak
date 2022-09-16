@@ -9,6 +9,7 @@ pipeline {
 	}
 
 	environment {
+		PROD_BRANCH="main"
 		DAYBREAK_BOOTSTRAP="./bootstrap/linux/daybreak"
 		DAYBREAK_OUT="./out"
 		REGISTRY_PASSWORD=credentials("docker-password")
