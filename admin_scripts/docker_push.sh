@@ -6,6 +6,6 @@ set -ex
 
 TAG_VALUES=$(build_tags)
 
-for tag in ${TAGS}; do
+for tag in ${TAG_VALUES}; do
 	docker push exokomodo/daybreak:${tag}
 done
