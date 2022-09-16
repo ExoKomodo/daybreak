@@ -27,7 +27,7 @@ pipeline {
 				CC_COMPILER = "gcc"
 			}
 			steps {
-				sh "docker-compose -p build-push push ${COMPOSE_ARGS} push_devcontainer"
+				sh "docker-compose -p build-push push -- push_devcontainer"
 			}
 		}
 	}
