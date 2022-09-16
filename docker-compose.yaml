@@ -7,7 +7,6 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-      dockerfile: Dockerfiles/base/Dockerfile
     command: bash /app/compose_scripts/memory_check.sh
   test:
     environment:
@@ -16,7 +15,6 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-      dockerfile: Dockerfiles/base/Dockerfile
     command: bash /app/compose_scripts/test.sh
   bootstrap:
     environment:
@@ -25,7 +23,6 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-      dockerfile: Dockerfiles/base/Dockerfile
     command: bash /app/compose_scripts/bootstrap.sh
   build_daybreak:
     environment:
@@ -34,7 +31,6 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-      dockerfile: Dockerfiles/base/Dockerfile
     command: bash /app/compose_scripts/build.sh /app/src/main.day
   build_daybreak_test:
     environment:
@@ -43,7 +39,6 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-      dockerfile: Dockerfiles/base/Dockerfile
     command: bash /app/compose_scripts/build.sh /app/tests/test_main.day
   fix_ownership:
     environment:
@@ -52,7 +47,6 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-      dockerfile: Dockerfiles/base/Dockerfile
     command: bash /app/compose_scripts/fix_ownership.sh
   push_base:
     environment:
@@ -62,7 +56,6 @@ services:
     image: exokomodo/daybreak:base-latest
     build:
       context: .
-      dockerfile: Dockerfiles/base/Dockerfile
     command: bash /app/compose_scripts/build.sh /app/src/main.day
   push_devcontainer:
     environment:
@@ -72,4 +65,3 @@ services:
     image: exokomodo/daybreak:devcontainer-latest
     build:
       context: .
-      dockerfile: Dockerfiles/devcontainer/Dockerfile

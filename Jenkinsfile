@@ -11,9 +11,17 @@ pipeline {
 	environment {
 		DAYBREAK_BOOTSTRAP="./bootstrap/linux/daybreak"
 		DAYBREAK_OUT="./out"
+		REGISTRY_PASSWORD=credentials("docker-password")
+		REGISTRY_USERNAME=credentials("docker-username")
 	}
 
 	stages {
+		stage('docker login') {
+			steps {
+				sh "bash ./admin_scripts/docker_login.sh"
+			}
+		}
+
 		stage('gcc') {
 			environment {
 				CC_COMPILER = "gcc"
