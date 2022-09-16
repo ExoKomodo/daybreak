@@ -21,13 +21,19 @@ pipeline {
 				sh "bash ./admin_scripts/docker_login.sh"
 			}
 		}
-	
-		stage ("Build and Push") {
+
+		stage ("Build") {
 			environment {
 				CC_COMPILER = "gcc"
 			}
 			steps {
-				sh "docker-compose -p build-push push -- push_base"
+				sh "bash ./admin_scripts/docker_build.sh"
+			}
+		}
+
+		stage ("Push") {
+			steps {
+				sh "bash ./admin_scripts/docker_push.sh"
 			}
 		}
 	}
@@ -36,6 +42,7 @@ pipeline {
 		always {
 			sh "docker-compose up ${COMPOSE_ARGS} fix_ownership"
 		}
+
 		cleanup {
 			sh "bash ./admin_scripts/cleanup.sh"
 		}
