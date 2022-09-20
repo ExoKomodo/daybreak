@@ -19,11 +19,16 @@ jobs:
           ./bootstrap/linux/daybreak ./src/main.day -o ./bootstrap/linux/daybreak
           chmod +x ./bootstrap/linux/daybreak
           echo "Successfully built"
-      - name: (linux) Store artifacts
+      - name: (linux) Store Binaries
         uses: actions/upload-artifact@v3
         with:
           name: daybreak-linux
           path: ./bootstrap/linux/daybreak
+      - name: (linux) Store C Sources
+        uses: actions/upload-artifact@v3
+        with:
+          name: daybreak-linux
+          path: ~/.daybreak/out/main.day.c
   bootstrap_windows:
     runs-on: windows-latest
     env:
