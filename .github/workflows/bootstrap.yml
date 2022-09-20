@@ -19,7 +19,7 @@ jobs:
           ./bootstrap/linux/daybreak ./src/main.day -o ./bootstrap/linux/daybreak
           chmod +x ./bootstrap/linux/daybreak
           echo "Successfully built"
-      - name: (linux) Store Binaries
+      - name: (linux) Store artifacts
         uses: actions/upload-artifact@v3
         with:
           name: daybreak-linux
