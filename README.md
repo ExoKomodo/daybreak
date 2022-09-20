@@ -40,6 +40,26 @@ cd ./Daybreak
 bash ./daybreak_install.sh
 ```
 
+### Bootstrapping a new platform
+To bootstrap a new compiler, a generated C source of Daybreak is needed to bootstrap the core Daybreak code into a binary. Clone the git repo either via HTTPS or SSH.
+```bash
+# Clone the repository locally
+git clone git@github.com:ExoKomodo/Daybreak.git
+# Temporarily move into Daybreak repo
+cd ./Daybreak
+# Set C_INCLUDE_PATH to use the includes of the cloned repo
+export C_INCLUDE_PATH=./src/include:${C_INCLUDE_PATH}
+```
+Once the environment is setup, get the C source for the desired commit from the CI.
+Sadly, Github's API is complex for this process and means that doing this without a web browser requires an API token.
+The easiest method is to download the daybreak-linux.zip artifact from an action and work with that as so
+```bash
+unzip daybreak-linux.zip
+cd daybreak-linux
+cc main.day.c -o daybreak
+```
+Daybreak should now be fully bootstrapped and functioning on the new platform
+
 ## Suggested VSCode Extensions
 Reference [`devcontainer.json`](./.devcontainer/devcontainer.json)'s `extensions` array to see what VSCode extensions are recommended.
 

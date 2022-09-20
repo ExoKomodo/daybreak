@@ -23,7 +23,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: daybreak-linux
-          path: ./bootstrap/linux/daybreak
+          path: |
+            ./bootstrap/linux/daybreak
+            ~/.daybreak/out/main.day.c
   bootstrap_windows:
     runs-on: windows-latest
     env:
