@@ -14,14 +14,73 @@ RUN chmod +x /usr/local/bin/docker-compose
 
 # Install git and configure it
 RUN apt-get install -y git
-RUN cp ./.devcontainer/tools/git/gitconfig ${HOME}/.gitconfig
+RUN touch ${HOME}/.gitconfig
+RUN <<EOF
+echo "
+[alias]
+        co = checkout
+        cob = checkout -b
+        cp = cherry-pick
+        com = commit -m
+        st = status
+        pushup = !git push --set-upstream origin `git rev-parse --abbrev-ref HEAD`
+        br = branch
+        hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+        type = cat-file -t
+        dump = cat-file -p
+        rebi = rebase -i
+        del = branch -D
+[branch]
+        autosetuprebase = always
+[core]
+        editor = vim
+[pull]
+        rebase = true
+" > ${HOME}/.gitconfig
+EOF
+
+# Install vim and configure it
+RUN apt-get install -y vim
 
 # Install zsh and configure zprezto
 RUN echo 'N' > ./zsh_args
 RUN apt-get install -y zsh < ./zsh_args
 RUN rm ./zsh_args
-RUN zsh ./.devcontainer/tools/zsh/install_zprezto.zsh
-RUN echo 'neofetch' >> ~/.zshrc
 
-# Install vim and configure it
-RUN apt-get install -y vim
+RUN zsh
+
+RUN git clone --depth 1 --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+
+RUN setopt EXTENDED_GLOB
+RUN <<EOF
+for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+done
+EOF
+
+RUN chsh -s /bin/zsh
+
+RUN echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ${HOME}/.zshrc
+
+# Enable ZPrezto modules:
+RUN <<EOF
+echo "
+zstyle ':prezto:load' pmodule \\
+  'environment' \\
+  'terminal' \\
+  'editor' \\
+  'history' \\
+  'directory' \\
+  'spectrum' \\
+  'utility' \\
+  'completion' \\
+  'git' \\
+  'history-substring-search' \\
+  'python' \\
+  'ssh' \\
+  'syntax-highlighting' \\
+  'prompt'
+" >> ~/.zpreztorc
+EOF
+
+RUN echo 'neofetch' >> ~/.zshrc
