@@ -22,3 +22,6 @@ RUN apt-get install -y zsh < ./zsh_args
 RUN rm ./zsh_args
 RUN zsh ./.devcontainer/tools/zsh/install_zprezto.zsh
 RUN echo 'neofetch' >> ~/.zshrc
+
+# Install vim and configure it
+RUN apt-get install -y vim
