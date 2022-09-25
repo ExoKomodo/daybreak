@@ -1,1 +1,1 @@
-FROM exokomodo/daybreak:base-latest
+FROM exokomodo/development:211-cicada-base-latest

@@ -1,3 +1,5 @@
+# Assumes the git repo is mounted at /app
+
 FROM ubuntu:kinetic
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -32,7 +34,6 @@ RUN apt-get install -y valgrind
 RUN curl https://wasmtime.dev/install.sh -sSf | bash
 ENV PATH="${HOME}/.wasmtime/bin:${PATH}"
 
-COPY . /app
 WORKDIR /app/deps
 RUN tar -xf wasi-sysroot-16.0.tar.gz
 WORKDIR /app
