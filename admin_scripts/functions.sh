@@ -8,7 +8,7 @@ function build_tag_values() {
 	else
 		local REPO=exokomodo/development
 
-		local TAGS="${REPO}:${BRANCH_NAME}-${NAME}-${BUILD_ID}"
+		local TAGS="${REPO}:${BRANCH_NAME}-${NAME}-${BUILD_ID} ${REPO}:${BRANCH_NAME}-${NAME}-latest"
 	fi
 
 	echo "${TAGS}"
