@@ -1,1 +1,1 @@
-FROM exokomodo/daybreak:base-latest
+FROM exokomodo/daybreak:base-5
