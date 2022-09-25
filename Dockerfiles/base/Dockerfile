@@ -46,8 +46,6 @@ RUN update-alternatives --install /usr/bin/cc cc $(which zig) 1
 RUN update-alternatives --install /usr/bin/cc cc $(which zig-wasi) 0
 RUN ln -s /app/bootstrap/linux/daybreak /usr/bin/daybreak
 
-ENV JENKINS_USER=112
-ENV JENKINS_GROUP=119
 ENV C_INCLUDE_PATH=/app/src/include:/app/tests/include
 
-RUN bash cicada/ci/setup_jenkins_user.bash
+RUN bash cicada/ci/setup_jenkins_user.bash 112 119

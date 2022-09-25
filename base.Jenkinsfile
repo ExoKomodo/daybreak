@@ -9,12 +9,12 @@ pipeline {
 	}
 
 	environment {
-		PROD_BRANCH="main"
 		DAYBREAK_BOOTSTRAP="./bootstrap/linux/daybreak"
 		DAYBREAK_OUT="./out"
-		REGISTRY_PASSWORD=credentials("docker-password")
-		REGISTRY_USERNAME=credentials("docker-username")
-		NAME="base"
+		CICADA_PROD_BRANCH="main"
+		CICADA_REGISTRY_PASSWORD=credentials("docker-password")
+		CICADA_REGISTRY_USERNAME=credentials("docker-username")
+		CICADA_NAME="base"
 	}
 
 	stages {

@@ -11,8 +11,8 @@ pipeline {
 	environment {
 		DAYBREAK_BOOTSTRAP="./bootstrap/linux/daybreak"
 		DAYBREAK_OUT="./out"
-		REGISTRY_PASSWORD=credentials("docker-password")
-		REGISTRY_USERNAME=credentials("docker-username")
+		CICADA_REGISTRY_PASSWORD=credentials("docker-password")
+		CICADA_REGISTRY_USERNAME=credentials("docker-username")
 	}
 
 	stages {
