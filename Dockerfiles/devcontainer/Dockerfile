@@ -47,33 +47,7 @@ RUN echo 'N' > ./zsh_args
 RUN apt-get install -qy zsh < ./zsh_args
 RUN rm ./zsh_args
 
-RUN /bin/zsh -c "\
-git clone --depth 1 --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto" \n\
-setopt EXTENDED_GLOB \n\
-for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do \n\
-  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}" \n\
-done \n\
-chsh -s /bin/zsh \n\
-echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ${HOME}/.zshrc \n\
-"
-
-# Enable ZPrezto modules:
-RUN echo "\
-zstyle ':prezto:load' pmodule \
-        'environment' \
-        'terminal' \
-        'editor' \
-        'history' \
-        'directory' \
-        'spectrum' \
-        'utility' \
-        'completion' \
-        'git' \
-        'history-substring-search' \
-        'python' \
-        'ssh' \
-        'syntax-highlighting' \
-        'prompt' \
-" >> ${HOME}/.zpreztorc
+RUN curl -O https://raw.githubusercontent.com/ExoKomodo/Daybreak/main/.devcontainer/tools/zsh/install_zprezto.zsh
+RUN /bin/zsh ./install_zprezto.zsh
 
 RUN echo 'neofetch' >> ${HOME}/.zshrc
