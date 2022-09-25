@@ -6,8 +6,8 @@ WRAPPER=""
 DAYBREAK_TEST=${DAYBREAK_OUT}/daybreak_test
 DAYBREAK_EULER=${DAYBREAK_OUT}/euler
 
-bash ./compose_scripts/check_env.sh
-bash ./compose_scripts/bootstrap.sh
+bash ./compose_scripts/check_env.bash
+bash ./compose_scripts/bootstrap.bash
 
 if [ $# -gt 0 ]; then
 	WRAPPER="$@"
@@ -26,7 +26,7 @@ popd
 # Directly compile Euler programs using the compiler executable
 ${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./euler/euler.day
 # Run build for actual run
-bash ./compose_scripts/build.sh ./euler/euler.day -o ${DAYBREAK_EULER}
+bash ./compose_scripts/build.bash ./euler/euler.day -o ${DAYBREAK_EULER}
 # Run euler problem solutions
 
 if [[ ${CC_COMPILER} == *"wasi"* ]]; then
@@ -38,7 +38,7 @@ fi
 # Directly compile test programs using the compiler executable
 ${WRAPPER} ${DAYBREAK_BOOTSTRAP} ./tests/test_main.day
 # Run build for actual run
-bash ./compose_scripts/build.sh ./tests/test_main.day -o ${DAYBREAK_TEST}
+bash ./compose_scripts/build.bash ./tests/test_main.day -o ${DAYBREAK_TEST}
 # WASM does not support popen() currently, meaning daybreak is outside of the current WASM standard
 if [[ ${CC_COMPILER} != *"wasi"* ]]; then
 	# Run tests with the compiler's test executable

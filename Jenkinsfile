@@ -18,7 +18,7 @@ pipeline {
 	stages {
 		stage('docker login') {
 			steps {
-				sh "bash ./admin_scripts/docker_login.sh"
+				sh "bash ./cicada/ci/container_login.bash"
 			}
 		}
 
@@ -122,7 +122,7 @@ pipeline {
 			sh "docker-compose up ${COMPOSE_ARGS} fix_ownership"
 		}
 		cleanup {
-			sh "bash ./admin_scripts/cleanup.sh"
+			sh "bash ./cicada/ci/cleanup.bash"
 		}
 	}
 }

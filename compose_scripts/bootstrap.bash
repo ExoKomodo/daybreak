@@ -11,9 +11,9 @@ if [ ${CC_COMPILER} = "clang-wasi" ]; then
 	CC_COMPILER=clang
 fi
 
-bash ./compose_scripts/check_env.sh
+bash ./compose_scripts/check_env.bash
 
 ${DAYBREAK_BOOTSTRAP} ./src/main.day -o ${DAYBREAK_BOOTSTRAP}
 
 CC_COMPILER=${TEMP}
-bash ./compose_scripts/check_env.sh
+bash ./compose_scripts/check_env.bash

@@ -50,4 +50,4 @@ ENV JENKINS_USER=112
 ENV JENKINS_GROUP=119
 ENV C_INCLUDE_PATH=/app/src/include:/app/tests/include
 
-RUN bash admin_scripts/setup_jenkins_user.sh
+RUN bash cicada/ci/setup_jenkins_user.bash

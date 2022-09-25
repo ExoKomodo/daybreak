@@ -16,7 +16,7 @@ Programming language that compiles to C
 - [Docker Hub - Development](https://hub.docker.com/repository/docker/exokomodo/development)
 
 ## Installation
-To install daybreak locally, clone the Daybreak repo to your machine, and run `daybreak_install.sh`
+To install daybreak locally, clone the Daybreak repo to your machine, and run `daybreak_install.bash`
 
 ### (Recommended) Git Clone via SSH:
 Cloning via SSH will allow for you to contribute to Daybreak and push commits
@@ -26,7 +26,7 @@ git clone git@github.com:ExoKomodo/Daybreak.git
 # Temporarily move into Daybreak repo
 cd ./Daybreak
 # Follow the instructions of the install script
-bash ./daybreak_install.sh
+bash ./daybreak_install.bash
 ```
 
 ### (Not recommended) Git clone via HTTPS:
@@ -37,7 +37,7 @@ git clone https://github.com/ExoKomodo/Daybreak.git
 # Temporarily move into Daybreak repo
 cd ./Daybreak
 # Follow the instructions of the install script
-bash ./daybreak_install.sh
+bash ./daybreak_install.bash
 ```
 
 ### Bootstrapping a new platform

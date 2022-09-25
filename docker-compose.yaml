@@ -7,7 +7,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-    command: bash /app/compose_scripts/memory_check.sh
+    command: bash /app/compose_scripts/memory_check.bash
   test:
     environment:
       - CC_COMPILER=${CC_COMPILER}
@@ -15,7 +15,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-    command: bash /app/compose_scripts/test.sh
+    command: bash /app/compose_scripts/test.bash
   bootstrap:
     environment:
       - CC_COMPILER=${CC_COMPILER}
@@ -23,7 +23,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-    command: bash /app/compose_scripts/bootstrap.sh
+    command: bash /app/compose_scripts/bootstrap.bash
   build_daybreak:
     environment:
       - CC_COMPILER=${CC_COMPILER}
@@ -31,7 +31,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-    command: bash /app/compose_scripts/build.sh /app/src/main.day
+    command: bash /app/compose_scripts/build.bash /app/src/main.day
   build_daybreak_test:
     environment:
       - CC_COMPILER=${CC_COMPILER}
@@ -39,7 +39,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-    command: bash /app/compose_scripts/build.sh /app/tests/test_main.day
+    command: bash /app/compose_scripts/build.bash /app/tests/test_main.day
   fix_ownership:
     environment:
       - CC_COMPILER=${CC_COMPILER}
@@ -47,7 +47,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-    command: bash /app/compose_scripts/fix_ownership.sh
+    command: bash /app/compose_scripts/fix_ownership.bash
   push_base:
     environment:
       - CC_COMPILER=${CC_COMPILER}
@@ -56,7 +56,7 @@ services:
     image: exokomodo/daybreak:base-latest
     build:
       context: .
-    command: bash /app/compose_scripts/build.sh /app/src/main.day
+    command: bash /app/compose_scripts/build.bash /app/src/main.day
   push_devcontainer:
     environment:
       - CC_COMPILER=${CC_COMPILER}

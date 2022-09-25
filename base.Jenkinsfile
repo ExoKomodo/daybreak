@@ -20,7 +20,7 @@ pipeline {
 	stages {
 		stage ("Docker Login") {
 			steps {
-				sh "bash ./admin_scripts/docker_login.sh"
+				sh "bash ./cicada/ci/container_login.bash"
 			}
 		}
 
@@ -29,13 +29,13 @@ pipeline {
 				CC_COMPILER = "gcc"
 			}
 			steps {
-				sh "bash ./admin_scripts/docker_build.sh"
+				sh "bash ./cicada/ci/container_build.bash"
 			}
 		}
 
 		stage ("Push") {
 			steps {
-				sh "bash ./admin_scripts/docker_push.sh"
+				sh "bash ./cicada/ci/container_push.bash"
 			}
 		}
 	}
@@ -46,7 +46,7 @@ pipeline {
 		}
 
 		cleanup {
-			sh "bash ./admin_scripts/cleanup.sh"
+			sh "bash ./cicada/ci/cleanup.bash"
 		}
 	}
 }
