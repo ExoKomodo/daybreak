@@ -3,6 +3,7 @@ FROM ubuntu:kinetic
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y --fix-missing
+RUN apt-get install -y apt-utils
 RUN apt-get install -y curl
 RUN apt-get install -y valgrind
 RUN apt-get install -y xz-utils
