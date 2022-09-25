@@ -17,27 +17,27 @@ RUN chmod +x /usr/local/bin/docker-compose
 # Install git and configure it
 RUN apt-get install -qy git
 RUN touch ${HOME}/.gitconfig
-RUN echo <<EOF
-[alias]
-        co = checkout
-        cob = checkout -b
-        cp = cherry-pick
-        com = commit -m
-        st = status
-        pushup = !git push --set-upstream origin `git rev-parse --abbrev-ref HEAD`
-        br = branch
-        hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
-        type = cat-file -t
-        dump = cat-file -p
-        rebi = rebase -i
-        del = branch -D
-[branch]
-        autosetuprebase = always
-[core]
-        editor = vim
-[pull]
-        rebase = true
-EOF > ${HOME}/.gitconfig
+RUN echo "\
+[alias]\
+        co = checkout\
+        cob = checkout -b\
+        cp = cherry-pick\
+        com = commit -m\
+        st = status\
+        pushup = !git push --set-upstream origin `git rev-parse --abbrev-ref HEAD`\
+        br = branch\
+        hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short\
+        type = cat-file -t\
+        dump = cat-file -p\
+        rebi = rebase -i\
+        del = branch -D\
+[branch]\
+        autosetuprebase = always\
+[core]\
+        editor = vim\
+[pull]\
+        rebase = true\
+" > ${HOME}/.gitconfig
 
 # Install vim and configure it
 RUN apt-get install -qy vim
