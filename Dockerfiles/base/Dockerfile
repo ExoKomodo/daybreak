@@ -3,16 +3,16 @@ FROM ubuntu:kinetic
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y --fix-missing
-RUN apt-get install -y apt-utils
-RUN apt-get install -y curl
-RUN apt-get install -y valgrind
-RUN apt-get install -y xz-utils
+RUN apt-get install -qy apt-utils
+RUN apt-get install -qy curl
+RUN apt-get install -qy valgrind
+RUN apt-get install -qy xz-utils
 
 # Install gcc backend
-RUN apt-get install -y gcc-12
+RUN apt-get install -qy gcc-12
 
 # Install clang backend
-RUN apt-get install -y clang-11
+RUN apt-get install -qy clang-11
 
 # Install WASI
 # WORKDIR /wasi
