@@ -16,6 +16,7 @@ RUN apt-get install -y clang-11
 WORKDIR /wasi
 RUN curl -O https://raw.githubusercontent.com/ExoKomodo/Daybreak/main/deps/wasi-sysroot-16.0.tar.gz
 RUN tar -xf wasi-sysroot-16.0.tar.gz
+RUN rm wasi-sysroot-16.0.tar.gz
 
 # Install zig backend
 ARG ARCH=x86_64
