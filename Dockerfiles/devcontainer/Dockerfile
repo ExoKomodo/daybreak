@@ -1,4 +1,4 @@
-FROM exokomodo/development:DAY-203-base-1
+FROM exokomodo/development:base-latest
 
 RUN apt-get update -y
 
