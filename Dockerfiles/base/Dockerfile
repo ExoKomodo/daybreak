@@ -15,10 +15,10 @@ RUN apt-get install -y clang-11
 # Install WASI
 WORKDIR /wasi
 ENV WASI_SYSROOT=wasi-sysroot-16.0
-ENV WASI_SYSROOT_TARBALL=${WASI_SYSROOT}.tar.gz
-ENV WASI_SYSROOT_PATH=/wasi/${WASI_SYSROOT}
-RUN curl -O "https://github.com/ExoKomodo/Daybreak/raw/main/deps/${WASI_SYSROOT_TARBALL}"
-RUN tar -xf ${WASI_SYSROOT_TARBALL}
+ENV WASI_SYSROOT_TARBALL=$WASI_SYSROOT.tar.gz
+ENV WASI_SYSROOT_PATH=/wasi/$WASI_SYSROOT
+RUN curl -O "https://github.com/ExoKomodo/Daybreak/raw/main/deps/$WASI_SYSROOT_TARBALL"
+RUN tar -xf $WASI_SYSROOT_TARBALL
 
 # Install zig backend
 ENV ARCH=x86_64
