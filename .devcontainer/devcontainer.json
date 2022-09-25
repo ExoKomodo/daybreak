@@ -14,7 +14,8 @@
 		"secanis.jenkinsfile-support",
 		"spmeesseman.vscode-taskexplorer",
 		"gruntfuggly.triggertaskonsave",
-		"visualstudioexptteam.vscodeintellicode"
+		"visualstudioexptteam.vscodeintellicode",
+		"GitHub.vscode-pull-request-github",
 	],
 	"containerEnv": {
 		"C_INCLUDE_PATH": "./src/include:./tests/include",
