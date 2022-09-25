@@ -8,8 +8,8 @@ Programming language that compiles to C
 
 ## Important Links
 - [Language Cheat Sheet](https://docs.google.com/document/d/1VsP0L_J_NGatTqUZniUga4odmSZfCDRTvfQCVJQn9ac/edit?usp=sharing)
-- [Github Repository](https://github.com/ExoKomodo/Daybreak)
-- [Jenkins](https://jenkins.exokomodo.com/job/Daybreak)
+- [Github Repository](https://github.com/ExoKomodo/daybreak)
+- [Jenkins](https://jenkins.exokomodo.com/job/daybreak)
 - [Jenkins - Base Image](https://jenkins.exokomodo.com/job/daybreak-base)
 - [Jenkins - Devcontainer Image](https://jenkins.exokomodo.com/job/daybreak-devcontainer)
 - [Docker Hub - Daybreak](https://hub.docker.com/repository/docker/exokomodo/daybreak)
@@ -22,7 +22,7 @@ To install daybreak locally, clone the Daybreak repo to your machine, and run `d
 Cloning via SSH will allow for you to contribute to Daybreak and push commits
 ```bash
 # Clone repository locally
-git clone git@github.com:ExoKomodo/Daybreak.git
+git clone git@github.com:ExoKomodo/daybreak.git
 # Temporarily move into Daybreak repo
 cd ./Daybreak
 # Follow the instructions of the install script
@@ -33,9 +33,9 @@ bash ./daybreak_install.bash
 Cloning via HTTPS will only allow for you to clone the repo and install Daybreak. You will not be able to push commits to Github with an HTTPS-cloned repository.
 ```bash
 # Clone repository locally
-git clone https://github.com/ExoKomodo/Daybreak.git
-# Temporarily move into Daybreak repo
-cd ./Daybreak
+git clone https://github.com/ExoKomodo/daybreak.git
+# Temporarily move into daybreak repo
+cd ./daybreak
 # Follow the instructions of the install script
 bash ./daybreak_install.bash
 ```
@@ -44,9 +44,9 @@ bash ./daybreak_install.bash
 To bootstrap a new compiler, a generated C source of Daybreak is needed to bootstrap the core Daybreak code into a binary. Clone the git repo either via HTTPS or SSH.
 ```bash
 # Clone the repository locally
-git clone git@github.com:ExoKomodo/Daybreak.git
-# Temporarily move into Daybreak repo
-cd ./Daybreak
+git clone git@github.com:ExoKomodo/daybreak.git
+# Temporarily move into daybreak repo
+cd ./daybreak
 # Set C_INCLUDE_PATH to use the includes of the cloned repo
 export C_INCLUDE_PATH=./src/include:${C_INCLUDE_PATH}
 ```
@@ -64,8 +64,8 @@ Daybreak should now be fully bootstrapped and functioning on the new platform
 Reference [`devcontainer.json`](./.devcontainer/devcontainer.json)'s `extensions` array to see what VSCode extensions are recommended.
 
 ## CI/CD
-[![Jenkins Build Status](https://jenkins.exokomodo.com/buildStatus/icon?job=Daybreak/main)](http://jenkins.exokomodo.com/job/Daybreak/job/main/)
-![Bootstrap Workflow](https://github.com/ExoKomodo/Daybreak/actions/workflows/bootstrap.yml/badge.svg)
+[![Jenkins Build Status](https://jenkins.exokomodo.com/buildStatus/icon?job=daybreak/main)](http://jenkins.exokomodo.com/job/daybreak/job/main/)
+![Bootstrap Workflow](https://github.com/ExoKomodo/daybreak/actions/workflows/bootstrap.yml/badge.svg)
 
 
 ## Development
@@ -93,7 +93,7 @@ In the services, these environment variables are defined by default:
 - `CC_COMPILER=gcc` Defines which c compiler to use for compose services
 
 These environment variables are defined by default for the VSCode Dev Container, but will need to be defined for local compose usage
-- `DAYBREAK_BOOTSTRAP=/workspaces/Daybreak/bootstrap/linux/daybreak` Bootstrap executable location
+- `DAYBREAK_BOOTSTRAP=/workspaces/daybreak/bootstrap/linux/daybreak` Bootstrap executable location
 - `OUT=/workspaces/Daybreak/out` Output directory for artifacts
 
 #### Services
