@@ -14,11 +14,8 @@ RUN apt-get install -y clang-11
 
 # Install WASI
 WORKDIR /wasi
-ARG WASI_SYSROOT=wasi-sysroot-16.0
-ARG WASI_SYSROOT_TARBALL='${WASI_SYSROOT}.tar.gz'
-ARG WASI_SYSROOT_PATH='/wasi/${WASI_SYSROOT}'
-RUN curl -O https://github.com/ExoKomodo/Daybreak/raw/main/deps/${WASI_SYSROOT_TARBALL}
-RUN tar -xf ${WASI_SYSROOT_TARBALL}
+RUN curl -O https://github.com/ExoKomodo/Daybreak/raw/main/deps/wasi-sysroot-16.0.tar.gz
+RUN tar -xf wasi-sysroot-16.0.tar.gz
 
 # Install zig backend
 ARG ARCH=x86_64
@@ -32,7 +29,7 @@ RUN echo '${ZIG_DIR}/zig cc $@' > /usr/bin/zig
 RUN chmod +x /usr/bin/zig
 
 # Create zig-wasi backend
-RUN echo '${ZIG_DIR}/zig cc --target=wasm32-wasi --sysroot ${WASI_SYSROOT_PATH} $@' > /usr/bin/zig-wasi
+RUN echo '${ZIG_DIR}/zig cc --target=wasm32-wasi --sysroot /wasi/wasi-sysroot-16.0 $@' > /usr/bin/zig-wasi
 RUN chmod +x /usr/bin/zig-wasi
 
 # Install utilities
