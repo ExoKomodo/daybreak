@@ -53,7 +53,7 @@ RUN git clone --depth 1 --recursive https://github.com/sorin-ionescu/prezto.git 
 
 RUN setopt EXTENDED_GLOB
 RUN for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do \
-  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}" \
+  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"; \
 done
 
 RUN chsh -s /bin/zsh
