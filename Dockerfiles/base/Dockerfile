@@ -14,17 +14,17 @@ RUN apt-get install -y clang-11
 
 # Install WASI
 WORKDIR /wasi
-ENV WASI_SYSROOT=wasi-sysroot-16.0
-ENV WASI_SYSROOT_TARBALL=$WASI_SYSROOT.tar.gz
-ENV WASI_SYSROOT_PATH=/wasi/$WASI_SYSROOT
-RUN curl -O "https://github.com/ExoKomodo/Daybreak/raw/main/deps/$WASI_SYSROOT_TARBALL"
-RUN tar -xf $WASI_SYSROOT_TARBALL
+ARG WASI_SYSROOT=wasi-sysroot-16.0
+ARG WASI_SYSROOT_TARBALL=${WASI_SYSROOT}.tar.gz
+ARG WASI_SYSROOT_PATH=/wasi/${WASI_SYSROOT}
+RUN curl -O "https://github.com/ExoKomodo/Daybreak/raw/main/deps/${WASI_SYSROOT_TARBALL}"
+RUN tar -xf ${WASI_SYSROOT_TARBALL}
 
 # Install zig backend
-ENV ARCH=x86_64
-ENV ZIG_VERSION=0.9.1
-ENV ZIG_DIR=/zig-linux-${ARCH}-${ZIG_VERSION}
-ENV ZIG_TARBALL=${ZIG_DIR}.tar.xz
+ARG ARCH=x86_64
+ARG ZIG_VERSION=0.9.1
+ARG ZIG_DIR=/zig-linux-${ARCH}-${ZIG_VERSION}
+ARG ZIG_TARBALL=${ZIG_DIR}.tar.xz
 RUN curl -O https://ziglang.org/download/${ZIG_VERSION}${ZIG_TARBALL}
 RUN tar -xvf ${ZIG_TARBALL}
 RUN rm ${ZIG_TARBALL}
@@ -32,7 +32,7 @@ RUN echo '${ZIG_DIR}/zig cc $@' > /usr/bin/zig
 RUN chmod +x /usr/bin/zig
 
 # Create zig-wasi backend
-RUN echo '${ZIG_DIR}/zig cc --target=wasm32-wasi --sysroot ${WASI_SYSROOT_PATH} $@' > /usr/bin/zig-wasi
+RUN echo "${ZIG_DIR}/zig cc --target=wasm32-wasi --sysroot ${WASI_SYSROOT_PATH} \$@" > /usr/bin/zig-wasi
 RUN chmod +x /usr/bin/zig-wasi
 
 # Install utilities
