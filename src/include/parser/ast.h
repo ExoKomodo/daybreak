@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -52,6 +53,8 @@ typedef enum {
   AstModuleStatement,
   AstModuleStatementList,
   AstMutBinding,
+  AstMutExpression,
+  AstNewAlloc,
   AstNumericExpression,
   AstParameter,
   AstParameterList,
@@ -99,6 +102,8 @@ struct MatchStatementNode;
 struct ModuleStatementListNode;
 struct ModuleStatementNode;
 struct MutBindingNode;
+struct MutExpressionNode;
+struct NewAllocNode;
 struct NumericExpressionNode;
 struct ParameterListNode;
 struct ParameterNode;
@@ -119,6 +124,7 @@ union AstNodeUnion;
 union BindingStatementNodeUnion;
 union ExpressionNodeUnion;
 union ModuleStatementNodeUnion;
+union MutExpressionNodeUnion;
 union NumericExpressionNodeUnion;
 union StatementNodeUnion;
 union TypeDeclarationNodeUnion;
@@ -152,6 +158,8 @@ union AstNodeUnion {
   struct ModuleStatementListNode* module_statement_list;
   struct ModuleStatementNode* module_statement;
   struct MutBindingNode* mut_binding;
+  struct MutExpressionNode* mut_expression;
+  struct NewAllocNode* new_alloc;
   struct NumericExpressionNode* numeric_expression;
   struct ParameterListNode* parameter_list;
   struct ParameterNode* parameter;
@@ -188,6 +196,11 @@ union ModuleStatementNodeUnion {
   struct ImportStatementNode* import_statement;
   struct LetBindingNode* let_binding;
   struct TypeDeclarationNode* type_declaration;
+};
+
+union MutExpressionNodeUnion {
+  struct NewAllocNode* new_alloc;
+  struct ExpressionNode* expression;
 };
 
 union NumericExpressionNodeUnion {
@@ -378,7 +391,17 @@ struct MutBindingNode {
   AstNodeKind kind;
   struct IdentifierNode* binding;
   struct TypeIdentifierNode* type;
-  struct ExpressionNode* expression;
+  struct MutExpressionNode* mut_expression;
+};
+
+struct MutExpressionNode {
+  AstNodeKind kind;
+  union MutExpressionNodeUnion value;
+};
+
+struct NewAllocNode {
+  AstNodeKind kind;
+  struct StructuredTypeExpressionNode* structured_type_expression;
 };
 
 struct NumericExpressionNode {
@@ -612,6 +635,16 @@ void ast_free_mut_binding_node(struct MutBindingNode*);
 struct MutBindingNode* ast_parse_mut_binding(struct Token**);
 bool ast_mut_binding_token_matches_first_set(struct Token);
 
+struct MutExpressionNode* ast_new_mut_expression_node(AstNodeKind, union MutExpressionNodeUnion);
+void ast_free_mut_expression_node(struct MutExpressionNode*);
+struct MutExpressionNode* ast_parse_mut_expression(struct Token**);
+bool ast_mut_expression_token_matches_first_set(struct Token);
+
+struct NewAllocNode* ast_new_new_alloc_node(struct StructuredTypeExpressionNode*);
+void ast_free_new_alloc_node(struct NewAllocNode*);
+struct NewAllocNode* ast_parse_new_alloc(struct Token**);
+bool ast_new_alloc_token_matches_first_set(struct Token);
+
 struct NumericExpressionNode* ast_new_numeric_expression_node(AstNodeKind, union NumericExpressionNodeUnion);
 void ast_free_numeric_expression_node(struct NumericExpressionNode*);
 struct NumericExpressionNode* ast_parse_numeric_expression(struct Token**);
@@ -784,6 +817,12 @@ void ast_free_node(struct AstNode* node) {
     } break;
     case AstMutBinding: {
       ast_free_mut_binding_node(node->value.mut_binding);
+    } break;
+    case AstMutExpression: {
+      ast_free_mut_expression_node(node->value.mut_expression);
+    } break;
+    case AstNewAlloc: {
+      ast_free_new_alloc_node(node->value.new_alloc);
     } break;
     case AstNumericExpression: {
       ast_free_numeric_expression_node(node->value.numeric_expression);
@@ -2211,7 +2250,7 @@ struct MutBindingNode* ast_new_mut_binding_node(
   node->kind = AstMutBinding;
   node->binding = binding;
   node->type = type;
-  node->expression = expression;
+  node->mut_expression = expression;
   return node;
 }
 
@@ -2220,8 +2259,8 @@ void ast_free_mut_binding_node(struct MutBindingNode* node) {
   node->binding = NULL;
   ast_free_type_identifier_node(node->type);
   node->type = NULL;
-  ast_free_expression_node(node->expression);
-  node->expression = NULL;
+  ast_free_mut_expression_node(node->mut_expression);
+  node->mut_expression = NULL;
 
   free(node);
 }
@@ -2247,12 +2286,113 @@ struct MutBindingNode* ast_parse_mut_binding(struct Token** tokens) {
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
-  struct ExpressionNode* expression = ast_parse_expression(tokens);
-  return ast_new_mut_binding_node(binding, type, expression);
+  struct MutExpressionNode* mut_expression = ast_parse_mut_expression(tokens);
+  return ast_new_mut_binding_node(binding, type, mut_expression);
 }
 
 inline bool ast_mut_binding_token_matches_first_set(struct Token token) {
   return token_is_mut(token);
+}
+
+/*********************/
+/* MutExpressionNode */
+/*********************/
+struct MutExpressionNode* ast_new_mut_expression_node(
+  AstNodeKind kind,
+  union MutExpressionNodeUnion value
+) {
+  struct MutExpressionNode* node = malloc(sizeof(struct MutExpressionNode));
+  node->kind = kind;
+  node->value = value;
+  return node;
+}
+
+void ast_free_mut_expression_node(struct MutExpressionNode* node) {
+  switch (node->kind) {
+    case AstNewAlloc: {
+      ast_free_new_alloc_node(node->value.new_alloc);
+    } break;
+    case AstExpression: {
+      ast_free_expression_node(node->value.expression);
+    } break;
+    default: {
+      LOG_ERROR("Invalid MutExpressionNode kind");
+      exit(1);
+    }
+  }
+
+  free(node);
+}
+
+struct MutExpressionNode* ast_parse_mut_expression(struct Token** tokens) {
+  _CHECK_TOKENS();
+  LOG_DEBUG("Parsing Mut Expression: %s", (*tokens)->name);
+
+  if (!ast_mut_expression_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected a mut expression, but got %s", (*tokens)->name);
+    exit(1);
+  }
+  if (ast_new_alloc_token_matches_first_set(**tokens)){
+    struct NewAllocNode* new_alloc = ast_parse_new_alloc(tokens);
+    return ast_new_mut_expression_node(
+      AstNewAlloc,
+      (union MutExpressionNodeUnion) {
+        .new_alloc = new_alloc
+      }
+    );
+  } else if (ast_expression_token_matches_first_set(**tokens)) {
+    struct ExpressionNode* expression = ast_parse_expression(tokens);
+    return ast_new_mut_expression_node(
+      AstExpression,
+      (union MutExpressionNodeUnion) {
+        .expression = expression
+      }
+    );
+  } else {
+    LOG_ERROR("Invalid ExpressionNode kind");
+    exit(1);
+  }
+}
+
+inline bool ast_mut_expression_token_matches_first_set(struct Token token) {
+  return (
+    ast_new_alloc_token_matches_first_set(token) ||
+    ast_expression_token_matches_first_set(token)
+  );
+}
+
+/****************/
+/* NewAllocNode */
+/****************/
+struct NewAllocNode* ast_new_new_alloc_node(struct StructuredTypeExpressionNode* structured_type_expression) {
+  struct NewAllocNode* node = malloc(sizeof(struct NewAllocNode));
+  node->kind = AstNewAlloc;
+  node->structured_type_expression = structured_type_expression;
+  return node;
+}
+
+void ast_free_new_alloc_node(struct NewAllocNode* new_alloc) {
+  ast_free_structured_type_expression_node(new_alloc->structured_type_expression);
+  new_alloc->structured_type_expression = NULL;
+
+  free(new_alloc);
+}
+
+struct NewAllocNode* ast_parse_new_alloc(struct Token** tokens) {
+  _CHECK_TOKENS();
+  LOG_DEBUG("Parsing New Alloc Node: %s", (*tokens)->name);
+
+  if (!ast_new_alloc_token_matches_first_set(**tokens)) {
+    LOG_ERROR("Expected new alloc, got '%s'", (*tokens)->name);
+    exit(1);
+  }
+  _ADVANCE_TOKEN(tokens);
+  struct StructuredTypeExpression* structured_type_expression = ast_parse_structured_type_expression(tokens);
+  return ast_new_new_alloc_node(structured_type_expression);
+}
+
+inline bool ast_new_alloc_token_matches_first_set(struct Token token) {
+  return token_is_new(token);
 }
 
 /*************************/

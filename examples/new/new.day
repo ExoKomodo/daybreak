@@ -1,0 +1,16 @@
+type Foo struct is
+	a: int
+	b: cstring
+end
+
+fun main (_: int argv: ptr<ccstring>) int do
+	(unused _)
+	(unused argv)
+	mut foo_ptr: ptr<Foo> <- new {Foo
+		a <- 1
+		b <- "foo"
+	}
+	let foo: Foo <- (deref foo_ptr)
+	(printf "a: %d b: %s\n" foo.a foo.b)
+	0
+end

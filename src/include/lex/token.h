@@ -125,6 +125,9 @@ _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	mut
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
+	new
+)
+_TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
 	return
 )
 _TOKEN_GENERATE_TOKEN_MATCH_FUNCTION(
@@ -257,6 +260,7 @@ static inline bool token_is_keyword(struct Token token) {
 		token_is_let(token) ||
 		token_is_match(token) ||
 		token_is_mut(token) ||
+		token_is_new(token) ||
 		token_is_return(token) ||
 		/* Not included as keywords due to the use of an IdentifierNode
 		  to determine the kind of TypeDeclarationNode

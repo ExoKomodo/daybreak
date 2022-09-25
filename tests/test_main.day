@@ -9,6 +9,7 @@ importc "test_integer.h"
 importc "test_match.h"
 importc "test_modules.h"
 importc "test_multiple_imports.h"
+importc "test_new.h"
 importc "test_pointers.h"
 importc "test_return.h"
 importc "test_shebang.h"
@@ -34,16 +35,18 @@ fun main () int do
 			7
 		(not (test_multiple_imports)) =>
 			8
-		(not (test_pointers)) =>
+		(not (test_new)) =>
 			9
-		(not (test_return)) =>
+		(not (test_pointers)) =>
 			10
-		(not (test_shebang)) =>
+		(not (test_return)) =>
 			11
-		(not (test_types)) =>
+		(not (test_shebang)) =>
 			12
-		(not (test_bindings)) =>
+		(not (test_types)) =>
 			13
+		(not (test_bindings)) =>
+			14
 		(default) => do
 			(LOG_INFO "Successfully passed all tests!")
 			0

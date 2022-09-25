@@ -1,4 +1,4 @@
-FROM exokomodo/development:DAY-203-base-1
+FROM exokomodo/daybreak:base-latest
 
 RUN apt-get update -y
 
@@ -22,3 +22,6 @@ RUN apt-get install -y zsh < ./zsh_args
 RUN rm ./zsh_args
 RUN zsh ./.devcontainer/tools/zsh/install_zprezto.zsh
 RUN echo 'neofetch' >> ~/.zshrc
+
+# Install vim and configure it
+RUN apt-get install -y vim

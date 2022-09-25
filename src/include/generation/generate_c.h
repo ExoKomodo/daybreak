@@ -839,16 +839,100 @@ int generate_c_from_mut_binding(
 		return 1;
 	}
 
-	const int error = _generate_c_variable_declaration(
-		output_file,
-		mut_binding->type,
-		mut_binding->binding,
-		mut_binding->expression
-	);
-	if (error != 0) {
-		return error;
+	const struct MutExpressionNode* mut_expression = mut_binding->mut_expression;
+	switch (mut_expression->kind) {
+		case AstNewAlloc: {
+			const struct NewAllocNode* new_alloc = mut_binding->mut_expression->value.new_alloc;
+			const char* type_name_temp = new_alloc->structured_type_expression->type->identifier->name;
+			char* type_name = malloc(sizeof(char) * (strlen(type_name_temp) + 1));
+			strcpy(type_name, type_name_temp);
+
+			struct ExpressionNode** sizeof_call_expressions = malloc(sizeof(struct ExpressionNode) * 2);
+			sizeof_call_expressions[0] = ast_new_expression_node(
+				AstIdentifierExpression,
+				(union ExpressionNodeUnion) {
+					.identifier_expression = ast_new_identifier_expression_node(
+						ast_new_identifier_node(
+							type_name
+						),
+						NULL
+					)
+				}
+			);
+			sizeof_call_expressions[1] = NULL;
+			struct ExpressionNode** malloc_call_expressions = malloc(sizeof(struct ExpressionNode) * 2);
+			malloc_call_expressions[0] = ast_new_expression_node(
+				AstCallExpression,
+				(union ExpressionNodeUnion) {
+					.call_expression = ast_new_call_expression_node(
+						ast_new_identifier_node("sizeof"),
+						ast_new_expression_list_node(
+							sizeof_call_expressions
+						)
+					)
+				}
+			);
+			malloc_call_expressions[1] = NULL;
+			struct ExpressionNode* expression = ast_new_expression_node(
+				AstCallExpression,
+				(union ExpressionNodeUnion) {
+					.call_expression = ast_new_call_expression_node(
+						ast_new_identifier_node("malloc"),
+						ast_new_expression_list_node(
+							malloc_call_expressions
+						)
+					)
+				}
+			);
+			const int error = _generate_c_variable_declaration(
+				output_file,
+				mut_binding->type,
+				mut_binding->binding,
+				expression
+			);
+			fputs(";\n", output_file);
+			const struct StructuredTypeExpressionNode* structured_type_expression = new_alloc->structured_type_expression;
+			for (size_t i = 0; i < structured_type_expression->field_bindings->length; i++) {
+				const struct FieldBindingNode* field_binding = structured_type_expression->field_bindings->field_bindings[i];
+				int error = generate_c_from_identifier(output_file, mut_binding->binding);
+				if (error != 0) {
+					return error;
+				}
+				fputs("->", output_file);
+				error = generate_c_from_identifier(output_file, field_binding->identifier);
+				fputs(" = ", output_file);
+				error = generate_c_from_expression(output_file, field_binding->expression);
+				fputs(";\n", output_file);
+				if (error != 0) {
+					return error;
+				}
+			}
+			// ast_free_expression_node(expression);
+			// expression = NULL;
+			if (error != 0) {
+				return error;
+			}
+		} break;
+		case AstExpression: {
+			const int error = _generate_c_variable_declaration(
+				output_file,
+				mut_binding->type,
+				mut_binding->binding,
+				mut_expression->value.expression
+			);
+			if (error != 0) {
+				return error;
+			}
+			fputs(";\n", output_file);
+		} break;
+		default: {
+			LOG_ERROR(
+				"Failed to generate C code from MutExpressionNode. Unknown MutExpressionNode kind %d.",
+				mut_expression->kind
+			);
+			return 2;
+		} break;
 	}
-	fputs(";\n", output_file);
 
 	return 0;
 }
@@ -1264,6 +1348,7 @@ int _generate_c_variable_declaration(
 		LOG_ERROR("Failed to generate C variable declaration. Failed to generate expression.");
 		return error;
 	}
+	return 0;
 }
 
 bool _is_file_imported(const char* source_file_path) {
