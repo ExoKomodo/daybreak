@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y
 RUN apt-get install -y curl
-RUN apt-get install -y valgrind
+RUN apt-get install -y --fix-missing valgrind
 RUN apt-get install -y xz-utils
 
 # Install gcc backend
