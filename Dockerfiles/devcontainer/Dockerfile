@@ -18,25 +18,25 @@ RUN chmod +x /usr/local/bin/docker-compose
 RUN apt-get install -qy git
 RUN touch ${HOME}/.gitconfig
 RUN echo "\
-[alias]\
-        co = checkout\
-        cob = checkout -b\
-        cp = cherry-pick\
-        com = commit -m\
-        st = status\
-        pushup = !git push --set-upstream origin `git rev-parse --abbrev-ref HEAD`\
-        br = branch\
-        hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short\
-        type = cat-file -t\
-        dump = cat-file -p\
-        rebi = rebase -i\
-        del = branch -D\
-[branch]\
-        autosetuprebase = always\
-[core]\
-        editor = vim\
-[pull]\
-        rebase = true\
+[alias] \n\
+        co = checkout \n\
+        cob = checkout -b \n\
+        cp = cherry-pick \n\
+        com = commit -m \n\
+        st = status \n\
+        pushup = !git push --set-upstream origin `git rev-parse --abbrev-ref HEAD` \n\
+        br = branch \n\
+        hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short \n\
+        type = cat-file -t \n\
+        dump = cat-file -p \n\
+        rebi = rebase -i \n\
+        del = branch -D \n\
+[branch] \n\
+        autosetuprebase = always \n\
+[core] \n\
+        editor = vim \n\
+[pull] \n\
+        rebase = true \n\
 " > ${HOME}/.gitconfig
 
 # Install vim and configure it
@@ -62,7 +62,21 @@ RUN echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ${HOME}/.zshrc
 
 # Enable ZPrezto modules:
 RUN echo "\
-zstyle ':prezto:load' pmodule 'environment' 'terminal' 'editor' 'history' 'directory' 'spectrum' 'utility' 'completion' 'git' 'history-substring-search' 'python' 'ssh' 'syntax-highlighting' 'prompt' \
+zstyle ':prezto:load' pmodule \
+        'environment' \
+        'terminal' \
+        'editor' \
+        'history' \
+        'directory' \
+        'spectrum' \
+        'utility' \
+        'completion' \
+        'git' \
+        'history-substring-search' \
+        'python' \
+        'ssh' \
+        'syntax-highlighting' \
+        'prompt' \
 " >> ${HOME}/.zpreztorc
 
 RUN echo 'neofetch' >> ${HOME}/.zshrc
