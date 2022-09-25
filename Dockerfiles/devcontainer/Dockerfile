@@ -47,18 +47,15 @@ RUN echo 'N' > ./zsh_args
 RUN apt-get install -qy zsh < ./zsh_args
 RUN rm ./zsh_args
 
-RUN zsh
-
-RUN git clone --depth 1 --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
-
-RUN setopt EXTENDED_GLOB
-RUN for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do \
-  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"; \
-done
-
-RUN chsh -s /bin/zsh
-
-RUN echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ${HOME}/.zshrc
+RUN /bin/zsh -c "\
+git clone --depth 1 --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto" \n\
+setopt EXTENDED_GLOB \n\
+for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do \n\
+  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}" \n\
+done \n\
+chsh -s /bin/zsh \n\
+echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ${HOME}/.zshrc \n\
+"
 
 # Enable ZPrezto modules:
 RUN echo "\
