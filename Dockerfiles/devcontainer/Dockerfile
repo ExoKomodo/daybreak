@@ -17,8 +17,7 @@ RUN chmod +x /usr/local/bin/docker-compose
 # Install git and configure it
 RUN apt-get install -qy git
 RUN touch ${HOME}/.gitconfig
-RUN <<EOF
-echo "
+RUN echo <<EOF
 [alias]
         co = checkout
         cob = checkout -b
@@ -38,8 +37,7 @@ echo "
         editor = vim
 [pull]
         rebase = true
-" > ${HOME}/.gitconfig
-EOF
+EOF > ${HOME}/.gitconfig
 
 # Install vim and configure it
 RUN apt-get install -qy vim
