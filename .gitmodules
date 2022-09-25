@@ -1,0 +1,4 @@
+[submodule "cicada"]
+	path = cicada
+	url = git@github.com:ExoKomodo/cicada.git
+	branch = main
