@@ -57,6 +57,6 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-    command: bash /app/compose_scripts/fix_ownership.sh
+    command: bash /app/cicada/ci/fix_ownership.bash
     volumes:
       - .:/app:rw
