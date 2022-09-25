@@ -52,35 +52,17 @@ RUN zsh
 RUN git clone --depth 1 --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
 
 RUN setopt EXTENDED_GLOB
-RUN <<EOF
-for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
-  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+RUN for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do \
+  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}" \
 done
-EOF
 
 RUN chsh -s /bin/zsh
 
 RUN echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ${HOME}/.zshrc
 
 # Enable ZPrezto modules:
-RUN <<EOF
-echo "
-zstyle ':prezto:load' pmodule \\
-  'environment' \\
-  'terminal' \\
-  'editor' \\
-  'history' \\
-  'directory' \\
-  'spectrum' \\
-  'utility' \\
-  'completion' \\
-  'git' \\
-  'history-substring-search' \\
-  'python' \\
-  'ssh' \\
-  'syntax-highlighting' \\
-  'prompt'
+RUN echo "\
+zstyle ':prezto:load' pmodule 'environment' 'terminal' 'editor' 'history' 'directory' 'spectrum' 'utility' 'completion' 'git' 'history-substring-search' 'python' 'ssh' 'syntax-highlighting' 'prompt' \
 " >> ${HOME}/.zpreztorc
-EOF
 
 RUN echo 'neofetch' >> ${HOME}/.zshrc
