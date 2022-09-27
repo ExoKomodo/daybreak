@@ -30,23 +30,21 @@ pipeline {
       environment {
         CC_COMPILER = 'gcc'
       }
-      parallel {
-        stage('[gcc] Build Daybreak') {
-          steps {
-            sh "bash ${CICADA_COMPOSE} gcc-build build_daybreak"
-          }
+      stage('[gcc] Build Daybreak') {
+        steps {
+          sh "bash ${CICADA_COMPOSE} gcc-build build_daybreak"
         }
+      }
 
-        stage('[gcc] Test') {
-          steps {
-            sh "bash ${CICADA_COMPOSE} gcc-test test"
-          }
+      stage('[gcc] Test') {
+        steps {
+          sh "bash ${CICADA_COMPOSE} gcc-test test"
         }
+      }
 
-        stage('[gcc] Memory Check') {
-          steps {
-            sh "bash ${CICADA_COMPOSE} gcc-memcheck memory_check"
-          }
+      stage('[gcc] Memory Check') {
+        steps {
+          sh "bash ${CICADA_COMPOSE} gcc-memcheck memory_check"
         }
       }
     }
@@ -55,23 +53,21 @@ pipeline {
       environment {
         CC_COMPILER = 'clang'
       }
-      parallel {
-        stage('[clang] Build Daybreak') {
-          steps {
-            sh "bash ${CICADA_COMPOSE} clang-build build_daybreak"
-          }
+      stage('[clang] Build Daybreak') {
+        steps {
+          sh "bash ${CICADA_COMPOSE} clang-build build_daybreak"
         }
+      }
 
-        stage('[clang] Test') {
-          steps {
-            sh "bash ${CICADA_COMPOSE} clang-test test"
-          }
+      stage('[clang] Test') {
+        steps {
+          sh "bash ${CICADA_COMPOSE} clang-test test"
         }
+      }
 
-        stage('[clang] Memory Check') {
-          steps {
-            sh "bash ${CICADA_COMPOSE} clang-memcheck memory_check"
-          }
+      stage('[clang] Memory Check') {
+        steps {
+          sh "bash ${CICADA_COMPOSE} clang-memcheck memory_check"
         }
       }
     }
@@ -80,23 +76,21 @@ pipeline {
       environment {
         CC_COMPILER = 'zig'
       }
-      parallel {
-        stage('[zig] Build Daybreak') {
-          steps {
-            sh "bash ${CICADA_COMPOSE} zig-build build_daybreak"
-          }
+      stage('[zig] Build Daybreak') {
+        steps {
+          sh "bash ${CICADA_COMPOSE} zig-build build_daybreak"
         }
+      }
 
-        stage('[zig] Test') {
-          steps {
-            sh "bash ${CICADA_COMPOSE} zig-test test"
-          }
+      stage('[zig] Test') {
+        steps {
+          sh "bash ${CICADA_COMPOSE} zig-test test"
         }
+      }
 
-        stage('[zig] Memory Check') {
-          steps {
-            sh "bash ${CICADA_COMPOSE} zig-memcheck memory_check"
-          }
+      stage('[zig] Memory Check') {
+        steps {
+          sh "bash ${CICADA_COMPOSE} zig-memcheck memory_check"
         }
       }
     }
@@ -105,17 +99,15 @@ pipeline {
       environment {
         CC_COMPILER = 'zig-wasi'
       }
-      parallel {
-        stage('[zig-wasi] Build Daybreak') {
-          steps {
-            sh "bash ${CICADA_COMPOSE} zig-wasi-build build_daybreak"
-          }
+      stage('[zig-wasi] Build Daybreak') {
+        steps {
+          sh "bash ${CICADA_COMPOSE} zig-wasi-build build_daybreak"
         }
+      }
 
-        stage('[zig-wasi] Test') {
-          steps {
-            sh "bash ${CICADA_COMPOSE} zig-wasi-test test"
-          }
+      stage('[zig-wasi] Test') {
+        steps {
+          sh "bash ${CICADA_COMPOSE} zig-wasi-test test"
         }
       }
     }
