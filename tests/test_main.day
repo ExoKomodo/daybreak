@@ -19,34 +19,34 @@ importc "log/prelude.h"
 
 fun main () int do
 	match
-		? (not (test_double)) =>
-		? 	1
-		? (not (test_enum)) =>
-		? 	2
-		? (not (test_foobar)) =>
-		? 	3
-		? (not (test_hello_world)) =>
-		? 	4
-		? (not (test_integer)) =>
-		? 	5
-		? (not (test_match)) =>
-		? 	6
-		? (not (test_modules)) =>
-		? 	7
-		? (not (test_multiple_imports)) =>
-		? 	8
+		(not (test_double)) =>
+			1
+		(not (test_enum)) =>
+			2
+		(not (test_foobar)) =>
+			3
+		(not (test_hello_world)) =>
+			4
+		(not (test_integer)) =>
+			5
+		(not (test_match)) =>
+			6
+		(not (test_modules)) =>
+			7
+		(not (test_multiple_imports)) =>
+			8
 		(not (test_new)) =>
 			9
-		? (not (test_pointers)) =>
-		? 	10
-		? (not (test_return)) =>
-		? 	11
-		? (not (test_shebang)) =>
-		? 	12
-		? (not (test_types)) =>
-		? 	13
-		? (not (test_bindings)) =>
-		? 	14
+		(not (test_pointers)) =>
+			10
+		(not (test_return)) =>
+			11
+		(not (test_shebang)) =>
+			12
+		(not (test_types)) =>
+			13
+		(not (test_bindings)) =>
+			14
 		(default) => do
 			(LOG_INFO "Successfully passed all tests!")
 			0
