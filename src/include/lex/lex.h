@@ -23,7 +23,7 @@ struct Token* lex_file(const char*, FILE*);
 
 void _lex_build_token(const char*, char[], size_t*, size_t, size_t, struct Token**);
 FILE* _lex_check_path(const char*);
-FILE* lex_open_file(const char*, char[SYSTEM_MAX_PATH]);
+FILE* lex_open_file(const char*, char[MAX_PATH]);
 
 struct Token* lex_file(const char* filename, FILE* file) {
 	if (!file) {
@@ -311,10 +311,10 @@ struct Token* lex_file(const char* filename, FILE* file) {
 	return tokens;
 }
 
-FILE* lex_open_file(const char* filename, char opened_file_name[SYSTEM_MAX_PATH]) {
+FILE* lex_open_file(const char* filename, char opened_file_name[MAX_PATH]) {
 	char* standard_library_directory = get_standard_library_directory();
-	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(SYSTEM_PACKAGE_DIRECTORY) + 2));
-	sprintf(package_directory, "%s" SYSTEM_PACKAGE_DIRECTORY, standard_library_directory);
+	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(PACKAGE_DIRECTORY) + 2));
+	sprintf(package_directory, "%s" PACKAGE_DIRECTORY, standard_library_directory);
         free(standard_library_directory);
         standard_library_directory = NULL;
 	char* full_path = malloc(strlen(package_directory) + strlen(filename) + 2);
