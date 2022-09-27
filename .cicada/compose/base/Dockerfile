@@ -57,9 +57,7 @@ ENV CICADA_JENKINS_GROUP=119
 RUN groupadd -r -f -g ${CICADA_JENKINS_GROUP} jenkins
 RUN useradd -r -u ${CICADA_JENKINS_USER} -g ${CICADA_JENKINS_GROUP} jenkins
 
-# Register daybreak backend from mount directory
-WORKDIR ${MOUNT_DIRECTORY}
-RUN ln -s ${MOUNT_DIRECTORY}/bootstrap/linux/daybreak /usr/bin/daybreak
-
 # Set env vars that have no dependent commands
 ENV C_INCLUDE_PATH=${MOUNT_DIRECTORY}/src/include:${MOUNT_DIRECTORY}/tests/include
+
+WORKDIR ${MOUNT_DIRECTORY}
