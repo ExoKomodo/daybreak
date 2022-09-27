@@ -1,5 +1,7 @@
 FROM ubuntu:kinetic
 
+ARG MOUNT_DIRECTORY=/app
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y --fix-missing
@@ -46,15 +48,17 @@ RUN update-alternatives --install /usr/bin/clang clang $(which clang-11) 3
 RUN update-alternatives --install /usr/bin/cc cc $(which clang) 2
 RUN update-alternatives --install /usr/bin/cc cc $(which zig) 1
 RUN update-alternatives --install /usr/bin/cc cc $(which zig-wasi) 0
-RUN ln -s /app/bootstrap/linux/daybreak /usr/bin/daybreak
 
+# Add jenkins user and group
 ENV JENKINS_USER=112
 ENV JENKINS_GROUP=119
 
 RUN groupadd -r -f -g ${JENKINS_GROUP} jenkins
 RUN useradd -r -u ${JENKINS_USER} -g ${JENKINS_GROUP} jenkins
 
-# Assumes the git repo will be mounted at /app
-ENV C_INCLUDE_PATH=/app/src/include:/app/tests/include
+# Register daybreak backend from mount directory
+WORKDIR ${MOUNT_DIRECTORY}
+RUN ln -s ${MOUNT_DIRECTORY}/bootstrap/linux/daybreak /usr/bin/daybreak
 
-WORKDIR /app
+# Set env vars that have no dependent commands
+ENV C_INCLUDE_PATH=${MOUNT_DIRECTORY}/src/include:${MOUNT_DIRECTORY}/tests/include
