@@ -907,6 +907,7 @@ int generate_c_from_mut_binding(
 					return error;
 				}
 			}
+			LOG_INFO("Here: %p", expression);
 			ast_free_expression_node(expression);
 			expression = NULL;
 			if (error != 0) {
