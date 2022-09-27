@@ -83,6 +83,7 @@ pipeline {
       stages {
         stage('[zig] Build Daybreak') {
           steps {
+            sh "env"
             sh "bash ${CICADA_COMPOSE} zig-build build_daybreak"
           }
         }
