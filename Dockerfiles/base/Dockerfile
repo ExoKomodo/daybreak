@@ -56,3 +56,5 @@ RUN useradd -r -u ${JENKINS_USER} -g ${JENKINS_GROUP} jenkins
 
 # Assumes the git repo will be mounted at /app
 ENV C_INCLUDE_PATH=/app/src/include:/app/tests/include
+
+WORKDIR /app
