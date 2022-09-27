@@ -19,6 +19,13 @@ pipeline {
 	}
 
 	stages {
+		when {
+			anyOf {
+				changeset "base.Jenkinsfile"
+				changeset "containers/base/*"
+			}
+		}
+
 		stage ("Docker Login") {
 			steps {
 				sh "bash ./cicada/ci/container_login.bash"
