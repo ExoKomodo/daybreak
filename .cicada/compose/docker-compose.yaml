@@ -60,6 +60,7 @@ services:
       - CC_COMPILER=${CC_COMPILER}
       - DAYBREAK_BOOTSTRAP=${DAYBREAK_BOOTSTRAP}
       - DAYBREAK_OUT=${DAYBREAK_OUT}
+      - CICADA_CI_DIR=${CICADA_CI_DIR}
     build:
       context: .
       dockerfile: ${CICADA_COMPOSE_DIR}/daybreak/Dockerfile

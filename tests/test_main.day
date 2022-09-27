@@ -41,8 +41,8 @@ fun main () int do
 			10
 		(not (test_return)) =>
 			11
-		? (not (test_shebang)) =>
-		? 	12
+		(not (test_shebang)) =>
+			12
 		(not (test_types)) =>
 			13
 		(not (test_bindings)) =>
