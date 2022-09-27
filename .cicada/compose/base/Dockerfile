@@ -17,10 +17,10 @@ RUN apt-get install -qy gcc-12
 RUN apt-get install -qy clang-11
 
 # Install WASI
-# WORKDIR /wasi
-# RUN curl -O https://raw.githubusercontent.com/ExoKomodo/Daybreak/main/deps/wasi-sysroot-16.0.tar.gz
-# RUN tar -xf wasi-sysroot-16.0.tar.gz
-# RUN rm wasi-sysroot-16.0.tar.gz
+WORKDIR /wasi
+RUN curl -O https://raw.githubusercontent.com/ExoKomodo/Daybreak/main/deps/wasi-sysroot-16.0.tar.gz
+RUN tar -xf wasi-sysroot-16.0.tar.gz
+RUN rm wasi-sysroot-16.0.tar.gz
 
 # Install wasmtime
 RUN curl https://wasmtime.dev/install.sh -sSf | bash
