@@ -16,10 +16,6 @@ pipeline {
     CICADA_REGISTRY_USERNAME = credentials('docker-username')
     CICADA_NAME = 'daybreak'
 
-    CICADA_ROOT_DIR = ".cicada"
-    CICADA_HEAD_DIR = "${CICADA_ROOT_DIR}/.head"
-    CICADA_CI_DIR = "${CICADA_HEAD_DIR}/ci"
-    CICADA_COMPOSE_DIR = "${CICADA_ROOT_DIR}/compose"
     CICADA_DOCKER_HUB_DEV_PROJECT = 'development'
     CICADA_DOCKER_HUB_PRD_PROJECT = 'daybreak'
     CICADA_DOCKER_HUB_USERNAME = 'exokomodo'
