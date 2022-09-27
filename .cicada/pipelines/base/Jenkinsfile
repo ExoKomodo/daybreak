@@ -28,10 +28,6 @@ pipeline {
 	}
 
 	stages {
-		when {
-			changeset "${CICADA_PIPELINES_DIR}/base/**"
-		}
-
 		stage ("Docker Login") {
 			steps {
 				sh "bash ${CICADA_CI_DIR}/container_login.bash"
