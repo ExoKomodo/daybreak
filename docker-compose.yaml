@@ -7,6 +7,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
+      dockerfile: .cicada/pipelines/daybreak/Dockerfile
     command: bash /app/compose_scripts/memory_check.sh
     volumes:
       - .:/app:rw
@@ -17,6 +18,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
+      dockerfile: .cicada/pipelines/daybreak/Dockerfile
     command: bash /app/compose_scripts/test.sh
     volumes:
       - .:/app:rw
@@ -27,6 +29,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
+      dockerfile: .cicada/pipelines/daybreak/Dockerfile
     command: bash /app/compose_scripts/bootstrap.sh
     volumes:
       - .:/app:rw
@@ -37,6 +40,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
+      dockerfile: .cicada/pipelines/daybreak/Dockerfile
     command: bash /app/compose_scripts/build.sh /app/src/main.day
     volumes:
       - .:/app:rw
@@ -47,6 +51,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
+      dockerfile: .cicada/pipelines/daybreak/Dockerfile
     command: bash /app/compose_scripts/build.sh /app/tests/test_main.day
     volumes:
       - .:/app:rw
@@ -57,6 +62,7 @@ services:
       - DAYBREAK_OUT=${DAYBREAK_OUT}
     build:
       context: .
-    command: bash /app/cicada/ci/fix_ownership.bash
+      dockerfile: .cicada/pipelines/daybreak/Dockerfile
+    command: bash /app/.cicada/.head/fix_ownership.bash
     volumes:
       - .:/app:rw

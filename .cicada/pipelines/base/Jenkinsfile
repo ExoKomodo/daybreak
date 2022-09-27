@@ -1,4 +1,7 @@
 def COMPOSE_ARGS = '--build --abort-on-container-exit'
+def CICADA_ROOT_DIR = ".cicada"
+def CICADA_CI_DIR = "${CICADA_ROOT_DIR}/ci"
+def CICADA_PIPELINES_DIR = "${CICADA_ROOT_DIR}/pipelines"
 
 pipeline {
 	agent any
@@ -12,23 +15,26 @@ pipeline {
 		DAYBREAK_BOOTSTRAP="./bootstrap/linux/daybreak"
 		DAYBREAK_OUT="./out"
 		DOCKER_BUILDKIT="1"
-		CICADA_PROD_BRANCH="main"
+		CICADA_PRD_BRANCH="main"
 		CICADA_REGISTRY_PASSWORD=credentials("docker-password")
 		CICADA_REGISTRY_USERNAME=credentials("docker-username")
 		CICADA_NAME="base"
+		CICADA_ROOT_DIR = "${CICADA_ROOT_DIR}"
+		CICADA_CI_DIR = "${CICADA_CI_DIR}"
+		CICADA_PIPELINES_DIR = "${CICADA_PIPELINES_DIR}"
+		CICADA_DOCKER_HUB_USERNAME = "exokomodo"
+		CICADA_DOCKER_HUB_PRD_PROJECT = "daybreak"
+		CICADA_DOCKER_HUB_DEV_PROJECT = "development"
 	}
 
 	stages {
 		when {
-			anyOf {
-				changeset "base.Jenkinsfile"
-				changeset "containers/base/*"
-			}
+			changeset "${CICADA_PIPELINES_DIR}/base/**"
 		}
 
 		stage ("Docker Login") {
 			steps {
-				sh "bash ./cicada/ci/container_login.bash"
+				sh "bash ${CICADA_CI_DIR}/container_login.bash"
 			}
 		}
 
@@ -37,13 +43,13 @@ pipeline {
 				CC_COMPILER = "gcc"
 			}
 			steps {
-				sh "bash ./cicada/ci/container_build.bash"
+				sh "bash ${CICADA_CI_DIR}/container_build.bash"
 			}
 		}
 
 		stage ("Push") {
 			steps {
-				sh "bash ./cicada/ci/container_push.bash"
+				sh "bash ${CICADA_CI_DIR}/container_push.bash"
 			}
 		}
 	}
@@ -54,7 +60,7 @@ pipeline {
 		}
 
 		cleanup {
-			sh "bash ./cicada/ci/cleanup.bash"
+			sh "bash ${CICADA_CI_DIR}/cleanup.bash"
 		}
 	}
 }
