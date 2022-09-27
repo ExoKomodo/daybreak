@@ -8,7 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <std/compiler/system/helpers.h>
+#include <helpers/system.h>
 #include <lex/token.h>
 
 #define _TOKEN_BUFFER_SIZE 64
