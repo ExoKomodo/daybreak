@@ -3,7 +3,6 @@
 .devcontainer       @ExoKomodo/developers
 .github             @ExoKomodo/developers
 .vscode             @ExoKomodo/developers
-admin_scripts       @ExoKomodo/developers
 bootstrap           @ExoKomodo/developers
 compose_scripts     @ExoKomodo/developers
 euler               @ExoKomodo/developers

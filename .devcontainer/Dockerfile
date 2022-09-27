@@ -1,1 +1,1 @@
-FROM exokomodo/daybreak:devcontainer-latest
+FROM exokomodo/development:211-cicada-devcontainer-latest

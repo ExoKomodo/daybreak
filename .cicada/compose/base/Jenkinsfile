@@ -1,0 +1,52 @@
+def COMPOSE_ARGS = '--build --abort-on-container-exit'
+
+pipeline {
+	agent any
+
+	options {
+		disableConcurrentBuilds()
+		ansiColor('xterm')
+	}
+
+	environment {
+		DAYBREAK_BOOTSTRAP="./bootstrap/linux/daybreak"
+		DAYBREAK_OUT="./out"
+		DOCKER_BUILDKIT="1"
+		CICADA_PRD_BRANCH="main"
+		CICADA_REGISTRY_PASSWORD=credentials("docker-password")
+		CICADA_REGISTRY_USERNAME=credentials("docker-username")
+		CICADA_NAME="base"
+		CICADA_DOCKER_HUB_DEV_PROJECT = "development"
+		CICADA_DOCKER_HUB_PRD_PROJECT = "daybreak"
+		CICADA_DOCKER_HUB_USERNAME = "exokomodo"
+	}
+
+	stages {
+		stage ("Docker Login") {
+			steps {
+				sh "bash ${CICADA_CI_DIR}/container_login.bash"
+			}
+		}
+
+		stage ("Build") {
+			environment {
+				CC_COMPILER = "gcc"
+			}
+			steps {
+				sh "bash ${CICADA_CI_DIR}/container_build.bash"
+			}
+		}
+
+		stage ("Push") {
+			steps {
+				sh "bash ${CICADA_CI_DIR}/container_push.bash"
+			}
+		}
+	}
+
+	post {
+		cleanup {
+			sh "bash ${CICADA_CI_DIR}/cleanup.bash"
+		}
+	}
+}

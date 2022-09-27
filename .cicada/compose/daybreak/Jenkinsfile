@@ -1,0 +1,133 @@
+pipeline {
+  agent any
+
+  options {
+    disableConcurrentBuilds()
+    ansiColor('xterm')
+  }
+
+  environment {
+    DAYBREAK_BOOTSTRAP = './bootstrap/linux/daybreak'
+    DAYBREAK_OUT = './out'
+    CICADA_PRD_BRANCH = 'main'
+    CICADA_REGISTRY_PASSWORD = credentials('docker-password')
+    CICADA_REGISTRY_USERNAME = credentials('docker-username')
+    CICADA_NAME = 'daybreak'
+
+    CICADA_DOCKER_HUB_DEV_PROJECT = 'development'
+    CICADA_DOCKER_HUB_PRD_PROJECT = 'daybreak'
+    CICADA_DOCKER_HUB_USERNAME = 'exokomodo'
+  }
+
+  stages {
+    stage('docker login') {
+      steps {
+        sh "bash ${CICADA_CI_DIR}/container_login.bash"
+      }
+    }
+
+    stage('gcc') {
+      environment {
+        CC_COMPILER = 'gcc'
+      }
+      stages {
+        stage('[gcc] Build Daybreak') {
+          steps {
+            sh "bash ${CICADA_COMPOSE} gcc-build build_daybreak"
+          }
+        }
+
+        stage('[gcc] Test') {
+          steps {
+            sh "bash ${CICADA_COMPOSE} gcc-test test"
+          }
+        }
+
+        stage('[gcc] Memory Check') {
+          steps {
+            sh "bash ${CICADA_COMPOSE} gcc-memcheck memory_check"
+          }
+        }
+      }
+    }
+
+    stage('clang') {
+      environment {
+        CC_COMPILER = 'clang'
+      }
+      stages {
+        stage('[clang] Build Daybreak') {
+          steps {
+            sh "bash ${CICADA_COMPOSE} clang-build build_daybreak"
+          }
+        }
+
+        stage('[clang] Test') {
+          steps {
+            sh "bash ${CICADA_COMPOSE} clang-test test"
+          }
+        }
+
+        stage('[clang] Memory Check') {
+          steps {
+            sh "bash ${CICADA_COMPOSE} clang-memcheck memory_check"
+          }
+        }
+      }
+    }
+
+    stage('zig') {
+      environment {
+        CC_COMPILER = 'zig'
+      }
+      stages {
+        stage('[zig] Build Daybreak') {
+          steps {
+            sh "env"
+            sh "bash ${CICADA_COMPOSE} zig-build build_daybreak"
+          }
+        }
+
+        stage('[zig] Test') {
+          steps {
+            sh "bash ${CICADA_COMPOSE} zig-test test"
+          }
+        }
+
+        stage('[zig] Memory Check') {
+          steps {
+            sh "bash ${CICADA_COMPOSE} zig-memcheck memory_check"
+          }
+        }
+      }
+    }
+
+    stage('zig-wasi') {
+      environment {
+        CC_COMPILER = 'zig-wasi'
+      }
+      stages {
+        stage('[zig-wasi] Build Daybreak') {
+          steps {
+            sh "bash ${CICADA_COMPOSE} zig-wasi-build build_daybreak"
+          }
+        }
+
+        stage('[zig-wasi] Test') {
+          steps {
+            sh "bash ${CICADA_COMPOSE} zig-wasi-test test"
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      sh "bash ${CICADA_COMPOSE} fix fix_ownership"
+    }
+    cleanup {
+      sh "bash ${CICADA_CI_DIR}/cleanup.bash"
+    }
+  }
+}

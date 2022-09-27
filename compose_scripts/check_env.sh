@@ -14,15 +14,15 @@ then
 	exit 1
 fi
 
-if [ -z ${JENKINS_USER} ];
+if [ -z ${CICADA_JENKINS_USER} ];
 then
-	echo "Must define env var: JENKINS_USER"
+	echo "Must define env var: CICADA_JENKINS_USER"
 	exit 1
 fi
 
-if [ -z ${JENKINS_GROUP} ];
+if [ -z ${CICADA_JENKINS_GROUP} ];
 then
-	echo "Must define env var: JENKINS_GROUP"
+	echo "Must define env var: CICADA_JENKINS_GROUP"
 	exit 1
 fi
 

@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <std/compiler/system/helpers.h>
+#include <helpers/system.h>
 
 #if defined(_WIN32) || defined(_WIN64)
   #define NEW "examples\\new\\new.day"
@@ -35,7 +35,7 @@ bool test_new() {
   }
 
   FILE* output_file = fopen(NEW_OUTPUT_FILE, "w+");
-  error = system_run_command(NEW_EXECUTABLE, output_file);
+  error = run_command(NEW_EXECUTABLE, output_file);
   fclose(output_file);
 
   output_file = fopen(NEW_OUTPUT_FILE, "r");
