@@ -31,6 +31,7 @@ ARG ARCH=x86_64
 ARG ZIG_VERSION=0.9.1
 ARG ZIG_DIR=/zig-linux-${ARCH}-${ZIG_VERSION}
 ARG ZIG_TARBALL=${ZIG_DIR}.tar.xz
+
 RUN curl -O https://ziglang.org/download/${ZIG_VERSION}${ZIG_TARBALL}
 RUN tar -xf ${ZIG_TARBALL}
 RUN rm ${ZIG_TARBALL}
@@ -50,11 +51,11 @@ RUN update-alternatives --install /usr/bin/cc cc $(which zig) 1
 RUN update-alternatives --install /usr/bin/cc cc $(which zig-wasi) 0
 
 # Add jenkins user and group
-ENV JENKINS_USER=112
-ENV JENKINS_GROUP=119
+ENV CICADA_JENKINS_USER=112
+ENV CICADA_JENKINS_GROUP=119
 
-RUN groupadd -r -f -g ${JENKINS_GROUP} jenkins
-RUN useradd -r -u ${JENKINS_USER} -g ${JENKINS_GROUP} jenkins
+RUN groupadd -r -f -g ${CICADA_JENKINS_GROUP} jenkins
+RUN useradd -r -u ${CICADA_JENKINS_USER} -g ${CICADA_JENKINS_GROUP} jenkins
 
 # Register daybreak backend from mount directory
 WORKDIR ${MOUNT_DIRECTORY}
