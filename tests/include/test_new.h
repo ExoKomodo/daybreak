@@ -35,7 +35,7 @@ bool test_new() {
   }
 
   FILE* output_file = fopen(NEW_OUTPUT_FILE, "w+");
-  error = system_run_command(NEW_EXECUTABLE, output_file);
+  error = run_command(NEW_EXECUTABLE, output_file);
   fclose(output_file);
 
   output_file = fopen(NEW_OUTPUT_FILE, "r");
