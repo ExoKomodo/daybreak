@@ -39,7 +39,7 @@
 	"mounts": [
 		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
 	],
-	"workspaceMount": "type=bind.source=${localWorkspaceFolder},target=/app",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind",
 	"workspaceFolder": "/app",
 	// Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode"
