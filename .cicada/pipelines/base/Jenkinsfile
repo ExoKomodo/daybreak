@@ -1,7 +1,9 @@
 def COMPOSE_ARGS = '--build --abort-on-container-exit'
+
 def CICADA_ROOT_DIR = ".cicada"
-def CICADA_CI_DIR = "${CICADA_ROOT_DIR}/ci"
 def CICADA_PIPELINES_DIR = "${CICADA_ROOT_DIR}/pipelines"
+def CICADA_HEAD_DIR = "${CICADA_ROOT_DIR}/.head"
+def CICADA_CI_DIR = "${CICADA_ROOT_DIR}/ci"
 
 pipeline {
 	agent any
@@ -19,12 +21,13 @@ pipeline {
 		CICADA_REGISTRY_PASSWORD=credentials("docker-password")
 		CICADA_REGISTRY_USERNAME=credentials("docker-username")
 		CICADA_NAME="base"
-		CICADA_ROOT_DIR = "${CICADA_ROOT_DIR}"
 		CICADA_CI_DIR = "${CICADA_CI_DIR}"
+		CICADA_HEAD_DIR = "${CICADA_CI_DIR}"
 		CICADA_PIPELINES_DIR = "${CICADA_PIPELINES_DIR}"
-		CICADA_DOCKER_HUB_USERNAME = "exokomodo"
-		CICADA_DOCKER_HUB_PRD_PROJECT = "daybreak"
+		CICADA_ROOT_DIR = "${CICADA_ROOT_DIR}"
 		CICADA_DOCKER_HUB_DEV_PROJECT = "development"
+		CICADA_DOCKER_HUB_PRD_PROJECT = "daybreak"
+		CICADA_DOCKER_HUB_USERNAME = "exokomodo"
 	}
 
 	stages {
