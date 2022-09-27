@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <std/compiler/system/helpers.h>
+#include <helpers/system.h>
 
 #if defined(_WIN32) || defined(_WIN64)
   #define NEW "examples\\new\\new.day"
