@@ -51,3 +51,5 @@ RUN curl -O https://raw.githubusercontent.com/ExoKomodo/Daybreak/main/.devcontai
 RUN /bin/zsh ./install_zprezto.zsh
 
 RUN echo 'neofetch' >> ${HOME}/.zshrc
+
+RUN ln -s /workspaces/daybreak/bootstrap/linux/daybreak /usr/bin/daybreak
