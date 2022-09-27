@@ -19,7 +19,7 @@ pipeline {
     CICADA_DOCKER_HUB_DEV_PROJECT = 'development'
     CICADA_DOCKER_HUB_PRD_PROJECT = 'daybreak'
     CICADA_DOCKER_HUB_USERNAME = 'exokomodo'
-    COMPOSE = "${CICADA_CI_DIR}/compose.bash"
+    COMPOSE = ".cicada/.head/ci/compose.bash"
   }
 
   stages {
