@@ -28,6 +28,7 @@ pipeline {
 		CICADA_DOCKER_HUB_DEV_PROJECT = "development"
 		CICADA_DOCKER_HUB_PRD_PROJECT = "daybreak"
 		CICADA_DOCKER_HUB_USERNAME = "exokomodo"
+		COMPOSE_FILE_ARG = "-f ${CICADA_PIPELINES_DIR}/${CICADA_NAME}/docker-compose.yaml"
 	}
 
 	stages {
@@ -54,10 +55,6 @@ pipeline {
 	}
 
 	post {
-		always {
-			sh "docker-compose up ${COMPOSE_ARGS} fix_ownership"
-		}
-
 		cleanup {
 			sh "bash ${CICADA_CI_DIR}/cleanup.bash"
 		}

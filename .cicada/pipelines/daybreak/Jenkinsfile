@@ -23,7 +23,7 @@ pipeline {
     CICADA_DOCKER_HUB_DEV_PROJECT = 'development'
     CICADA_DOCKER_HUB_PRD_PROJECT = 'daybreak'
     CICADA_DOCKER_HUB_USERNAME = 'exokomodo'
-    COMPOSE_FILE = "${CICADA_PIPELINES_DIR}/${CICADA_NAME}/docker-compose.yaml"
+    COMPOSE_FILE_ARG = "-f ${CICADA_PIPELINES_DIR}/${CICADA_NAME}/docker-compose.yaml"
   }
 
   stages {
@@ -40,19 +40,19 @@ pipeline {
       parallel {
         stage('[gcc] Build Daybreak') {
           steps {
-            sh "docker-compose -f ${COMPOSE_FILE} -p gcc-build up ${COMPOSE_ARGS} build_daybreak"
+            sh "docker-compose ${COMPOSE_FILE} -p gcc-build up ${COMPOSE_ARGS} build_daybreak"
           }
         }
 
         stage('[gcc] Test') {
           steps {
-            sh "docker-compose -f ${COMPOSE_FILE} -p gcc-test up ${COMPOSE_ARGS} test"
+            sh "docker-compose z${COMPOSE_FILE} -p gcc-test up ${COMPOSE_ARGS} test"
           }
         }
 
         stage('[gcc] Memory Check') {
           steps {
-            sh "docker-compose -f ${COMPOSE_FILE} -p gcc-memcheck up ${COMPOSE_ARGS} memory_check"
+            sh "docker-compose ${COMPOSE_FILE} -p gcc-memcheck up ${COMPOSE_ARGS} memory_check"
           }
         }
       }
@@ -65,19 +65,19 @@ pipeline {
       parallel {
         stage('[clang] Build Daybreak') {
           steps {
-            sh "docker-compose -f ${COMPOSE_FILE} -p clang-build up ${COMPOSE_ARGS} build_daybreak"
+            sh "docker-compose ${COMPOSE_FILE} -p clang-build up ${COMPOSE_ARGS} build_daybreak"
           }
         }
 
         stage('[clang] Test') {
           steps {
-            sh "docker-compose -f ${COMPOSE_FILE} -p clang-test up ${COMPOSE_ARGS} test"
+            sh "docker-compose ${COMPOSE_FILE} -p clang-test up ${COMPOSE_ARGS} test"
           }
         }
 
         stage('[clang] Memory Check') {
           steps {
-            sh "docker-compose -f ${COMPOSE_FILE} -p clang-memcheck up ${COMPOSE_ARGS} memory_check"
+            sh "docker-compose ${COMPOSE_FILE} -p clang-memcheck up ${COMPOSE_ARGS} memory_check"
           }
         }
       }
@@ -90,19 +90,19 @@ pipeline {
       parallel {
         stage('[zig] Build Daybreak') {
           steps {
-            sh "docker-compose -f ${COMPOSE_FILE} -p zig-build up ${COMPOSE_ARGS} build_daybreak"
+            sh "docker-compose ${COMPOSE_FILE_ARG} -p zig-build up ${COMPOSE_ARGS} build_daybreak"
           }
         }
 
         stage('[zig] Test') {
           steps {
-            sh "docker-compose -f ${COMPOSE_FILE} -p zig-test up ${COMPOSE_ARGS} test"
+            sh "docker-compose ${COMPOSE_FILE_ARG} -p zig-test up ${COMPOSE_ARGS} test"
           }
         }
 
         stage('[zig] Memory Check') {
           steps {
-            sh "docker-compose -f ${COMPOSE_FILE} -p zig-memcheck up ${COMPOSE_ARGS} memory_check"
+            sh "docker-compose ${COMPOSE_FILE_ARG} -p zig-memcheck up ${COMPOSE_ARGS} memory_check"
           }
         }
       }
@@ -115,13 +115,13 @@ pipeline {
       parallel {
         stage('[zig-wasi] Build Daybreak') {
           steps {
-            sh "docker-compose -f ${COMPOSE_FILE} -p zig-wasi-build up ${COMPOSE_ARGS} build_daybreak"
+            sh "docker-compose ${COMPOSE_FILE_ARG} -p zig-wasi-build up ${COMPOSE_ARGS} build_daybreak"
           }
         }
 
         stage('[zig-wasi] Test') {
           steps {
-            sh "docker-compose -f ${COMPOSE_FILE} -p zig-wasi-test up ${COMPOSE_ARGS} test"
+            sh "docker-compose ${COMPOSE_FILE_ARG} -p zig-wasi-test up ${COMPOSE_ARGS} test"
           }
         }
       }
