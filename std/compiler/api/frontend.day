@@ -2,7 +2,7 @@ importc "stdio.h"
 importc "string.h"
 
 importc "generation/prelude.h"
-importc "std/compiler/system/helpers.h"
+importc "helpers/system.h"
 importc "lex/prelude.h"
 importc "macros/helpers.h"
 
