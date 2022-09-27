@@ -1326,9 +1326,6 @@ struct ExpressionNode* ast_new_expression_node(
 }
 
 void ast_free_expression_node(struct ExpressionNode* node) {
-  if (!node) {
-    return;
-  }
   switch (node->kind) {
     case AstCallExpression: {
       ast_free_call_expression_node(node->value.call_expression);

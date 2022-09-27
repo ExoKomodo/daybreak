@@ -852,20 +852,20 @@ int generate_c_from_mut_binding(
 				AstIdentifierExpression,
 				(union ExpressionNodeUnion) {
 					.identifier_expression = ast_new_identifier_expression_node(
-						ast_new_identifier_node(
-							type_name
-						),
+						ast_new_identifier_node(type_name),
 						NULL
 					)
 				}
 			);
 			sizeof_call_expressions[1] = NULL;
+			char* sizeof_identifier = malloc(sizeof(char) * (strlen("sizeof") + 1));
+			strcpy(sizeof_identifier, "sizeof");
 			struct ExpressionNode** malloc_call_expressions = malloc(sizeof(struct ExpressionNode) * 2);
 			malloc_call_expressions[0] = ast_new_expression_node(
 				AstCallExpression,
 				(union ExpressionNodeUnion) {
 					.call_expression = ast_new_call_expression_node(
-						ast_new_identifier_node("sizeof"),
+						ast_new_identifier_node(sizeof_identifier),
 						ast_new_expression_list_node(
 							sizeof_call_expressions
 						)
@@ -873,11 +873,13 @@ int generate_c_from_mut_binding(
 				}
 			);
 			malloc_call_expressions[1] = NULL;
+			char* malloc_identifier = malloc(sizeof(char) * (strlen("malloc") + 1));
+			strcpy(malloc_identifier, "malloc");
 			struct ExpressionNode* expression = ast_new_expression_node(
 				AstCallExpression,
 				(union ExpressionNodeUnion) {
 					.call_expression = ast_new_call_expression_node(
-						ast_new_identifier_node("malloc"),
+						ast_new_identifier_node(malloc_identifier),
 						ast_new_expression_list_node(
 							malloc_call_expressions
 						)
@@ -907,7 +909,6 @@ int generate_c_from_mut_binding(
 					return error;
 				}
 			}
-			LOG_INFO("Here: %p", expression);
 			ast_free_expression_node(expression);
 			expression = NULL;
 			if (error != 0) {
