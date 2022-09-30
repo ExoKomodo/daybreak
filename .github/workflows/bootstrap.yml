@@ -7,7 +7,7 @@ on:
 
 jobs:
   bootstrap_linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       C_INCLUDE_PATH: './src/include:./tests/include'
     steps:
