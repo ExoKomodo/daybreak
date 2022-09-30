@@ -62,7 +62,7 @@ fun system_get_standard_library_directory () cstring do
 	end
 end
 
-fun system_run_command (command: ccstring output_stream: ptr<FILE>) int do
+fun system_run_command (command: cstring output_stream: ptr<FILE>) int do
 	mut command_stream: ptr<FILE> <- (popen command "r")
 	mut buffer: ptr<char> <- (malloc
 		(mul
@@ -121,7 +121,7 @@ fun system_setup_language_directories () int do
 	0
 end
 
-fun _system_make_dir_check (directory: ccstring error: int) int do
+fun _system_make_dir_check (directory: cstring error: int) int do
 	match
 		(and
 			(truthy error)
@@ -136,12 +136,12 @@ fun _system_make_dir_check (directory: ccstring error: int) int do
 	end
 end
 
-fun _system_make_dir (directory: ccstring) int do
+fun _system_make_dir (directory: cstring) int do
 	let error: int <- (_system_mkdir_common directory)
 	(_system_make_dir_check directory error)		
 end
 
-fun _system_make_subdir (directory: ccstring subdirectory: ccstring) int do
+fun _system_make_subdir (directory: cstring subdirectory: cstring) int do
 	mut full_path: cstring <- (malloc
 		(mul
 			(sizeof char)
