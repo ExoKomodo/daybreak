@@ -129,7 +129,7 @@ union StatementNodeUnion;
 union TypeDeclarationNodeUnion;
 union TypeExpressionNodeUnion;
 
-union AstNodeUnion {
+typedef union AstNodeUnion {
   struct BindingStatementNode* binding_statement;
   struct CallExpressionNode* call_expression;
   struct DoStatementNode* do_statement;
@@ -174,7 +174,7 @@ union AstNodeUnion {
   struct TypeExpressionNode* type_expression;
   struct TypeIdentifierNode* type_identifier;
   struct UnionTypeDeclarationNode* union_type_declaration;
-};
+} AstNodeUnion;
 
 union BindingStatementNodeUnion {
   struct LetBindingNode* let_binding;
