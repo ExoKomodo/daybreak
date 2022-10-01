@@ -489,6 +489,8 @@ struct UnionTypeDeclarationNode {
 /*************************/
 /* Function Declarations */
 /*************************/
+// void ast_free_node(struct AstNode*);
+
 struct BindingStatementNode* ast_new_binding_statement_node(AstNodeKind, union BindingStatementNodeUnion);
 void ast_free_binding_statement_node(struct BindingStatementNode*);
 struct BindingStatementNode* ast_parse_binding_statement(struct Token**);
@@ -716,6 +718,152 @@ struct UnionTypeDeclarationNode* ast_new_union_type_declaration_node(struct Iden
 void ast_free_union_type_declaration_node(struct UnionTypeDeclarationNode*);
 struct UnionTypeDeclarationNode* ast_parse_union_type_declaration(struct IdentifierNode*, struct Token**);
 bool ast_union_type_declaration_token_matches_first_set(struct Token);
+
+/***********/
+/* AstNode */
+/***********/
+// void ast_free_node(struct AstNode* node) {
+//   switch (node->kind) {
+//     case AstBindingStatement: {
+//       ast_free_binding_statement_node(node->value.binding_statement);
+//     } break;
+//     case AstCallExpression: {
+//       ast_free_call_expression_node(node->value.call_expression);
+//     } break;
+//     case AstDoStatement: {
+//       ast_free_do_statement_node(node->value.do_statement);
+//     } break;
+//     case AstDoubleExpression: {
+//       ast_free_double_expression_node(node->value.double_expression);
+//     } break;
+//     case AstEnumField: {
+//       ast_free_enum_field_node(node->value.enum_field);
+//     } break;
+//     case AstEnumFieldList: {
+//       ast_free_enum_field_list_node(node->value.enum_field_list);
+//     } break;
+//     case AstEnumTypeDeclaration: {
+//       ast_free_enum_type_declaration_node(node->value.enum_type_declaration);
+//     } break;
+//     case AstEnumTypeExpression: {
+//       ast_free_enum_type_expression_node(node->value.enum_type_expression);
+//     } break;
+//     case AstExpression: {
+//       ast_free_expression_node(node->value.expression);
+//     } break;
+//     case AstExpressionList: {
+//       ast_free_expression_list_node(node->value.expression_list);
+//     } break;
+//     case AstField: {
+//       ast_free_field_node(node->value.field);
+//     } break;
+//     case AstFieldBinding: {
+//       ast_free_field_binding_node(node->value.field_binding);
+//     } break;
+//     case AstFieldBindingList: {
+//       ast_free_field_binding_list_node(node->value.field_binding_list);
+//     } break;
+//     case AstFieldList: {
+//       ast_free_field_list_node(node->value.field_list);
+//     } break;
+//     case AstFunctionDeclaration: {
+//       ast_free_function_declaration_node(node->value.function_declaration);
+//     } break;
+//     case AstIdentifier: {
+//       ast_free_identifier_node(node->value.identifier);
+//     } break;
+//     case AstIdentifierExpression: {
+//       ast_free_identifier_expression_node(node->value.identifier_expression);
+//     } break;
+//     case AstImportStatement: {
+//       ast_free_import_statement_node(node->value.import_statement);
+//     } break;
+//     case AstIntegerExpression: {
+//       ast_free_integer_expression_node(node->value.integer_expression);
+//     } break;
+//     case AstLetBinding: {
+//       ast_free_let_binding_node(node->value.let_binding);
+//     } break;
+//     case AstListExpression: {
+//       ast_free_list_expression_node(node->value.list_expression);
+//     } break;
+//     case AstMatchCase: {
+//       ast_free_match_case_node(node->value.match_case);
+//     } break;
+//     case AstMatchCaseList: {
+//       ast_free_match_case_list_node(node->value.match_case_list);
+//     } break;
+//     case AstMatchStatement: {
+//       ast_free_match_statement_node(node->value.match_expression);
+//     } break;
+//     case AstModuleStatement: {
+//       ast_free_module_statement_node(node->value.module_statement);
+//     } break;
+//     case AstModuleStatementList: {
+//       ast_free_module_statement_list_node(node->value.module_statement_list);
+//     } break;
+//     case AstMutBinding: {
+//       ast_free_mut_binding_node(node->value.mut_binding);
+//     } break;
+//     case AstMutExpression: {
+//       ast_free_mut_expression_node(node->value.mut_expression);
+//     } break;
+//     case AstNewAlloc: {
+//       ast_free_new_alloc_node(node->value.new_alloc);
+//     } break;
+//     case AstNumericExpression: {
+//       ast_free_numeric_expression_node(node->value.numeric_expression);
+//     } break;
+//     case AstParameter: {
+//       ast_free_parameter_node(node->value.parameter);
+//     } break;
+//     case AstParameterList: {
+//       ast_free_parameter_list_node(node->value.parameter_list);
+//     } break;
+//     case AstProgram: {
+//       ast_free_program_node(node->value.program);
+//     } break;
+//     case AstReturnStatement: {
+//       ast_free_return_statement_node(node->value.return_statement);
+//     } break;
+//     case AstShebang: {
+//       ast_free_shebang_node(node->value.shebang);
+//     } break;
+//     case AstStatement: {
+//       ast_free_statement_node(node->value.statement);
+//     } break;
+//     case AstStatementList: {
+//       ast_free_statement_list_node(node->value.statement_list);
+//     } break;
+//     case AstStringExpression: {
+//       ast_free_string_expression_node(node->value.string_expression);
+//     } break;
+//     case AstStructTypeDeclaration: {
+//       ast_free_struct_type_declaration_node(node->value.struct_type_declaration);
+//     } break;
+//     case AstStructuredTypeExpression: {
+//       ast_free_structured_type_expression_node(node->value.structured_type_expression);
+//     } break;
+//     case AstTypeDeclaration: {
+//       ast_free_type_declaration_node(node->value.type_declaration);
+//     } break;
+//     case AstTypeExpression: {
+//       ast_free_type_expression_node(node->value.type_expression);
+//     } break;
+//     case AstTypeIdentifier: {
+//       ast_free_type_identifier_node(node->value.type_identifier);
+//     } break;
+//     case AstUnionTypeDeclaration: {
+//       ast_free_union_type_declaration_node(node->value.union_type_declaration);
+//     } break;
+//     default: {
+//       LOG_ERROR("Invalid AstNode kind");
+//       exit(1);
+//     }
+//   }
+
+//   free(node);
+// }
 
 /*************************/
 /* BindingStatementNode */
