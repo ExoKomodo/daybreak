@@ -8,7 +8,7 @@ fun ast_new_node (kind: AstNodeKind value: AstNodeUnion) ptr<AstNode> do
 	node
 end
 
-fun ast_free_node(node_ptr: ptr<AstNode>) bool do
+fun ast_free_node(node_ptr: ptr<AstNode>) int do
 	let node: AstNode <- (deref node_ptr)
 	let kind: AstNodeKind <- node.kind
 	let value: AstNodeUnion <- node.value
@@ -105,9 +105,10 @@ fun ast_free_node(node_ptr: ptr<AstNode>) bool do
 		(default) => do
 			(LOG_ERROR "Invalid AstNode kind")
 			(exit 1)
+			1
 		end
 	end
 
 	(delete node_ptr)
-	true
+	0
 end
