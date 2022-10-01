@@ -13,9 +13,9 @@ fun ast_free_node(node_ptr: ptr<AstNode>) bool do
 	let kind: AstNodeKind <- node.kind
 	let value: AstNodeUnion <- node.value
 
-	? match
-	? 	(eq kind #AstNodeKind.AstBindingStatement) =>
-	? 		(ast_free_binding_statement_node value.binding_statement)
+	match
+		(eq kind #AstNodeKind.AstBindingStatement) =>
+			(ast_free_binding_statement_node value.binding_statement)
 	? 	(eq kind #AstNodeKind.AstCallExpression) =>
 	? 		(ast_free_call_expression_node value.call_expression)
 	? 	(eq kind #AstNodeKind.AstDoStatement) =>
@@ -102,11 +102,11 @@ fun ast_free_node(node_ptr: ptr<AstNode>) bool do
 	? 		(ast_free_type_identifier_node value.type_identifier)
 	? 	(eq kind #AstNodeKind.AstUnionTypeDeclaration) =>
 	? 		(ast_free_union_type_declaration_node value.union_type_declaration)
-	? 	(default) => do
-	? 		(LOG_ERROR "Invalid AstNode kind")
-	? 		(exit 1)
-	? 	end
-	? end
+		(default) => do
+			(LOG_ERROR "Invalid AstNode kind")
+			(exit 1)
+		end
+	end
 
 	(delete node_ptr)
 	true
