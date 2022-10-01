@@ -73,6 +73,7 @@ fun system_run_command (command: cstring output_stream: ptr<FILE>) int do
 		output_stream
 		buffer
 		_SYSTEM_COMMAND_BUFFER_SIZE)
+	(delete buffer)
 	(pclose command_stream)
 end
 
