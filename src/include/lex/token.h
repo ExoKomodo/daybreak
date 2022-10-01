@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <log/prelude.h>
-
 typedef struct Token {
 	const char* filename;
 	char* name;

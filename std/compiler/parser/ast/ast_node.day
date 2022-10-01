@@ -1,0 +1,114 @@
+importc "parser/prelude.h"
+
+fun ast_new_node (kind: AstNodeKind value: AstNodeUnion) ptr<AstNode> do
+	mut node: ptr<AstNode> <- new {AstNode
+		kind <- kind
+		value <- value
+	}
+	node
+end
+
+fun ast_free_node(node_ptr: ptr<AstNode>) int do
+	let node: AstNode <- (deref node_ptr)
+	let kind: AstNodeKind <- node.kind
+	let value: AstNodeUnion <- node.value
+
+	match
+		(eq kind #AstNodeKind.AstBindingStatement) =>
+			(ast_free_binding_statement_node value.binding_statement)
+		(eq kind #AstNodeKind.AstCallExpression) =>
+			(ast_free_call_expression_node value.call_expression)
+		(eq kind #AstNodeKind.AstDoStatement) =>
+			(ast_free_do_statement_node value.do_statement)
+		(eq kind #AstNodeKind.AstDoubleExpression) =>
+			(ast_free_double_expression_node value.double_expression)
+		(eq kind #AstNodeKind.AstEnumField) =>
+			(ast_free_enum_field_node value.enum_field)
+		(eq kind #AstNodeKind.AstEnumFieldList) =>
+			(ast_free_enum_field_list_node value.enum_field_list)
+		(eq kind #AstNodeKind.AstEnumTypeDeclaration) =>
+			(ast_free_enum_type_declaration_node value.enum_type_declaration)
+		(eq kind #AstNodeKind.AstEnumTypeExpression) =>
+			(ast_free_enum_type_expression_node value.enum_type_expression)
+		(eq kind #AstNodeKind.AstExpression) =>
+			(ast_free_expression_node value.expression)
+		(eq kind #AstNodeKind.AstExpressionList) =>
+			(ast_free_expression_list_node value.expression_list)
+		(eq kind #AstNodeKind.AstField) =>
+			(ast_free_field_node value.field)
+		(eq kind #AstNodeKind.AstFieldBinding) =>
+			(ast_free_field_binding_node value.field_binding)
+		(eq kind #AstNodeKind.AstFieldBindingList) =>
+			(ast_free_field_binding_list_node value.field_binding_list)
+		(eq kind #AstNodeKind.AstFieldList) =>
+			(ast_free_field_list_node value.field_list)
+		(eq kind #AstNodeKind.AstFunctionDeclaration) =>
+			(ast_free_function_declaration_node value.function_declaration)
+		(eq kind #AstNodeKind.AstIdentifier) =>
+			(ast_free_identifier_node value.identifier)
+		(eq kind #AstNodeKind.AstIdentifierExpression) =>
+			(ast_free_identifier_expression_node value.identifier_expression)
+		(eq kind #AstNodeKind.AstImportStatement) =>
+			(ast_free_import_statement_node value.import_statement)
+		(eq kind #AstNodeKind.AstIntegerExpression) =>
+			(ast_free_integer_expression_node value.integer_expression)
+		(eq kind #AstNodeKind.AstLetBinding) =>
+			(ast_free_let_binding_node value.let_binding)
+		(eq kind #AstNodeKind.AstListExpression) =>
+			(ast_free_list_expression_node value.list_expression)
+		(eq kind #AstNodeKind.AstMatchCase) =>
+			(ast_free_match_case_node value.match_case)
+		(eq kind #AstNodeKind.AstMatchCaseList) =>
+			(ast_free_match_case_list_node value.match_case_list)
+		(eq kind #AstNodeKind.AstMatchStatement) =>
+			(ast_free_match_statement_node value.match_expression)
+		(eq kind #AstNodeKind.AstModuleStatement) =>
+			(ast_free_module_statement_node value.module_statement)
+		(eq kind #AstNodeKind.AstModuleStatementList) =>
+			(ast_free_module_statement_list_node value.module_statement_list)
+		(eq kind #AstNodeKind.AstMutBinding) =>
+			(ast_free_mut_binding_node value.mut_binding)
+		(eq kind #AstNodeKind.AstMutExpression) =>
+			(ast_free_mut_expression_node value.mut_expression)
+		(eq kind #AstNodeKind.AstNewAlloc) =>
+			(ast_free_new_alloc_node value.new_alloc)
+		(eq kind #AstNodeKind.AstNumericExpression) =>
+			(ast_free_numeric_expression_node value.numeric_expression)
+		(eq kind #AstNodeKind.AstParameter) =>
+			(ast_free_parameter_node value.parameter)
+		(eq kind #AstNodeKind.AstParameterList) =>
+			(ast_free_parameter_list_node value.parameter_list)
+		(eq kind #AstNodeKind.AstProgram) =>
+			(ast_free_program_node value.program)
+		(eq kind #AstNodeKind.AstReturnStatement) =>
+			(ast_free_return_statement_node value.return_statement)
+		(eq kind #AstNodeKind.AstShebang) =>
+			(ast_free_shebang_node value.shebang)
+		(eq kind #AstNodeKind.AstStatement) =>
+			(ast_free_statement_node value.statement)
+		(eq kind #AstNodeKind.AstStatementList) =>
+			(ast_free_statement_list_node value.statement_list)
+		(eq kind #AstNodeKind.AstStringExpression) =>
+			(ast_free_string_expression_node value.string_expression)
+		(eq kind #AstNodeKind.AstStructTypeDeclaration) =>
+			(ast_free_struct_type_declaration_node value.struct_type_declaration)
+		(eq kind #AstNodeKind.AstStructuredTypeExpression) =>
+			(ast_free_structured_type_expression_node value.structured_type_expression)
+		(eq kind #AstNodeKind.AstTypeDeclaration) =>
+			(ast_free_type_declaration_node value.type_declaration)
+		(eq kind #AstNodeKind.AstTypeExpression) =>
+			(ast_free_type_expression_node value.type_expression)
+		(eq kind #AstNodeKind.AstTypeIdentifier) =>
+			(ast_free_type_identifier_node value.type_identifier)
+		(eq kind #AstNodeKind.AstUnionTypeDeclaration) =>
+			(ast_free_union_type_declaration_node value.union_type_declaration)
+		(default) => do
+			(LOG_ERROR "Invalid AstNode kind")
+			(exit 1)
+			1
+		end
+	end
+
+	(delete node_ptr)
+	0
+end

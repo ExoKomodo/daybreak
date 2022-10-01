@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <stdbool.h>
 
-#include <helpers/system.h>
+#include <std/compiler/system/helpers.h>
 #include <lex/prelude.h>
 #include <parser/prelude.h>
 #include <macros/helpers.h>
@@ -52,7 +52,7 @@ int generate_c_from_type_expression(FILE*, const struct TypeExpressionNode*);
 int generate_c_from_type_identifier(FILE*, const struct TypeIdentifierNode*);
 int generate_c_from_union_type_declaration(FILE*, const struct UnionTypeDeclarationNode*);
 int generate_c_include_prelude(FILE*);
-int generate_c_macros(FILE*);
+// int generate_c_macros(FILE*);
 int _generate_c_variable_declaration(FILE*, const struct TypeIdentifierNode*, const struct IdentifierNode*, const struct ExpressionNode*);
 int _generate_c_function_definition(FILE*, const struct FunctionDeclarationNode*);
 int _generate_c_function_declaration(FILE*, const struct FunctionDeclarationNode*);
@@ -66,7 +66,7 @@ bool _should_inline(const struct FunctionDeclarationNode*);
 
 #define IMPORTED_FILE_MAX 1024
 
-char imported_file_paths[IMPORTED_FILE_MAX][MAX_PATH] = {{'\0'}};
+char imported_file_paths[IMPORTED_FILE_MAX][SYSTEM_MAX_PATH] = {{'\0'}};
 int imported_file_count = 0;
 
 int generate_c_code(
@@ -842,9 +842,9 @@ int generate_c_from_mut_binding(
 	const struct MutExpressionNode* mut_expression = mut_binding->mut_expression;
 	switch (mut_expression->kind) {
 		case AstNewAlloc: {
-			const struct NewAllocNode* new_alloc = mut_binding->mut_expression->value.new_alloc;
+			const struct NewAllocNode* new_alloc = mut_expression->value.new_alloc;
 			const char* type_name_temp = new_alloc->structured_type_expression->type->identifier->name;
-			char* type_name = malloc(sizeof(char) * (strlen(type_name_temp) + 1));
+			char* type_name = malloc(sizeof(char) * ((strlen(type_name_temp) + 1)));
 			strcpy(type_name, type_name_temp);
 
 			struct ExpressionNode** sizeof_call_expressions = malloc(sizeof(struct ExpressionNode) * 2);
@@ -1282,42 +1282,6 @@ int generate_c_from_union_type_declaration(FILE* output_file, const struct Union
 	return 0;	
 }
 
-int generate_c_macros(FILE* output_file) {
-	fputs("#define add(x, y) ((x) + (y))\n", output_file);
-	fputs("#define and(x, y) ((x) && (y))\n", output_file);
-	fputs("#define cast(type, x) ((type) x)\n", output_file);
-	fputs("#define ccstring const char *\n", output_file);
-	fputs("#define cstring char *\n", output_file);
-	fputs("#define delete(x) { (free((void*)x)); x = NULL; }\n", output_file);
-	fputs("#define deref(x) *(x)\n", output_file);
-	fputs("#define div(x, y) ((x) / (y))\n", output_file);
-	fputs("#define eq(x, y) ((x) == (y))\n", output_file);
-	fputs("#define equals(x, y) ((x) == (y))\n", output_file);
-	fputs("#define falsey(x) (!(x))\n", output_file);
-	fputs("#define gt(x, y) ((x) > (y))\n", output_file);
-	fputs("#define gte(x, y) ((x) >= (y))\n", output_file);
-	fputs("#define interpolate_cstring(x, y) x y\n", output_file);
-	fputs("#define lt(x, y) ((x) < (y))\n", output_file);
-	fputs("#define lte(x, y) ((x) <= (y))\n", output_file);
-	fputs("#define mod(x, y) ((x) % (y))\n", output_file);
-	fputs("#define mul(x, y) ((x) * (y))\n", output_file);
-	fputs("#define nand(x, y) (!((x) && (y)))\n", output_file);
-	fputs("#define neg(x) (-(x))\n", output_file);
-	fputs("#define nor(x, y) (!((x) || (y)))\n", output_file);
-	fputs("#define not(x) (!(x))\n", output_file);
-	fputs("#define or(x, y) ((x) || (y))\n", output_file);
-	fputs("#define point(x) &(x)\n", output_file);
-	fputs("#define sub(x, y) ((x) - (y))\n", output_file);
-	fputs("#define truthy(x) (x)\n", output_file);
-	fputs("#define xor(x, y) ((x) ^ (y))\n", output_file);
-	fputs("#define xnor(x, y) (!((x) ^ (y)))\n", output_file);
-	fputs("#define unsafe_index(arr, index) (arr)[(index)]\n", output_file);
-	fputs("#define unused(x) (void)(x)\n", output_file);
-	fputc('\n', output_file);
-
-	return 0;
-}
-
 int _generate_c_variable_declaration(
 	FILE* output_file,
 	const struct TypeIdentifierNode* type,
@@ -1354,9 +1318,9 @@ int _generate_c_variable_declaration(
 }
 
 bool _is_file_imported(const char* source_file_path) {
-        char* standard_library_directory = get_standard_library_directory();
-	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(PACKAGE_DIRECTORY) + 2));
-	sprintf(package_directory, "%s" PACKAGE_DIRECTORY, standard_library_directory);
+  char* standard_library_directory = system_get_standard_library_directory();
+	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(SYSTEM_PACKAGE_DIRECTORY) + 2));
+	sprintf(package_directory, "%s" SYSTEM_PACKAGE_DIRECTORY, standard_library_directory);
 	free(standard_library_directory);
         standard_library_directory = NULL;
         char* full_package_path = malloc(strlen(package_directory) + strlen(source_file_path) + 2);

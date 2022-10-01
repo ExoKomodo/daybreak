@@ -1,4 +1,5 @@
 import "std/compiler/api.day"
+import "std/log/prelude.day"
 
 importc "test_bindings.h"
 importc "test_double.h"
@@ -14,8 +15,6 @@ importc "test_pointers.h"
 importc "test_return.h"
 importc "test_shebang.h"
 importc "test_types.h"
-
-importc "log/prelude.h"
 
 fun main () int do
 	match

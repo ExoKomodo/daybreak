@@ -1,0 +1,184 @@
+import "std/log/prelude.day"
+importc "std/compiler/system/helpers.h"
+importc "string.h"
+
+fun system_get_default_output_file() cstring do
+	let standard_library_directory: cstring <- (system_get_standard_library_directory)
+	mut output_file_path: cstring <-
+		(malloc
+			(mul
+				(sizeof char)
+				(add
+					(strlen standard_library_directory)
+					(add
+						(strlen SYSTEM_OUTPUT_DIRECTORY)
+						(add
+							(strlen SYSTEM_DEFAULT_EXECUTABLE)
+							1)))))
+	(sprintf
+		output_file_path
+		(interpolate_cstring
+			"%s"
+			(interpolate_cstring
+				SYSTEM_OUTPUT_DIRECTORY
+				SYSTEM_DEFAULT_EXECUTABLE))
+		standard_library_directory)
+	(delete standard_library_directory)
+
+	output_file_path
+end
+
+fun system_get_standard_library_directory () cstring do
+	let daybreak_home_env: cstring <- (getenv "DAYBREAK_HOME")
+	match
+		(truthy daybreak_home_env) => do
+			mut full_path: cstring <-
+				(malloc
+					(mul
+						(sizeof char)
+						(add
+							(strlen daybreak_home_env)
+							1)))
+			(strcpy full_path daybreak_home_env)
+			full_path
+		end
+		(default) => do
+			mut full_path: cstring <-
+				(malloc
+					(mul
+						(sizeof char)
+						(add
+							(add
+								(strlen SYSTEM_STANDARD_PATH_PREFIX)
+								(strlen SYSTEM_STANDARD_DIRECTORY))
+							1)))
+			(sprintf
+				full_path
+				"%s%s"
+				SYSTEM_STANDARD_PATH_PREFIX
+				SYSTEM_STANDARD_DIRECTORY)
+			full_path
+		end
+	end
+end
+
+fun system_run_command (command: cstring output_stream: ptr<FILE>) int do
+	mut command_stream: ptr<FILE> <- (popen command "r")
+	mut buffer: ptr<char> <- (malloc
+		(mul
+			_SYSTEM_COMMAND_BUFFER_SIZE
+			(sizeof char)))
+	(_system_run_command
+		command_stream
+		output_stream
+		buffer
+		_SYSTEM_COMMAND_BUFFER_SIZE)
+	(delete buffer)
+	(pclose command_stream)
+end
+
+fun system_setup_language_directories () int do
+	mut standard_library_directory: cstring <- (system_get_standard_library_directory)
+
+	let make_dir_error: int <- (_system_make_dir standard_library_directory)
+	match
+		(truthy make_dir_error) => do
+			(delete standard_library_directory)
+			make_dir_error
+		end
+	end
+
+	let make_bin_subdir_error: int <- (_system_make_subdir
+		standard_library_directory
+		"bin")
+	match
+		(truthy make_bin_subdir_error) => do
+			(delete standard_library_directory)
+			make_bin_subdir_error
+		end
+	end
+
+	let make_packages_subdir_error: int <- (_system_make_subdir
+		standard_library_directory
+		"packages")
+	match
+		(truthy make_packages_subdir_error) => do
+			(delete standard_library_directory)
+			make_packages_subdir_error
+		end
+	end
+
+	let make_out_subdir_error: int <- (_system_make_subdir
+		standard_library_directory
+		"out")
+	match
+		(truthy make_out_subdir_error) => do
+			(delete standard_library_directory)
+			make_out_subdir_error
+		end
+	end
+	(delete standard_library_directory)
+
+	0
+end
+
+fun _system_make_dir_check (directory: cstring error: int) int do
+	match
+		(and
+			(truthy error)
+			(not (eq errno EEXIST))) => do
+				(LOG_ERROR
+					"Failed to create directory %s: errno=%d"
+					directory
+					errno)
+				error
+			end
+		(default) => 0
+	end
+end
+
+fun _system_make_dir (directory: cstring) int do
+	let error: int <- (_system_mkdir_common directory)
+	(_system_make_dir_check directory error)		
+end
+
+fun _system_make_subdir (directory: cstring subdirectory: cstring) int do
+	mut full_path: cstring <- (malloc
+		(mul
+			(sizeof char)
+			(add
+				2
+				(add
+					(strlen directory)
+					(strlen subdirectory)))))
+	(sprintf
+		full_path
+		"%s/%s"
+		directory
+		subdirectory)
+	let error: int <- (_system_make_dir full_path)
+	(delete full_path)
+	match
+		(truthy error) => error
+	end
+
+	0
+end
+
+fun _system_run_command (command_stream: ptr<FILE> output_stream: ptr<FILE> buffer: ptr<char> buffer_size: size_t) bool do
+	let result: ptr<char> <- (fgets
+		buffer
+		buffer_size
+		command_stream)
+	match
+		(truthy result) => do
+			(fputs buffer output_stream)
+			(_system_run_command
+				command_stream
+				output_stream
+				buffer
+				buffer_size)
+		end
+		(default) => true
+	end
+end

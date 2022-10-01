@@ -2,8 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <helpers/system.h>
-#include <log/prelude.h>
+#include <std/compiler/system/helpers.h>
 
 #if defined(_WIN32) || defined(_WIN64)
   #define DOUBLE "examples\\double\\double.day"
@@ -36,7 +35,7 @@ bool test_double() {
   }
 
   FILE* output_file = fopen(DOUBLE_OUTPUT_FILE, "w+");
-  error = run_command(DOUBLE_EXECUTABLE, output_file);
+  error = system_run_command(DOUBLE_EXECUTABLE, output_file);
   fclose(output_file);
 
   output_file = fopen(DOUBLE_OUTPUT_FILE, "r");

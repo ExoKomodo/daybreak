@@ -2,8 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <helpers/system.h>
-#include <log/prelude.h>
+#include <std/compiler/system/helpers.h>
 
 #if defined(_WIN32) || defined(_WIN64)
   #define SHEBANG "examples\\shebang\\shebang.day"
@@ -41,7 +40,7 @@ bool _test_shebang(const char* command, const bool include_greeting) {
   }
 
   FILE* output_file = fopen(SHEBANG_OUTPUT_FILE, "w+");
-  error = run_command(command, output_file);
+  error = system_run_command(command, output_file);
   fclose(output_file);
 
   output_file = fopen(SHEBANG_OUTPUT_FILE, "r");

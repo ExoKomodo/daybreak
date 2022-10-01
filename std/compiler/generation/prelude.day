@@ -1,0 +1,2 @@
+import "std/compiler/generation/generate_c.day"
+importc "generation/prelude.h"

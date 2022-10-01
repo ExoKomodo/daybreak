@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
-#include <log/colors.h>
+#include <std/ansi/colors.h>
 
 #ifndef DEBUG
   #define DEBUG false
