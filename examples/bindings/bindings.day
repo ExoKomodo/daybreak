@@ -8,5 +8,6 @@ fun do_work (x: int) int do
 end
 
 fun main () int do
-	(do_work 10)
+	let x <- 10
+	(do_work x)
 end
