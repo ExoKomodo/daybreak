@@ -53,6 +53,7 @@ int generate_c_from_type_identifier(FILE*, const struct TypeIdentifierNode*);
 int generate_c_from_union_type_declaration(FILE*, const struct UnionTypeDeclarationNode*);
 int generate_c_include_prelude(FILE*);
 int generate_c_macros(FILE*);
+const struct TypeIdentifierNode* _create_type_identifier_from_expression(const struct ExpressionNode*);
 int _generate_c_variable_declaration(FILE*, const struct TypeIdentifierNode*, const struct IdentifierNode*, const struct ExpressionNode*);
 int _generate_c_function_definition(FILE*, const struct FunctionDeclarationNode*);
 int _generate_c_function_declaration(FILE*, const struct FunctionDeclarationNode*);
@@ -1318,12 +1319,111 @@ int generate_c_macros(FILE* output_file) {
 	return 0;
 }
 
+// TODO: Finish taking type identifier from an expression
+const struct TypeIdentifierNode* _create_type_identifier_from_expression(const struct ExpressionNode* expression) {
+	if (!expression) {
+		LOG_WARNING("ExpressionNode is null. Cannot get TypeIdentifier.");
+		return NULL;
+	}
+	struct IdentifierNode* expression_identifier = NULL;
+	struct TypeIdentifierNode* type_identifier = NULL;
+	char* expression_identifier_name = NULL;
+	switch (expression->kind) {
+		case AstCallExpression: {
+			expression_identifier = expression->value.call_expression->function;
+		} break;
+		case AstIdentifierExpression: {
+			expression_identifier = expression->value.identifier_expression->identifier;
+		} break;
+		case AstListExpression: {
+			LOG_ERROR("UNSUPPORTED - Inferring list expression types");
+			exit(1);
+		} break;
+		case AstNumericExpression: {
+			const struct NumericExpressionNode* numeric_expression = expression->value.numeric_expression;
+			char* identifier_name = NULL;
+			switch (numeric_expression->kind) {
+				case AstIntegerExpression: {
+					const char* int_type = "int";
+					identifier_name = malloc(sizeof(char) * (strlen(int_type) + 1));
+					strcpy(identifier_name, int_type);
+				} break;
+				case AstDoubleExpression: {
+					const char* double_type = "double";
+					identifier_name = malloc(sizeof(char) * (strlen(double_type) + 1));
+					strcpy(identifier_name, double_type);
+				} break;
+				default: {
+					LOG_ERROR("Invalid NumericExpressionNode kind: %d", expression->kind);
+					exit(1);
+				} break;
+			}
+			return identifier_name;
+		} break;
+		case AstStringExpression: {
+			const char* cstring_type = "cstring";
+			char* identifier_name = malloc(sizeof(char) * (strlen(cstring_type) + 1));
+			strcpy(identifier_name, cstring_type);
+			return identifier_name;
+		} break;
+		case AstTypeExpression: {
+			const struct TypeExpressionNode* type_expression = expression->value.type_expression;
+			switch (type_expression->kind) {
+				case AstEnumTypeExpression: {
+					expression_identifier = type_expression->value.enum_type_expression->type->identifier;
+				} break;
+				case AstStructuredTypeExpression: {
+
+				} break;
+				default: {
+					LOG_ERROR("Invalid TypeExpressionNode kind: %d", expression->kind);
+					exit(1);
+				} break;
+			}
+		} break;
+		default: {
+			LOG_ERROR("Invalid ExpressionNode kind: %d", expression->kind);
+			exit(1);
+		} break;
+	}
+
+	return expression_identifier;
+}
+
 int _generate_c_variable_declaration(
 	FILE* output_file,
 	const struct TypeIdentifierNode* type,
 	const struct IdentifierNode* binding,
 	const struct ExpressionNode* expression
 ) {
+	if (!type) {
+		IdentifierNode* expression_identifier = NULL;
+		switch (expression->kind) {
+			case AstCallExpression: {
+				expression_identifier = expression->value.call_expression->function;
+			} break;
+			case AstIdentifierExpression: {
+				expression_identifier = expression->value.identifier_expression->identifier
+			} break;
+			case AstListExpression: {
+				
+			} break;
+			case AstNumericExpression: {
+
+			} break;
+			case AstStringExpression: {
+
+			} break;
+			case AstTypeExpression: {
+
+			} break;
+		}
+		struct IdentifierNode* inferred_identifier = ast_new_identifier_node();
+		struct TypeIdentifierNode* inferred_type = ast_new_type_identifier_node(
+			inferred_identifier,
+			NULL
+		)
+	}
 	int error = generate_c_from_type_identifier(output_file, type);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C variable declaration. Failed to generate type identifier.");
