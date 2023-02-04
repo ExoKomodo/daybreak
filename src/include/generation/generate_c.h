@@ -466,6 +466,7 @@ int _generate_c_function_definition(
 		return 1;
 	}
 
+	LOG_DEBUG("Generating C code for function signature.");
 	int error = _generate_c_function_signature(output_file, function_declaration, false);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C function signature from FunctionDeclarationNode: %d", error);
@@ -473,6 +474,7 @@ int _generate_c_function_definition(
 	}
 	fputs(" {\n", output_file);
 	struct DoStatementNode* body = function_declaration->body;
+	LOG_DEBUG("Generating C code for do statement.");
 	error = generate_c_from_do_statement(output_file, body);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C function body from Do Statement: %d", error);
@@ -627,6 +629,7 @@ int generate_c_from_let_binding(
 	FILE* output_file,
 	const struct LetBindingNode* let_binding
 ) {
+	LOG_DEBUG("Generating C code for let binding.");
 	if (!let_binding) {
 		LOG_ERROR("Failed to generate C code from LetBindingNode. NULL LetBindingNode.");
 		return 1;
@@ -787,17 +790,20 @@ int generate_c_from_module_statement_list(
 		LOG_ERROR("Failed to generate C code from ModuleStatementListNode. NULL ModuleStatementListNode.");
 		return 1;
 	}
+	LOG_DEBUG("Generating C code for imports.");
 	int error = _generate_c_from_module_statement_list_by_kind(output_file, module_statement_list, AstImportStatement);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C code for import statements");
 		return error;
 	}
+	LOG_DEBUG("Generating C code for type declarations.");
 	error = _generate_c_from_module_statement_list_by_kind(output_file, module_statement_list, AstTypeDeclaration);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C code for type declarations.");
 		return error;
 	}
 	
+	LOG_DEBUG("Generating C code for function declarations.");
 	const struct ModuleStatementNode** module_statements = module_statement_list->module_statements;
 	for (size_t i = 0; i < module_statement_list->length; i++) {
 		const struct ModuleStatementNode* module_statement = module_statements[i];
@@ -811,12 +817,14 @@ int generate_c_from_module_statement_list(
 		}
 	}
 
+	LOG_DEBUG("Generating C code for top-level let bindings.");
 	error = _generate_c_from_module_statement_list_by_kind(output_file, module_statement_list, AstLetBinding);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C code for let bindings.");
 		return error;
 	}
 
+	LOG_DEBUG("Generating C code for function definitions.");
 	for (size_t i = 0; i < module_statement_list->length; i++) {
 		const struct ModuleStatementNode* module_statement = module_statements[i];
 		if (module_statement->kind != AstFunctionDeclaration) {
@@ -828,6 +836,7 @@ int generate_c_from_module_statement_list(
 			return error;
 		}
 	}
+	LOG_DEBUG("Generated module statement list.");
 	return 0;
 }
 
@@ -1396,6 +1405,7 @@ int _generate_c_variable_declaration(
 	const struct IdentifierNode* binding,
 	const struct ExpressionNode* expression
 ) {
+	LOG_DEBUG("Generating C code for variable declaration.");
 	if (!type) {
 		struct IdentifierNode* expression_identifier = NULL;
 		switch (expression->kind) {
@@ -1406,18 +1416,19 @@ int _generate_c_variable_declaration(
 				expression_identifier = expression->value.identifier_expression->identifier;
 			} break;
 			case AstListExpression: {
-				
+				LOG_DEBUG("UNIMPLEMENTED::Infering type from AstListExpression");
 			} break;
 			case AstNumericExpression: {
-
+				LOG_DEBUG("UNIMPLEMENTED::Infering type from AstNumericExpression");
 			} break;
 			case AstStringExpression: {
-
+				LOG_DEBUG("UNIMPLEMENTED::Infering type from AstStringExpression");
 			} break;
 			case AstTypeExpression: {
-
+				LOG_DEBUG("UNIMPLEMENTED::Infering type from AstTypeExpression");
 			} break;
 		}
+		// NOTE: Segfaults when an empty case is hit above
 		struct IdentifierNode* inferred_identifier = ast_new_identifier_node(expression_identifier->name);
 		struct TypeIdentifierNode* inferred_type = ast_new_type_identifier_node(
 			inferred_identifier,
