@@ -1397,13 +1397,13 @@ int _generate_c_variable_declaration(
 	const struct ExpressionNode* expression
 ) {
 	if (!type) {
-		IdentifierNode* expression_identifier = NULL;
+		struct IdentifierNode* expression_identifier = NULL;
 		switch (expression->kind) {
 			case AstCallExpression: {
 				expression_identifier = expression->value.call_expression->function;
 			} break;
 			case AstIdentifierExpression: {
-				expression_identifier = expression->value.identifier_expression->identifier
+				expression_identifier = expression->value.identifier_expression->identifier;
 			} break;
 			case AstListExpression: {
 				
@@ -1418,11 +1418,11 @@ int _generate_c_variable_declaration(
 
 			} break;
 		}
-		struct IdentifierNode* inferred_identifier = ast_new_identifier_node();
+		struct IdentifierNode* inferred_identifier = ast_new_identifier_node(expression_identifier->name);
 		struct TypeIdentifierNode* inferred_type = ast_new_type_identifier_node(
 			inferred_identifier,
 			NULL
-		)
+		);
 	}
 	int error = generate_c_from_type_identifier(output_file, type);
 	if (error != 0) {
