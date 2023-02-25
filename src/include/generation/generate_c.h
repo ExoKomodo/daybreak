@@ -1410,9 +1410,7 @@ int _generate_c_variable_declaration(
 		char* identifier = NULL;
 		switch (expression->kind) {
 			case AstCallExpression: {
-				const struct IdentifierNode* identifier_node = expression->value.call_expression->function;
-				identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
-				strcpy(identifier, identifier_node->name);
+				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstCallExpression. Requires addition of a lookup table for functions.");
 			} break;
 			case AstIdentifierExpression: {
 				const struct IdentifierNode* identifier_node = expression->value.identifier_expression->identifier;
@@ -1431,20 +1429,37 @@ int _generate_c_variable_declaration(
 						strcpy(identifier, "int");
 					} break;
 					case AstDoubleExpression: {
-						char* identifier = malloc(sizeof(char) * (strlen("double") + 1));
+						identifier = malloc(sizeof(char) * (strlen("double") + 1));
 						strcpy(identifier, "double");
 					} break;
 					default: {
-						LOG_ERROR("Failed to infer type from AstNumericExpression: %d", number_kind);
+						LOG_ERROR("Invalid NumericExpressionNode kind: %d", number_kind);
+						exit(1);
 					} break;
 				}
 			} break;
 			case AstStringExpression: {
-				char* identifier = malloc(sizeof(char) * (strlen("ccstring") + 1));
+				identifier = malloc(sizeof(char) * (strlen("ccstring") + 1));
 				strcpy(identifier, "ccstring");
 			} break;
 			case AstTypeExpression: {
-				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstTypeExpression");
+				const struct TypeExpressionNode* type_expression = expression->value.type_expression;
+				switch (type_expression->kind) {
+					case AstEnumTypeExpression: {
+						const struct IdentifierNode* identifier_node = type_expression->value.enum_type_expression->type->identifier;
+						identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+						strcpy(identifier, identifier_node->name);
+					} break;
+					case AstStructuredTypeExpression: {
+						const struct IdentifierNode* identifier_node = type_expression->value.structured_type_expression->type->identifier;
+						identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+						strcpy(identifier, identifier_node->name);
+					} break;
+					default: {
+						LOG_ERROR("Invalid TypeExpressionNode kind: %d", expression->kind);
+						exit(1);
+					} break;
+				}
 			} break;
 		}
 		// NOTE: Segfaults when an empty case is hit above
