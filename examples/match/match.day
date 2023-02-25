@@ -1,5 +1,5 @@
 fun main () int do
-	let x: int <- 10
+	let x <- 10
 	match
 		(equals x 10) => (puts "x was 10")
 		(equals x 20) => (puts "x was 20")

@@ -25,11 +25,11 @@ fun from_bar (b: Bar) Baz do
 end
 
 fun main () int do
-  let f: Foo <- {Foo
+  let f <- {Foo
     a <- 1
     b <- 2
   }
-  let b: Bar <- {Bar
+  let b <- {Bar
     a <- 3
   }
   let c: Baz <- (from_foo f)
