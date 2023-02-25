@@ -1870,8 +1870,10 @@ struct LetBindingNode* ast_new_let_binding_node(
 void ast_free_let_binding_node(struct LetBindingNode* node) {
   ast_free_identifier_node(node->binding);
   node->binding = NULL;
-  ast_free_type_identifier_node(node->type);
-  node->type = NULL;
+  if (node->type) {
+    ast_free_type_identifier_node(node->type);
+    node->type = NULL;
+  }
   ast_free_expression_node(node->expression);
   node->expression = NULL;
 
@@ -2257,8 +2259,10 @@ struct MutBindingNode* ast_new_mut_binding_node(
 void ast_free_mut_binding_node(struct MutBindingNode* node) {
   ast_free_identifier_node(node->binding);
   node->binding = NULL;
-  ast_free_type_identifier_node(node->type);
-  node->type = NULL;
+  if (node->type) {
+    ast_free_type_identifier_node(node->type);
+    node->type = NULL;
+  }
   ast_free_mut_expression_node(node->mut_expression);
   node->mut_expression = NULL;
 

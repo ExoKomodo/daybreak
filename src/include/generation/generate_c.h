@@ -1407,30 +1407,49 @@ int _generate_c_variable_declaration(
 ) {
 	LOG_DEBUG("Generating C code for variable declaration.");
 	if (!type) {
-		struct IdentifierNode* expression_identifier = NULL;
+		char* identifier = NULL;
 		switch (expression->kind) {
 			case AstCallExpression: {
-				expression_identifier = expression->value.call_expression->function;
+				const struct IdentifierNode* identifier_node = expression->value.call_expression->function;
+				identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+				strcpy(identifier, identifier_node->name);
 			} break;
 			case AstIdentifierExpression: {
-				expression_identifier = expression->value.identifier_expression->identifier;
+				const struct IdentifierNode* identifier_node = expression->value.identifier_expression->identifier;
+				identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+				strcpy(identifier, identifier_node->name);
 			} break;
 			case AstListExpression: {
 				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstListExpression");
 			} break;
 			case AstNumericExpression: {
-				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstNumericExpression");
+				AstNodeKind number_kind = expression->value.numeric_expression->kind;
+				LOG_DEBUG("Figuring out numeric expression type: %d", number_kind);
+				switch (number_kind) {
+					case AstIntegerExpression: {
+						identifier = malloc(sizeof(char) * (strlen("int") + 1));
+						strcpy(identifier, "int");
+					} break;
+					case AstDoubleExpression: {
+						char* identifier = malloc(sizeof(char) * (strlen("double") + 1));
+						strcpy(identifier, "double");
+					} break;
+					default: {
+						LOG_ERROR("Failed to infer type from AstNumericExpression: %d", number_kind);
+					} break;
+				}
 			} break;
 			case AstStringExpression: {
-				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstStringExpression");
+				char* identifier = malloc(sizeof(char) * (strlen("ccstring") + 1));
+				strcpy(identifier, "ccstring");
 			} break;
 			case AstTypeExpression: {
 				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstTypeExpression");
 			} break;
 		}
 		// NOTE: Segfaults when an empty case is hit above
-		struct IdentifierNode* inferred_identifier = ast_new_identifier_node(expression_identifier->name);
-		struct TypeIdentifierNode* inferred_type = ast_new_type_identifier_node(
+		struct IdentifierNode* inferred_identifier = ast_new_identifier_node(identifier);
+		type = ast_new_type_identifier_node(
 			inferred_identifier,
 			NULL
 		);
