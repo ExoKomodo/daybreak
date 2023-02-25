@@ -1416,16 +1416,16 @@ int _generate_c_variable_declaration(
 				expression_identifier = expression->value.identifier_expression->identifier;
 			} break;
 			case AstListExpression: {
-				LOG_DEBUG("UNIMPLEMENTED::Infering type from AstListExpression");
+				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstListExpression");
 			} break;
 			case AstNumericExpression: {
-				LOG_DEBUG("UNIMPLEMENTED::Infering type from AstNumericExpression");
+				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstNumericExpression");
 			} break;
 			case AstStringExpression: {
-				LOG_DEBUG("UNIMPLEMENTED::Infering type from AstStringExpression");
+				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstStringExpression");
 			} break;
 			case AstTypeExpression: {
-				LOG_DEBUG("UNIMPLEMENTED::Infering type from AstTypeExpression");
+				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstTypeExpression");
 			} break;
 		}
 		// NOTE: Segfaults when an empty case is hit above
