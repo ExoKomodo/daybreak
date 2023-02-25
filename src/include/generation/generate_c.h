@@ -59,6 +59,7 @@ int _generate_c_function_definition(FILE*, const struct FunctionDeclarationNode*
 int _generate_c_function_declaration(FILE*, const struct FunctionDeclarationNode*);
 int _generate_c_function_signature(FILE*, const struct FunctionDeclarationNode*, const bool);
 int _generate_c_from_module_statement_list_by_kind(FILE*, const struct ModuleStatementListNode*, const AstNodeKind);
+struct TypeIdentifierNode* _infer_type(struct AstNode*);
 bool _is_file_imported(const char*);
 bool _is_main(const struct FunctionDeclarationNode*);
 bool _is_pointer_type(const struct TypeIdentifierNode*);
@@ -898,7 +899,7 @@ int generate_c_from_mut_binding(
 			);
 			const int error = _generate_c_variable_declaration(
 				output_file,
-				mut_binding->type,
+				mut_binding->type ? mut_binding->type : _infer_type(new_alloc),
 				mut_binding->binding,
 				expression
 			);
@@ -1407,67 +1408,11 @@ int _generate_c_variable_declaration(
 ) {
 	LOG_DEBUG("Generating C code for variable declaration.");
 	if (!type) {
-		char* identifier = NULL;
-		switch (expression->kind) {
-			case AstCallExpression: {
-				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstCallExpression. Requires addition of a lookup table for functions.");
-			} break;
-			case AstIdentifierExpression: {
-				const struct IdentifierNode* identifier_node = expression->value.identifier_expression->identifier;
-				identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
-				strcpy(identifier, identifier_node->name);
-			} break;
-			case AstListExpression: {
-				LOG_DEBUG("UNIMPLEMENTED::Inferring type from AstListExpression");
-			} break;
-			case AstNumericExpression: {
-				AstNodeKind number_kind = expression->value.numeric_expression->kind;
-				LOG_DEBUG("Figuring out numeric expression type: %d", number_kind);
-				switch (number_kind) {
-					case AstIntegerExpression: {
-						identifier = malloc(sizeof(char) * (strlen("int") + 1));
-						strcpy(identifier, "int");
-					} break;
-					case AstDoubleExpression: {
-						identifier = malloc(sizeof(char) * (strlen("double") + 1));
-						strcpy(identifier, "double");
-					} break;
-					default: {
-						LOG_ERROR("Invalid NumericExpressionNode kind: %d", number_kind);
-						exit(1);
-					} break;
-				}
-			} break;
-			case AstStringExpression: {
-				identifier = malloc(sizeof(char) * (strlen("ccstring") + 1));
-				strcpy(identifier, "ccstring");
-			} break;
-			case AstTypeExpression: {
-				const struct TypeExpressionNode* type_expression = expression->value.type_expression;
-				switch (type_expression->kind) {
-					case AstEnumTypeExpression: {
-						const struct IdentifierNode* identifier_node = type_expression->value.enum_type_expression->type->identifier;
-						identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
-						strcpy(identifier, identifier_node->name);
-					} break;
-					case AstStructuredTypeExpression: {
-						const struct IdentifierNode* identifier_node = type_expression->value.structured_type_expression->type->identifier;
-						identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
-						strcpy(identifier, identifier_node->name);
-					} break;
-					default: {
-						LOG_ERROR("Invalid TypeExpressionNode kind: %d", expression->kind);
-						exit(1);
-					} break;
-				}
-			} break;
+		type = _infer_type(expression);
+		if (!type) {
+			LOG_ERROR("Failed to infer type for a variable declaration");
+			exit(1);
 		}
-		// NOTE: Segfaults when an empty case is hit above
-		struct IdentifierNode* inferred_identifier = ast_new_identifier_node(identifier);
-		type = ast_new_type_identifier_node(
-			inferred_identifier,
-			NULL
-		);
 	}
 	int error = generate_c_from_type_identifier(output_file, type);
 	if (error != 0) {
@@ -1498,8 +1443,104 @@ int _generate_c_variable_declaration(
 	return 0;
 }
 
+struct TypeIdentifierNode* _infer_type(
+	struct AstNode* node
+) {
+	char* identifier = NULL;
+	switch (node->kind) {
+		case AstCallExpression: {
+			LOG_ERROR("UNIMPLEMENTED::Inferring type from AstCallExpression. Requires addition of a lookup table for functions.");
+			return NULL;
+		} break;
+		case AstIdentifierExpression: {
+			const struct IdentifierNode* identifier_node = ((struct ExpressionNode*) node)->value.identifier_expression->identifier;
+			identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+			strcpy(identifier, identifier_node->name);
+		} break;
+		case AstListExpression: {
+			char* array_identifier = malloc(sizeof(char) * (strlen("array") + 1));
+			strcpy(array_identifier, "array");
+
+			struct ExpressionListNode* expressions = ((struct ExpressionNode*) node)->value.list_expression->expressions;
+			if (expressions->length == 0) {
+				LOG_ERROR("UNSUPPORTED::ListExpressionNode requires at least one element to infer a type");
+				return NULL;
+			}
+
+			return ast_new_type_identifier_node(
+				ast_new_identifier_node(array_identifier),
+				_infer_type((struct AstNode*)(expressions->expressions[0]))
+			);
+		} break;
+		case AstNumericExpression: {
+			AstNodeKind number_kind = ((struct ExpressionNode*) node)->value.numeric_expression->kind;
+			switch (number_kind) {
+				case AstIntegerExpression: {
+					identifier = malloc(sizeof(char) * (strlen("int") + 1));
+					strcpy(identifier, "int");
+				} break;
+				case AstDoubleExpression: {
+					identifier = malloc(sizeof(char) * (strlen("double") + 1));
+					strcpy(identifier, "double");
+				} break;
+				default: {
+					LOG_ERROR("Invalid NumericExpressionNode kind: %d", number_kind);
+					return NULL;
+				} break;
+			}
+		} break;
+		case AstStringExpression: {
+			identifier = malloc(sizeof(char) * (strlen("ccstring") + 1));
+			strcpy(identifier, "ccstring");
+		} break;
+		case AstTypeExpression: {
+			const struct TypeExpressionNode* type_expression = ((struct ExpressionNode*) node)->value.type_expression;
+			switch (type_expression->kind) {
+				case AstEnumTypeExpression: {
+					const struct IdentifierNode* identifier_node = type_expression->value.enum_type_expression->type->identifier;
+					identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+					strcpy(identifier, identifier_node->name);
+				} break;
+				case AstStructuredTypeExpression: {
+					const struct IdentifierNode* identifier_node = type_expression->value.structured_type_expression->type->identifier;
+					identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+					strcpy(identifier, identifier_node->name);
+				} break;
+				default: {
+					LOG_ERROR("Invalid TypeExpressionNode kind: %d", node->kind);
+					return NULL;
+				} break;
+			}
+		} break;
+		case AstNewAlloc: {
+			char* ptr_identifier = malloc(sizeof(char) * (strlen("ptr") + 1));
+			strcpy(ptr_identifier, "ptr");
+
+			const struct IdentifierNode* identifier_node = ((struct NewAllocNode*) node)->structured_type_expression->type->identifier;
+			identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+			strcpy(identifier, identifier_node->name);
+
+			return ast_new_type_identifier_node(
+				ast_new_identifier_node(ptr_identifier),
+				ast_new_type_identifier_node(
+					ast_new_identifier_node(identifier),
+					NULL
+				)
+			);
+		} break;
+		default: {
+			LOG_ERROR("Attempted to infer type for unknown node: %d", node->kind);
+			return NULL;
+		} break;
+	}
+	return ast_new_type_identifier_node(
+		ast_new_identifier_node(identifier),
+		NULL
+	);
+}
+
 bool _is_file_imported(const char* source_file_path) {
-        char* standard_library_directory = get_standard_library_directory();
+	char* standard_library_directory = get_standard_library_directory();
 	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(PACKAGE_DIRECTORY) + 2));
 	sprintf(package_directory, "%s" PACKAGE_DIRECTORY, standard_library_directory);
 	free(standard_library_directory);

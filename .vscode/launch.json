@@ -5,6 +5,35 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Array",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/daybreak",
+      "args": [
+        "${workspaceFolder}/examples/array/array.day"
+      ],
+      "environment": [
+        {
+          "name": "C_INCLUDE_PATH",
+          "value": "${workspaceFolder}/src/include:${workspaceFolder}/tests/include",
+        }
+      ],
+      "windows": {
+        "environment": [
+          {
+            "name": "C_INCLUDE_PATH",
+            "value": "${workspaceFolder}\\src\\include;${workspaceFolder}\\tests\\include",
+          }
+        ],
+      },
+      "cwd": "${workspaceFolder}",
+      "miDebuggerPath": "gdb",
+      "osx": {
+        "MIMode": "lldb",
+      },
+      "preLaunchTask": "build [daybreak]",
+    },
+    {
       "name": "Bindings",
       "type": "cppdbg",
       "request": "launch",

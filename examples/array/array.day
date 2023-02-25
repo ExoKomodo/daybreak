@@ -1,0 +1,12 @@
+fun main () int do
+	mut primes <- [
+		2
+		3
+		5
+		7
+		11
+		13
+		17
+		19]
+	(printf "length of primes: %lu\n" (div (sizeof primes) (sizeof int)))
+end
