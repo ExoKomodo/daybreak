@@ -1442,7 +1442,9 @@ int _generate_c_variable_declaration(
 		LOG_ERROR("Failed to generate C variable declaration. Failed to generate expression.");
 		return error;
 	}
-	ast_free_type_identifier_node(type);
+	if (should_free_type) {
+		ast_free_type_identifier_node(type);
+	}
 	return 0;
 }
 
