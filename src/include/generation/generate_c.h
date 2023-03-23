@@ -897,12 +897,34 @@ int generate_c_from_mut_binding(
 					)
 				}
 			);
-			const int error = _generate_c_variable_declaration(
-				output_file,
-				mut_binding->type,
-				mut_binding->binding,
-				expression
-			);
+			int error = 0;
+			if (mut_binding->type) {
+				error = _generate_c_variable_declaration(
+					output_file,
+					mut_binding->type,
+					mut_binding->binding,
+					expression
+				);
+			} else {
+				char* ptr_identifier = malloc(sizeof(char) * (strlen("ptr") + 1));
+				strcpy(ptr_identifier, "ptr");
+				char* desired_type_name = malloc(sizeof(char) * (strlen(type_name) + 1));
+				strcpy(desired_type_name, type_name);
+				struct TypeIdentifierNode* desired_type = ast_new_type_identifier_node(
+					ast_new_identifier_node(ptr_identifier),
+					ast_new_type_identifier_node(
+						ast_new_identifier_node(desired_type_name),
+						NULL
+					)
+				);
+				error = _generate_c_variable_declaration(
+					output_file,
+					desired_type,
+					mut_binding->binding,
+					expression
+				);
+				ast_free_type_identifier_node(desired_type);
+			}
 			fputs(";\n", output_file);
 			const struct StructuredTypeExpressionNode* structured_type_expression = new_alloc->structured_type_expression;
 			for (size_t i = 0; i < structured_type_expression->field_bindings->length; i++) {
