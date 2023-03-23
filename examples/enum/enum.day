@@ -10,10 +10,10 @@ type Color enum is
 end
 
 fun main () int do
-  let opt: Option <- #Option.Some
-  let red: Color <- #Color.Red
-  let green: Color <- #Color.Green
-  let blue: Color <- #Color.Blue
+  let opt <- #Option.Some
+  let red <- #Color.Red
+  let green <- #Color.Green
+  let blue <- #Color.Blue
   (printf
     "Option: %d Red: %d Green: %d Blue: %d\n"
     opt

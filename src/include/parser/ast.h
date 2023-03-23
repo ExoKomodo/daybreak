@@ -630,7 +630,7 @@ void ast_free_module_statement_node(struct ModuleStatementNode*);
 struct ModuleStatementNode* ast_parse_module_statement(struct Token** tokens);
 bool ast_module_statement_token_matches_first_set(struct Token);
 
-struct MutBindingNode* ast_new_mut_binding_node(struct IdentifierNode*, struct TypeIdentifierNode*, struct ExpressionNode*);
+struct MutBindingNode* ast_new_mut_binding_node(struct IdentifierNode*, struct TypeIdentifierNode*, struct MutExpressionNode*);
 void ast_free_mut_binding_node(struct MutBindingNode*);
 struct MutBindingNode* ast_parse_mut_binding(struct Token**);
 bool ast_mut_binding_token_matches_first_set(struct Token);
@@ -1870,8 +1870,10 @@ struct LetBindingNode* ast_new_let_binding_node(
 void ast_free_let_binding_node(struct LetBindingNode* node) {
   ast_free_identifier_node(node->binding);
   node->binding = NULL;
-  ast_free_type_identifier_node(node->type);
-  node->type = NULL;
+  if (node->type) {
+    ast_free_type_identifier_node(node->type);
+    node->type = NULL;
+  }
   ast_free_expression_node(node->expression);
   node->expression = NULL;
 
@@ -1888,16 +1890,16 @@ struct LetBindingNode* ast_parse_let_binding(struct Token** tokens) {
   }
   _ADVANCE_TOKEN(tokens);
   struct IdentifierNode* binding = ast_parse_identifier(tokens);
-  if (!token_is_colon(**tokens)) {
-    LOG_ERROR("Expected ':' got '%s'", (*tokens)->name);
-    exit(1);
+  struct TypeIdentifierNode* type = NULL;
+  if (token_is_colon(**tokens)) {
+    _ADVANCE_TOKEN(tokens);
+    type = ast_parse_type_identifier(tokens);
   }
-  _ADVANCE_TOKEN(tokens);
-  struct TypeIdentifierNode* type = ast_parse_type_identifier(tokens);
   if (!token_is_binding_arrow(**tokens)) {
     LOG_ERROR("Expected '->' got '%s'", (*tokens)->name);
     exit(1);
   }
+  
   _ADVANCE_TOKEN(tokens);
   struct ExpressionNode* expression = ast_parse_expression(tokens);
   return ast_new_let_binding_node(binding, type, expression);
@@ -2244,7 +2246,7 @@ inline bool ast_module_statement_token_matches_first_set(struct Token token) {
 struct MutBindingNode* ast_new_mut_binding_node(
   struct IdentifierNode* binding,
   struct TypeIdentifierNode* type,
-  struct ExpressionNode* expression
+  struct MutExpressionNode* expression
 ) {
   struct MutBindingNode* node = malloc(sizeof(struct MutBindingNode));
   node->kind = AstMutBinding;
@@ -2257,8 +2259,10 @@ struct MutBindingNode* ast_new_mut_binding_node(
 void ast_free_mut_binding_node(struct MutBindingNode* node) {
   ast_free_identifier_node(node->binding);
   node->binding = NULL;
-  ast_free_type_identifier_node(node->type);
-  node->type = NULL;
+  if (node->type) {
+    ast_free_type_identifier_node(node->type);
+    node->type = NULL;
+  }
   ast_free_mut_expression_node(node->mut_expression);
   node->mut_expression = NULL;
 
@@ -2275,12 +2279,11 @@ struct MutBindingNode* ast_parse_mut_binding(struct Token** tokens) {
   }
   _ADVANCE_TOKEN(tokens);
   struct IdentifierNode* binding = ast_parse_identifier(tokens);
-  if (!token_is_colon(**tokens)) {
-    LOG_ERROR("Expected ':' got '%s'", (*tokens)->name);
-    exit(1);
+  struct TypeIdentifierNode* type = NULL;
+  if (token_is_colon(**tokens)) {
+    _ADVANCE_TOKEN(tokens);
+    type = ast_parse_type_identifier(tokens); 
   }
-  _ADVANCE_TOKEN(tokens);
-  struct TypeIdentifierNode* type = ast_parse_type_identifier(tokens);
   if (!token_is_binding_arrow(**tokens)) {
     LOG_ERROR("Expected '->' got '%s'", (*tokens)->name);
     exit(1);

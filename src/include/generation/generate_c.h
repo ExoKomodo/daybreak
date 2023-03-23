@@ -53,11 +53,13 @@ int generate_c_from_type_identifier(FILE*, const struct TypeIdentifierNode*);
 int generate_c_from_union_type_declaration(FILE*, const struct UnionTypeDeclarationNode*);
 int generate_c_include_prelude(FILE*);
 int generate_c_macros(FILE*);
+const struct TypeIdentifierNode* _create_type_identifier_from_expression(const struct ExpressionNode*);
 int _generate_c_variable_declaration(FILE*, const struct TypeIdentifierNode*, const struct IdentifierNode*, const struct ExpressionNode*);
 int _generate_c_function_definition(FILE*, const struct FunctionDeclarationNode*);
 int _generate_c_function_declaration(FILE*, const struct FunctionDeclarationNode*);
 int _generate_c_function_signature(FILE*, const struct FunctionDeclarationNode*, const bool);
 int _generate_c_from_module_statement_list_by_kind(FILE*, const struct ModuleStatementListNode*, const AstNodeKind);
+struct TypeIdentifierNode* _infer_type(struct AstNode*);
 bool _is_file_imported(const char*);
 bool _is_main(const struct FunctionDeclarationNode*);
 bool _is_pointer_type(const struct TypeIdentifierNode*);
@@ -465,6 +467,7 @@ int _generate_c_function_definition(
 		return 1;
 	}
 
+	LOG_DEBUG("Generating C code for function signature.");
 	int error = _generate_c_function_signature(output_file, function_declaration, false);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C function signature from FunctionDeclarationNode: %d", error);
@@ -472,6 +475,7 @@ int _generate_c_function_definition(
 	}
 	fputs(" {\n", output_file);
 	struct DoStatementNode* body = function_declaration->body;
+	LOG_DEBUG("Generating C code for do statement.");
 	error = generate_c_from_do_statement(output_file, body);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C function body from Do Statement: %d", error);
@@ -626,6 +630,7 @@ int generate_c_from_let_binding(
 	FILE* output_file,
 	const struct LetBindingNode* let_binding
 ) {
+	LOG_DEBUG("Generating C code for let binding.");
 	if (!let_binding) {
 		LOG_ERROR("Failed to generate C code from LetBindingNode. NULL LetBindingNode.");
 		return 1;
@@ -786,17 +791,20 @@ int generate_c_from_module_statement_list(
 		LOG_ERROR("Failed to generate C code from ModuleStatementListNode. NULL ModuleStatementListNode.");
 		return 1;
 	}
+	LOG_DEBUG("Generating C code for imports.");
 	int error = _generate_c_from_module_statement_list_by_kind(output_file, module_statement_list, AstImportStatement);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C code for import statements");
 		return error;
 	}
+	LOG_DEBUG("Generating C code for type declarations.");
 	error = _generate_c_from_module_statement_list_by_kind(output_file, module_statement_list, AstTypeDeclaration);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C code for type declarations.");
 		return error;
 	}
 	
+	LOG_DEBUG("Generating C code for function declarations.");
 	const struct ModuleStatementNode** module_statements = module_statement_list->module_statements;
 	for (size_t i = 0; i < module_statement_list->length; i++) {
 		const struct ModuleStatementNode* module_statement = module_statements[i];
@@ -810,12 +818,14 @@ int generate_c_from_module_statement_list(
 		}
 	}
 
+	LOG_DEBUG("Generating C code for top-level let bindings.");
 	error = _generate_c_from_module_statement_list_by_kind(output_file, module_statement_list, AstLetBinding);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C code for let bindings.");
 		return error;
 	}
 
+	LOG_DEBUG("Generating C code for function definitions.");
 	for (size_t i = 0; i < module_statement_list->length; i++) {
 		const struct ModuleStatementNode* module_statement = module_statements[i];
 		if (module_statement->kind != AstFunctionDeclaration) {
@@ -827,6 +837,7 @@ int generate_c_from_module_statement_list(
 			return error;
 		}
 	}
+	LOG_DEBUG("Generated module statement list.");
 	return 0;
 }
 
@@ -886,12 +897,34 @@ int generate_c_from_mut_binding(
 					)
 				}
 			);
-			const int error = _generate_c_variable_declaration(
-				output_file,
-				mut_binding->type,
-				mut_binding->binding,
-				expression
-			);
+			int error = 0;
+			if (mut_binding->type) {
+				error = _generate_c_variable_declaration(
+					output_file,
+					mut_binding->type,
+					mut_binding->binding,
+					expression
+				);
+			} else {
+				char* ptr_identifier = malloc(sizeof(char) * (strlen("ptr") + 1));
+				strcpy(ptr_identifier, "ptr");
+				char* desired_type_name = malloc(sizeof(char) * (strlen(type_name) + 1));
+				strcpy(desired_type_name, type_name);
+				struct TypeIdentifierNode* desired_type = ast_new_type_identifier_node(
+					ast_new_identifier_node(ptr_identifier),
+					ast_new_type_identifier_node(
+						ast_new_identifier_node(desired_type_name),
+						NULL
+					)
+				);
+				error = _generate_c_variable_declaration(
+					output_file,
+					desired_type,
+					mut_binding->binding,
+					expression
+				);
+				ast_free_type_identifier_node(desired_type);
+			}
 			fputs(";\n", output_file);
 			const struct StructuredTypeExpressionNode* structured_type_expression = new_alloc->structured_type_expression;
 			for (size_t i = 0; i < structured_type_expression->field_bindings->length; i++) {
@@ -1318,12 +1351,93 @@ int generate_c_macros(FILE* output_file) {
 	return 0;
 }
 
+// TODO: Finish taking type identifier from an expression
+const struct TypeIdentifierNode* _create_type_identifier_from_expression(const struct ExpressionNode* expression) {
+	if (!expression) {
+		LOG_WARNING("ExpressionNode is null. Cannot get TypeIdentifier.");
+		return NULL;
+	}
+	struct IdentifierNode* expression_identifier = NULL;
+	struct TypeIdentifierNode* type_identifier = NULL;
+	char* expression_identifier_name = NULL;
+	switch (expression->kind) {
+		case AstCallExpression: {
+			expression_identifier = expression->value.call_expression->function;
+		} break;
+		case AstIdentifierExpression: {
+			expression_identifier = expression->value.identifier_expression->identifier;
+		} break;
+		case AstListExpression: {
+			LOG_ERROR("UNSUPPORTED - Inferring list expression types");
+			exit(1);
+		} break;
+		case AstNumericExpression: {
+			const struct NumericExpressionNode* numeric_expression = expression->value.numeric_expression;
+			char* identifier_name = NULL;
+			switch (numeric_expression->kind) {
+				case AstIntegerExpression: {
+					const char* int_type = "int";
+					identifier_name = malloc(sizeof(char) * (strlen(int_type) + 1));
+					strcpy(identifier_name, int_type);
+				} break;
+				case AstDoubleExpression: {
+					const char* double_type = "double";
+					identifier_name = malloc(sizeof(char) * (strlen(double_type) + 1));
+					strcpy(identifier_name, double_type);
+				} break;
+				default: {
+					LOG_ERROR("Invalid NumericExpressionNode kind: %d", expression->kind);
+					exit(1);
+				} break;
+			}
+			return identifier_name;
+		} break;
+		case AstStringExpression: {
+			const char* cstring_type = "cstring";
+			char* identifier_name = malloc(sizeof(char) * (strlen(cstring_type) + 1));
+			strcpy(identifier_name, cstring_type);
+			return identifier_name;
+		} break;
+		case AstTypeExpression: {
+			const struct TypeExpressionNode* type_expression = expression->value.type_expression;
+			switch (type_expression->kind) {
+				case AstEnumTypeExpression: {
+					expression_identifier = type_expression->value.enum_type_expression->type->identifier;
+				} break;
+				case AstStructuredTypeExpression: {
+
+				} break;
+				default: {
+					LOG_ERROR("Invalid TypeExpressionNode kind: %d", expression->kind);
+					exit(1);
+				} break;
+			}
+		} break;
+		default: {
+			LOG_ERROR("Invalid ExpressionNode kind: %d", expression->kind);
+			exit(1);
+		} break;
+	}
+
+	return expression_identifier;
+}
+
 int _generate_c_variable_declaration(
 	FILE* output_file,
 	const struct TypeIdentifierNode* type,
 	const struct IdentifierNode* binding,
 	const struct ExpressionNode* expression
 ) {
+	LOG_DEBUG("Generating C code for variable declaration.");
+	bool should_free_type = false;
+	if (!type) {
+		type = _infer_type(expression);
+		if (!type) {
+			LOG_ERROR("Failed to infer type for a variable declaration");
+			exit(1);
+		}
+		should_free_type = true;
+	}
 	int error = generate_c_from_type_identifier(output_file, type);
 	if (error != 0) {
 		LOG_ERROR("Failed to generate C variable declaration. Failed to generate type identifier.");
@@ -1350,11 +1464,110 @@ int _generate_c_variable_declaration(
 		LOG_ERROR("Failed to generate C variable declaration. Failed to generate expression.");
 		return error;
 	}
+	if (should_free_type) {
+		ast_free_type_identifier_node(type);
+	}
 	return 0;
 }
 
+struct TypeIdentifierNode* _infer_type(
+	struct AstNode* node
+) {
+	char* identifier = NULL;
+	switch (node->kind) {
+		case AstCallExpression: {
+			LOG_ERROR("UNIMPLEMENTED::Inferring type from AstCallExpression. Requires addition of a lookup table for functions.");
+			return NULL;
+		} break;
+		case AstIdentifierExpression: {
+			const struct IdentifierNode* identifier_node = ((struct ExpressionNode*) node)->value.identifier_expression->identifier;
+			identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+			strcpy(identifier, identifier_node->name);
+		} break;
+		case AstListExpression: {
+			char* array_identifier = malloc(sizeof(char) * (strlen("array") + 1));
+			strcpy(array_identifier, "array");
+
+			struct ExpressionListNode* expressions = ((struct ExpressionNode*) node)->value.list_expression->expressions;
+			if (expressions->length == 0) {
+				LOG_ERROR("UNSUPPORTED::ListExpressionNode requires at least one element to infer a type");
+				return NULL;
+			}
+
+			return ast_new_type_identifier_node(
+				ast_new_identifier_node(array_identifier),
+				_infer_type((struct AstNode*)(expressions->expressions[0]))
+			);
+		} break;
+		case AstNumericExpression: {
+			AstNodeKind number_kind = ((struct ExpressionNode*) node)->value.numeric_expression->kind;
+			switch (number_kind) {
+				case AstIntegerExpression: {
+					identifier = malloc(sizeof(char) * (strlen("int") + 1));
+					strcpy(identifier, "int");
+				} break;
+				case AstDoubleExpression: {
+					identifier = malloc(sizeof(char) * (strlen("double") + 1));
+					strcpy(identifier, "double");
+				} break;
+				default: {
+					LOG_ERROR("Invalid NumericExpressionNode kind: %d", number_kind);
+					return NULL;
+				} break;
+			}
+		} break;
+		case AstStringExpression: {
+			identifier = malloc(sizeof(char) * (strlen("ccstring") + 1));
+			strcpy(identifier, "ccstring");
+		} break;
+		case AstTypeExpression: {
+			const struct TypeExpressionNode* type_expression = ((struct ExpressionNode*) node)->value.type_expression;
+			switch (type_expression->kind) {
+				case AstEnumTypeExpression: {
+					const struct IdentifierNode* identifier_node = type_expression->value.enum_type_expression->type->identifier;
+					identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+					strcpy(identifier, identifier_node->name);
+				} break;
+				case AstStructuredTypeExpression: {
+					const struct IdentifierNode* identifier_node = type_expression->value.structured_type_expression->type->identifier;
+					identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+					strcpy(identifier, identifier_node->name);
+				} break;
+				default: {
+					LOG_ERROR("Invalid TypeExpressionNode kind: %d", node->kind);
+					return NULL;
+				} break;
+			}
+		} break;
+		case AstNewAlloc: {
+			char* ptr_identifier = malloc(sizeof(char) * (strlen("ptr") + 1));
+			strcpy(ptr_identifier, "ptr");
+
+			const struct IdentifierNode* identifier_node = ((struct NewAllocNode*) node)->structured_type_expression->type->identifier;
+			identifier = malloc(sizeof(char) * (strlen(identifier_node->name) + 1));
+			strcpy(identifier, identifier_node->name);
+
+			return ast_new_type_identifier_node(
+				ast_new_identifier_node(ptr_identifier),
+				ast_new_type_identifier_node(
+					ast_new_identifier_node(identifier),
+					NULL
+				)
+			);
+		} break;
+		default: {
+			LOG_ERROR("Attempted to infer type for unknown node: %d", node->kind);
+			return NULL;
+		} break;
+	}
+	return ast_new_type_identifier_node(
+		ast_new_identifier_node(identifier),
+		NULL
+	);
+}
+
 bool _is_file_imported(const char* source_file_path) {
-        char* standard_library_directory = get_standard_library_directory();
+	char* standard_library_directory = get_standard_library_directory();
 	char* package_directory = malloc(sizeof(char) * (strlen(standard_library_directory) + strlen(PACKAGE_DIRECTORY) + 2));
 	sprintf(package_directory, "%s" PACKAGE_DIRECTORY, standard_library_directory);
 	free(standard_library_directory);
