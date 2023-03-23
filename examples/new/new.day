@@ -6,7 +6,7 @@ end
 fun main (_: int argv: ptr<ccstring>) int do
 	(unused _)
 	(unused argv)
-	mut foo_ptr <- new {Foo
+	mut foo_ptr: ptr<Foo> <- new {Foo
 		a <- 1
 		b <- "foo"
 	}
