@@ -899,7 +899,7 @@ int generate_c_from_mut_binding(
 			);
 			const int error = _generate_c_variable_declaration(
 				output_file,
-				mut_binding->type ? mut_binding->type : _infer_type(new_alloc),
+				mut_binding->type,
 				mut_binding->binding,
 				expression
 			);
