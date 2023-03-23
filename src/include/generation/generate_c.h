@@ -1407,12 +1407,14 @@ int _generate_c_variable_declaration(
 	const struct ExpressionNode* expression
 ) {
 	LOG_DEBUG("Generating C code for variable declaration.");
+	bool should_free_type = false;
 	if (!type) {
 		type = _infer_type(expression);
 		if (!type) {
 			LOG_ERROR("Failed to infer type for a variable declaration");
 			exit(1);
 		}
+		should_free_type = true;
 	}
 	int error = generate_c_from_type_identifier(output_file, type);
 	if (error != 0) {
@@ -1440,6 +1442,7 @@ int _generate_c_variable_declaration(
 		LOG_ERROR("Failed to generate C variable declaration. Failed to generate expression.");
 		return error;
 	}
+	ast_free_type_identifier_node(type);
 	return 0;
 }
 
