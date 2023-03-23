@@ -1,4 +1,4 @@
-[submodule ".cicada/.head"]
+[submodule "cicada"]
 	path = .cicada/head
-	url = https://github.com/ExoKomodo/cicada
+	url = git@github.com:ExoKomodo/cicada.git
 	branch = main
