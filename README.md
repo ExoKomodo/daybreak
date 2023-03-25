@@ -2,6 +2,14 @@
 
 Programming language that compiles to C
 
+## Motivation
+
+While my wife was pregnant with our first child, I made this for my daughter to be
+
+I wanted to have something to so that would focus me giving my time and energy to my child before I could actually hold and care for them
+
+My baby arrived in 2022 and she is more beautiful and complex than anything I could have made, other than she herself
+
 ## Table of Contents
 
 - [Important Links](#important-links)
