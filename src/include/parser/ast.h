@@ -927,7 +927,7 @@ struct BindingStatementNode* ast_parse_binding_statement(struct Token** tokens) 
       }
     );
   } else {
-    LOG_ERROR("Expected BindingStatement got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected BindingStatement got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 }
@@ -967,14 +967,14 @@ struct CallExpressionNode* ast_parse_call_expression(struct Token** tokens) {
   LOG_DEBUG("Parsing Call Expression: %s", (*tokens)->name);
 
   if (!ast_call_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '(' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '(' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
   struct IdentifierNode* function = ast_parse_identifier(tokens);
   struct ExpressionListNode* arguments = ast_parse_expression_list(tokens);
   if (!token_is_close_paren(**tokens)) {
-    LOG_ERROR("Expected ')' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected ')' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -1007,7 +1007,7 @@ struct DoStatementNode* ast_parse_do_statement(struct Token** tokens) {
   LOG_DEBUG("Parsing Do Statement: %s", (*tokens)->name);
 
   if (!ast_do_statement_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_DO), (*tokens)->name);
+    LOG_ERROR("Expected '%s' got '%s' - %s:%d:%d", HELPERS_STRINGIFY(TOKEN_DO), (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
@@ -1015,7 +1015,7 @@ struct DoStatementNode* ast_parse_do_statement(struct Token** tokens) {
   
   struct StatementListNode* statements = ast_parse_statement_list(tokens);
   if (!token_is_end(**tokens)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_END), (*tokens)->name);
+    LOG_ERROR("Expected '%s' got '%s' - %s:%d:%d", HELPERS_STRINGIFY(TOKEN_END), (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -1045,7 +1045,7 @@ struct DoubleExpressionNode* ast_parse_double_expression(struct Token** tokens) 
   LOG_DEBUG("Parsing Double Expression: %s", (*tokens)->name);
 
   if (!ast_double_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected double got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected double got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
@@ -1101,7 +1101,7 @@ struct EnumFieldListNode* ast_parse_enum_field_list(struct Token** tokens) {
 
   struct EnumFieldListNode* field_list = ast_new_enum_field_list_node(NULL);
   if (!ast_enum_field_list_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected identifier, got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected identifier got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
@@ -1145,7 +1145,7 @@ struct EnumFieldNode* ast_parse_enum_field(struct Token** tokens) {
   LOG_DEBUG("Parsing Enum Field: %s", (*tokens)->name);
 
   if (!ast_enum_field_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected Identifier, got %s", (*tokens)->name);
+    LOG_ERROR("Expected Identifier got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
@@ -1190,18 +1190,18 @@ struct EnumTypeDeclarationNode* ast_parse_enum_type_declaration(
   LOG_DEBUG("Parsing Enum Type Declaration: %s", (*tokens)->name);
 
   if (!ast_enum_type_declaration_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected enum type declaration got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected enum type declaration got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
   if (!token_is_is(**tokens)) {
-    LOG_ERROR("Expected 'is' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected 'is' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
   struct EnumFieldListNode* fields = ast_parse_enum_field_list(tokens);
   if (!token_is_end(**tokens)) {
-    LOG_ERROR("Expected 'end' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected 'end' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -1240,13 +1240,13 @@ struct EnumTypeExpressionNode* ast_parse_enum_type_expression(struct Token** tok
   LOG_DEBUG("Parsing Enum Type Expression: %s", (*tokens)->name);
 
   if (!ast_enum_type_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '#' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '#' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
   struct TypeIdentifierNode* type = ast_parse_type_identifier(tokens);
   if (!token_is_period(**tokens)) {
-    LOG_ERROR("Expected '.' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '.' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -1359,7 +1359,7 @@ struct ExpressionNode* ast_parse_expression(struct Token** tokens) {
   LOG_DEBUG("Parsing Expression: %s", (*tokens)->name);
 
   if (!ast_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected an expression, but got %s", (*tokens)->name);
+    LOG_ERROR("Expected an expression got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   if (ast_string_expression_token_matches_first_set(**tokens)){
@@ -1512,12 +1512,12 @@ struct FieldBindingNode* ast_parse_field_binding(struct Token** tokens) {
   LOG_DEBUG("Parsing Field Binding: %s", (*tokens)->name);
 
   if (!ast_field_binding_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected an identifier, but got %s", (*tokens)->name);
+    LOG_ERROR("Expected an identifier got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   struct IdentifierNode* identifier = ast_parse_identifier(tokens);
   if (!token_is_binding_arrow(**tokens)) {
-    LOG_ERROR("Expected a '<-', but got %s", (*tokens)->name);
+    LOG_ERROR("Expected a '<-' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -1572,7 +1572,7 @@ struct FieldListNode* ast_parse_field_list(struct Token** tokens) {
 
   struct FieldListNode* field_list = ast_new_field_list_node(NULL);
   if (!ast_field_list_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected identifier, got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected identifier got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
@@ -1614,13 +1614,13 @@ struct FieldNode* ast_parse_field(struct Token** tokens) {
   LOG_DEBUG("Parsing Field: %s", (*tokens)->name);
 
   if (!ast_field_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected an identifier");
+    LOG_ERROR("Expected an identifier got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
   struct IdentifierNode* identifier = ast_parse_identifier(tokens);
   if (!token_is_colon(**tokens)) {
-    LOG_ERROR("Expected ':' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected ':' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -1668,7 +1668,7 @@ struct FunctionDeclarationNode* ast_parse_function_declaration(struct Token** to
   LOG_DEBUG("Parsing Function Declaration: %s", (*tokens)->name);
 
   if (!ast_function_declaration_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_FUN), (*tokens)->name);
+    LOG_ERROR("Expected '%s' got '%s' - %s:%d:%d", HELPERS_STRINGIFY(TOKEN_FUN), (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
@@ -1677,7 +1677,7 @@ struct FunctionDeclarationNode* ast_parse_function_declaration(struct Token** to
   struct ParameterListNode* parameters = ast_parse_parameter_list(tokens);
   struct TypeIdentifierNode* return_type = ast_parse_type_identifier(tokens);
   if (!token_is_do(**tokens)) {
-    LOG_ERROR("Expected '%s' got '%s'", HELPERS_STRINGIFY(TOKEN_DO), (*tokens)->name);
+    LOG_ERROR("Expected '%s' got '%s' - %s:%d:%d", HELPERS_STRINGIFY(TOKEN_DO), (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   
@@ -1716,7 +1716,7 @@ struct IdentifierNode* ast_parse_identifier(struct Token** tokens) {
   LOG_DEBUG("Parsing Identifier: %s", (*tokens)->name);
 
   if (!ast_identifier_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected identifier got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected identifier got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
@@ -1760,7 +1760,7 @@ struct IdentifierExpressionNode* ast_parse_identifier_expression(struct Token** 
   LOG_DEBUG("Parsing Identifier Expression: %s", (*tokens)->name);
 
   if (!ast_identifier_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected identifier expression got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected identifier expression got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   struct IdentifierNode* identifier = ast_parse_identifier(tokens);
@@ -1801,7 +1801,7 @@ struct ImportStatementNode* ast_parse_import_statement(struct Token** tokens) {
   LOG_DEBUG("Parsing Import Statement: %s", (*tokens)->name);
 
   if (!ast_import_statement_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected import statement, but got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected import statement got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   ImportNodeKind import_kind = ImportStatement;
@@ -1839,7 +1839,7 @@ struct IntegerExpressionNode* ast_parse_integer_expression(struct Token** tokens
   LOG_DEBUG("Parsing Integer Expression: %s", (*tokens)->name);
 
   if (!ast_integer_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected integer got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected integer got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   const int64_t value = atoll((*tokens)->name);
@@ -1885,7 +1885,7 @@ struct LetBindingNode* ast_parse_let_binding(struct Token** tokens) {
   LOG_DEBUG("Parsing Let Binding: %s", (*tokens)->name);
 
   if (!ast_let_binding_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected 'let' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected 'let' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -1896,7 +1896,7 @@ struct LetBindingNode* ast_parse_let_binding(struct Token** tokens) {
     type = ast_parse_type_identifier(tokens);
   }
   if (!token_is_binding_arrow(**tokens)) {
-    LOG_ERROR("Expected '->' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '->' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   
@@ -1933,13 +1933,13 @@ struct ListExpressionNode* ast_parse_list_expression(struct Token** tokens) {
   LOG_DEBUG("Parsing List Expression: %s", (*tokens)->name);
 
   if (!ast_list_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '[' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '[' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
   struct ExpressionListNode* expressions = ast_parse_expression_list(tokens);
   if (!token_is_close_bracket(**tokens)) {
-    LOG_ERROR("Expected ']' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected ']' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -2027,13 +2027,13 @@ struct MatchCaseNode* ast_parse_match_case(struct Token** tokens) {
   LOG_DEBUG("Parsing Match Case: %s", (*tokens)->name);
 
   if (!ast_match_case_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '(' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '(' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
   struct CallExpressionNode* condition = ast_parse_call_expression(tokens);
   if (!token_is_fat_arrow(**tokens)) {
-    LOG_ERROR("Expected '=>' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '=>' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -2067,14 +2067,14 @@ struct MatchStatementNode* ast_parse_match_statement(struct Token** tokens) {
   LOG_DEBUG("Parsing Match Statement: %s", (*tokens)->name);
 
   if (!ast_match_statement_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected match got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected match got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
 
   struct MatchCaseListNode* match_case_list = ast_parse_match_case_list(tokens);
   if (!token_is_end(**tokens)) {
-    LOG_ERROR("Expected '" HELPERS_STRINGIFY(TOKEN_END) "' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '" HELPERS_STRINGIFY(TOKEN_END) "' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -2129,7 +2129,7 @@ struct ModuleStatementListNode* ast_parse_module_statement_list(struct Token** t
   LOG_DEBUG("Parsing Module Statement List: %s", (*tokens)->name);
 
   if (!ast_module_statement_list_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected module statement for list, got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected module statement for list got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
@@ -2226,7 +2226,7 @@ struct ModuleStatementNode* ast_parse_module_statement(struct Token** tokens) {
       }
     );
   } else {
-    LOG_ERROR("Expected Module Statement got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected Module Statement got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 }
@@ -2274,7 +2274,7 @@ struct MutBindingNode* ast_parse_mut_binding(struct Token** tokens) {
   LOG_DEBUG("Parsing Mut Binding: %s", (*tokens)->name);
 
   if (!ast_mut_binding_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected 'mut' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected 'mut' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -2285,7 +2285,7 @@ struct MutBindingNode* ast_parse_mut_binding(struct Token** tokens) {
     type = ast_parse_type_identifier(tokens); 
   }
   if (!token_is_binding_arrow(**tokens)) {
-    LOG_ERROR("Expected '->' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '->' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -2332,7 +2332,7 @@ struct MutExpressionNode* ast_parse_mut_expression(struct Token** tokens) {
   LOG_DEBUG("Parsing Mut Expression: %s", (*tokens)->name);
 
   if (!ast_mut_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected a mut expression, but got %s", (*tokens)->name);
+    LOG_ERROR("Expected a mut expression got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   if (ast_new_alloc_token_matches_first_set(**tokens)){
@@ -2386,7 +2386,7 @@ struct NewAllocNode* ast_parse_new_alloc(struct Token** tokens) {
   LOG_DEBUG("Parsing New Alloc Node: %s", (*tokens)->name);
 
   if (!ast_new_alloc_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected new alloc, got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected new alloc got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -2448,7 +2448,7 @@ struct NumericExpressionNode* ast_parse_numeric_expression(struct Token** tokens
     );
   }
 
-  LOG_ERROR("Expected number got '%s'", (*tokens)->name);
+  LOG_ERROR("Expected number got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
   exit(1);
 }
 
@@ -2504,7 +2504,7 @@ struct ParameterListNode* ast_parse_parameter_list(struct Token** tokens) {
 
   struct ParameterListNode* parameter_list = ast_new_parameter_list_node(NULL);
   if (!ast_parameter_list_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '(' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '(' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
@@ -2550,13 +2550,13 @@ struct ParameterNode* ast_parse_parameter(struct Token** tokens) {
   LOG_DEBUG("Parsing Parameter: %s", (*tokens)->name);
 
   if (!ast_parameter_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected an identifier");
+    LOG_ERROR("Expected an identifier got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
   struct IdentifierNode* identifier = ast_parse_identifier(tokens);
   if (!token_is_colon(**tokens)) {
-    LOG_ERROR("Expected ':' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected ':' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -2596,7 +2596,7 @@ struct ProgramNode* ast_parse_program(struct Token** tokens) {
   LOG_DEBUG("Parsing Program: %s", (*tokens)->name);
 
   if (!ast_program_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '#!' or module statement got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '#!' or module statement got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   struct ShebangNode* shebang = NULL;
@@ -2636,7 +2636,7 @@ struct ReturnStatementNode* ast_parse_return_statement(struct Token** tokens) {
   LOG_DEBUG("Parsing Return Statement: %s", (*tokens)->name);
 
   if (!ast_return_statement_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected return got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected return got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -2669,7 +2669,7 @@ struct ShebangNode* ast_parse_shebang(struct Token** tokens) {
   LOG_DEBUG("Parsing shebang: %s", (*tokens)->name);
 
   if (!ast_shebang_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '#!' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '#!' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -2724,7 +2724,7 @@ struct StatementNode* ast_parse_statement(struct Token** tokens) {
   LOG_DEBUG("Parsing Statement: %s", (*tokens)->name);
 
   if (!ast_statement_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected a statement, but got %s", (*tokens)->name);
+    LOG_ERROR("Expected a statement got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
@@ -2824,7 +2824,7 @@ struct StatementListNode* ast_parse_statement_list(struct Token** tokens) {
 
   struct StatementListNode* statement_list = ast_new_statement_list_node(NULL);
   if (!ast_statement_list_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected statement, got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected statement got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 
@@ -2859,7 +2859,7 @@ struct StringExpressionNode* ast_parse_string_expression(struct Token** tokens) 
   LOG_DEBUG("Parsing String Expression: %s", (*tokens)->name);
 
   if (!ast_string_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected string got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected string got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   const size_t token_length = (*tokens)->length + 1;
@@ -2902,18 +2902,18 @@ struct StructTypeDeclarationNode* ast_parse_struct_type_declaration(
   LOG_DEBUG("Parsing Struct Type Declaration: %s", (*tokens)->name);
 
   if (!ast_struct_type_declaration_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected struct type declaration got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected struct type declaration got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
   if (!token_is_is(**tokens)) {
-    LOG_ERROR("Expected 'is' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected 'is' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
   struct FieldListNode* fields = ast_parse_field_list(tokens);
   if (!token_is_end(**tokens)) {
-    LOG_ERROR("Expected 'end' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected 'end' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -2952,14 +2952,14 @@ struct StructuredTypeExpressionNode* ast_parse_structured_type_expression(struct
   LOG_DEBUG("Parsing Struct Type Expression: %s", (*tokens)->name);
 
   if (!ast_structured_type_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected '{' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '{' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
   struct TypeIdentifierNode* type = ast_parse_type_identifier(tokens);
   struct FieldBindingListNode* field_bindings = ast_parse_field_binding_list(tokens);
   if (!token_is_close_brace(**tokens)) {
-    LOG_ERROR("Expected '}' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected '}' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -3007,7 +3007,7 @@ struct TypeDeclarationNode* ast_parse_type_declaration(struct Token** tokens) {
   LOG_DEBUG("Parsing Type Declaration: %s", (*tokens)->name);
 
   if (!ast_type_declaration_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected type declaration got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected type declaration got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
@@ -3080,7 +3080,7 @@ struct TypeExpressionNode* ast_parse_type_expression(struct Token** tokens) {
   LOG_DEBUG("Parsing Type Expression: %s", (*tokens)->name);
 
   if (!ast_type_expression_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected type expression got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected type expression got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   if (ast_enum_type_expression_token_matches_first_set(**tokens)) {
@@ -3100,7 +3100,7 @@ struct TypeExpressionNode* ast_parse_type_expression(struct Token** tokens) {
       }
     );
   } else {
-    LOG_ERROR("Invalid TypeExpressionNode kind: %s", (**tokens).name);
+    LOG_ERROR("Invalid TypeExpressionNode kind got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
 }
@@ -3138,7 +3138,7 @@ struct TypeIdentifierNode* ast_parse_type_identifier(struct Token** tokens) {
   LOG_DEBUG("Parsing TypeIdentifier: %s", (*tokens)->name);
 
   if (!ast_type_identifier_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected type identifier got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected type identifier got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   struct IdentifierNode* identifier = ast_parse_identifier(tokens);
@@ -3147,7 +3147,7 @@ struct TypeIdentifierNode* ast_parse_type_identifier(struct Token** tokens) {
     _ADVANCE_TOKEN(tokens);
     contained_type = ast_parse_type_identifier(tokens);
     if (!token_is_right_angle(**tokens)) {
-      LOG_ERROR("Expected '>' got '%s'", (*tokens)->name);
+      LOG_ERROR("Expected '>' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
       exit(1);
     }
     _ADVANCE_TOKEN(tokens);
@@ -3187,18 +3187,18 @@ struct UnionTypeDeclarationNode* ast_parse_union_type_declaration(
   LOG_DEBUG("Parsing Union Type Declaration: %s", (*tokens)->name);
 
   if (!ast_union_type_declaration_token_matches_first_set(**tokens)) {
-    LOG_ERROR("Expected union type declaration got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected union type declaration got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
   if (!token_is_is(**tokens)) {
-    LOG_ERROR("Expected 'is' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected 'is' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
   struct FieldListNode* fields = ast_parse_field_list(tokens);
   if (!token_is_end(**tokens)) {
-    LOG_ERROR("Expected 'end' got '%s'", (*tokens)->name);
+    LOG_ERROR("Expected 'end' got '%s' - %s:%d:%d", (*tokens)->name, (*tokens)->filename, (*tokens)->line_number, (*tokens)->column);
     exit(1);
   }
   _ADVANCE_TOKEN(tokens);
