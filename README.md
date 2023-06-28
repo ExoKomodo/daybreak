@@ -1,3 +1,5 @@
+MOVED TO [SOURCEHUT](https://git.sr.ht/~nixnomad/daybreak-lang)
+
 # Daybreak
 
 Programming language that compiles to C
