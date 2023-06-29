@@ -1,4 +1,4 @@
-MOVED TO [SOURCEHUT](https://git.sr.ht/~nixnomad/daybreak-lang)
+# not yet MOVED TO [SOURCEHUT](https://git.sr.ht/~nixnomad/daybreak-lang)
 
 # Daybreak
 
