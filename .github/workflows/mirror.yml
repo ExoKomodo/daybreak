@@ -1,0 +1,15 @@
+name: Mirror
+on:
+  push:
+    branches:
+      - '*' 
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: jamesaorson/composite-git-mirror@main
+        with:
+          target-git-url: git@git.sr.ht:~jamesaorson/${{ github.event.repository.name }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
